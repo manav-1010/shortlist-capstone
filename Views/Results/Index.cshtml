@@ -5,6 +5,16 @@
 
 <h1>Results</h1>
 
+@if (Model.Filters?.Priorities != null && Model.Filters.Priorities.Count > 0)
+{
+    <p><strong>Selected priorities:</strong> @string.Join(", ", Model.Filters.Priorities)</p>
+}
+else
+{
+    <p><strong>Selected priorities:</strong> (none)</p>
+}
+
+
 @if (Model.Items.Count == 0)
 {
     <p>No results yet.</p>
