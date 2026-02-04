@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Shortlist</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">Shortlist</div>
+        <nav class="nav">
+            <a href="/Home/Index">Home</a>
+            <a href="/Filters/Index">Filters</a>
+            <a href="/Results/Index">Results</a>
+        </nav>
+    </header>
+
+    <div class="page">
+        @await Html.PartialAsync("_HeaderSummary")
+        <main class="content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+﻿@model Shortlist.Web.Models.FilterState
+@{
+    Layout = "_Layout";
+}
+
+<h1>Filters</h1>
+
+<form method="post">
+    <div>
+        <label>Budget</label><br />
+        <input asp-for="Budget" />
+    </div>
+
+    <div>
+        <label>Max Distance (Km)</label><br />
+        <input asp-for="MaxDistanceKm" />
+    </div>
+
+    <div>
+        <label>Priorities (max 3)</label>
+        <p>(priority chip UI will go here)</p>
+    </div>
+
+    <button type="submit">Apply</button>
+</form>
