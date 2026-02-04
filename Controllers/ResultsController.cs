@@ -11,10 +11,25 @@ namespace Shortlist.Web.Controllers
             var state = GetFilterState();
 
             // Dummy results for skeleton (will replace with real ranking later)
+            var chosen = state.Priorities ?? new List<string>();
+            var chosenText = chosen.Count > 0 ? string.Join(", ", chosen) : "None";
+
             var results = new List<ResultItem>
             {
-                new ResultItem { Name = "Area A", Score = 82, Pros = new(){"Close to campus"}, Cons = new(){"Higher rent"} },
-                new ResultItem { Name = "Area B", Score = 75, Pros = new(){"Cheaper"}, Cons = new(){"Farther commute"} }
+                new ResultItem
+                {
+                    Name = "Area A",
+                    Score = 82,
+                    Pros = new() { "Close to campus", $"Matched priorities: {chosenText}" },
+                    Cons = new() { "Higher rent" }
+                },
+                new ResultItem
+                {
+                    Name = "Area B",
+                    Score = 75,
+                    Pros = new() { "Cheaper", $"Matched priorities: {chosenText}" },
+                    Cons = new() { "Farther commute" }
+                }
             };
 
             var vm = new ResultsViewModel

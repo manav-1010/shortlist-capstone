@@ -9,15 +9,23 @@ namespace Shortlist.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // Load from session if present, else default
+            // load last saved filters (if any) so the form stays filled
             var state = GetFilterState();
             return View(state);
         }
 
-        // Nirali will implement apply behavior 
         [HttpPost]
         public IActionResult Index(FilterState state)
         {
+            // quick server-side safety check (UI blocks it too): max 3 priorities
+            state.Priorities = (state.Priorities ?? new List<string>())
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Select(p => p.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(3)
+                .ToList();
+
+            // save filters so Results page can read them
             SaveFilterState(state);
             return RedirectToAction("Index", "Results");
         }

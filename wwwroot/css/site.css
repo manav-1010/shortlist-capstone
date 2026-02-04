@@ -42,3 +42,37 @@ body {
     display: flex;
     justify-content: space-between;
 }
+
+.priority-help {
+    margin: 6px 0 10px;
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.priority-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.priority-chip {
+    border: 1px solid #999;
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+    .priority-chip.selected {
+        background: #111;
+        color: #fff;
+        border-color: #111;
+    }
+
+.priority-error {
+    color: #b00020;
+    font-size: 14px;
+    margin-top: 6px;
+}
