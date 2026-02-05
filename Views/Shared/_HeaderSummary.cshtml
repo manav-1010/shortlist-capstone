@@ -1,9 +1,44 @@
-﻿@using Shortlist.Web.Models
+﻿@using System.Text.Json
+@using Shortlist.Web.Models
+
 @{
-    // Skeleton: just static text for now
-    // Later: show budget/distance/priorities from session/model
+    FilterState state = new FilterState();
+
+    var json = Context.Session.GetString("FilterState");
+    if (!string.IsNullOrWhiteSpace(json))
+    {
+        state = JsonSerializer.Deserialize<FilterState>(json) ?? new FilterState();
+    }
+
+    var hasBudget = state.Budget.HasValue;
+    var hasDistance = state.MaxDistanceKm.HasValue;
+    var hasPriorities = state.Priorities != null && state.Priorities.Count > 0;
 }
+
 <div class="summary">
     <strong>Current Filters:</strong>
-    <span>(will show Budget / Distance / Priorities here)</span>
+
+    @if (!hasBudget && !hasDistance && !hasPriorities)
+    {
+        <span>No filters set yet</span>
+    }
+    else
+    {
+        <span>
+            @if (hasBudget)
+            {
+                <span>Budget - @state.Budget</span>
+            }
+
+            @if (hasDistance)
+            {
+                <span> | Distance - @state.MaxDistanceKm km or less</span>
+            }
+
+            @if (hasPriorities)
+            {
+                <span> | Priorities - @string.Join(", ", state.Priorities)</span>
+            }
+        </span>
+    }
 </div>
