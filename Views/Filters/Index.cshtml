@@ -67,7 +67,13 @@
 
     <div style="margin-top:16px;">
         <button type="submit">Apply</button>
-        <button type="button" id="btnResetPriorities" style="margin-left:10px;">Reset</button>
+
+        <button type="submit"
+                formaction="@Url.Action("Reset", "Filters")"
+                formmethod="post"
+                style="margin-left:10px;">
+            Reset
+        </button>
     </div>
 
 </form>
