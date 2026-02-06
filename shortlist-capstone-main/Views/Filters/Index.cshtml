@@ -1,0 +1,73 @@
+﻿@model Shortlist.Web.Models.FilterState
+@{
+    Layout = "_Layout";
+
+    // Keeping this list short for Sprint 1. We can rename later to match backlog wording.
+    var allPriorities = new List<string>
+    {
+        "Safety",
+        "Transit",
+        "Grocery",
+        "Quiet",
+        "Parking",
+        "Gym/Fitness",
+        "Parks",
+        "Laundry"
+    };
+
+    var selected = Model?.Priorities ?? new List<string>();
+}
+
+<h1>Filters</h1>
+
+<form method="post" id="filtersForm">
+    <div>
+        <label>Budget</label><br />
+        <input asp-for="Budget" />
+    </div>
+
+    <div>
+        <label>Max Distance (Km)</label><br />
+        <input asp-for="MaxDistanceKm" />
+    </div>
+
+    <div style="margin-top:16px;">
+        <label><strong>Priorities (max 3)</strong></label>
+
+        <div class="priority-help">
+            Pick up to 3 priorities. Click again to remove.
+            <span id="priorityCount" style="margin-left:10px; font-weight:600;">0/3</span>
+        </div>
+
+        <div id="priorityChips" class="priority-chips">
+            @foreach (var p in allPriorities)
+            {
+                var isSelected = selected.Contains(p);
+                <button type="button"
+                        class="priority-chip @(isSelected ? "selected" : "")"
+                        data-value="@p"
+                        aria-pressed="@(isSelected.ToString().ToLower())">
+                    @p
+                </button>
+            }
+        </div>
+
+        <div id="priorityError" class="priority-error" style="display:none;">
+            You can only select up to 3 priorities.
+        </div>
+
+        @* hidden inputs are how the selected chips get posted back as Priorities[] *@
+        <div id="priorityHiddenInputs">
+            @foreach (var p in selected)
+            {
+                <input type="hidden" name="Priorities" value="@p" />
+            }
+        </div>
+    </div>
+
+    <div style="margin-top:16px;">
+        <button type="submit">Apply</button>
+        <button type="button" id="btnResetPriorities" style="margin-left:10px;">Reset</button>
+    </div>
+
+</form>

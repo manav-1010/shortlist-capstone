@@ -1,0 +1,54 @@
+﻿@model Shortlist.Web.Models.ResultsViewModel
+@{
+    Layout = "_Layout";
+}
+
+<h1>Results</h1>
+
+@if (Model.Filters?.Priorities != null && Model.Filters.Priorities.Count > 0)
+{
+    <p><strong>Selected priorities:</strong> @string.Join(", ", Model.Filters.Priorities)</p>
+}
+else
+{
+    <p><strong>Selected priorities:</strong> (none)</p>
+}
+
+
+@if (Model.Items.Count == 0)
+{
+    <p>No results yet.</p>
+}
+else
+{
+    <ul class="results">
+        @foreach (var item in Model.Items)
+        {
+            <li class="card">
+                <div class="card-header">
+                    <strong>@item.Name</strong>
+                    <span>Score: @item.Score</span>
+                </div>
+
+                <button type="button" class="explain-btn">Explain</button>
+
+                <div class="explain-panel" style="display:none;">
+                    <p><strong>Pros</strong></p>
+                    <ul>
+                        @foreach (var p in item.Pros)
+                        {
+                            <li>@p</li>
+                        }
+                    </ul>
+                    <p><strong>Cons</strong></p>
+                    <ul>
+                        @foreach (var c in item.Cons)
+                        {
+                            <li>@c</li>
+                        }
+                    </ul>
+                </div>
+            </li>
+        }
+    </ul>
+}
