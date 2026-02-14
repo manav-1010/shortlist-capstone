@@ -1,44 +1,83 @@
-﻿@using System.Text.Json
+﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json
 @using Shortlist.Web.Models
 
 @{
-    FilterState state = new FilterState();
-
+    // 1) Try "FilterState" JSON first (Nirali's approach)
+    FilterState? state = null;
     var json = Context.Session.GetString("FilterState");
+
     if (!string.IsNullOrWhiteSpace(json))
     {
-        state = JsonSerializer.Deserialize<FilterState>(json) ?? new FilterState();
+        try
+        {
+            state = JsonSerializer.Deserialize<FilterState>(json);
+        }
+        catch
+        {
+            state = null;
+        }
     }
 
-    var hasBudget = state.Budget.HasValue;
-    var hasDistance = state.MaxDistanceKm.HasValue;
-    var hasPriorities = state.Priorities != null && state.Priorities.Count > 0;
-}
-
-<div class="summary">
-    <strong>Current Filters:</strong>
-
-    @if (!hasBudget && !hasDistance && !hasPriorities)
+    // 2) Fallback to separate session keys (main approach)
+    int? budget = null;
+    if (state?.Budget.HasValue == true)
     {
-        <span>No filters set yet</span>
+        // budget is decimal? in FilterState in your model, so round for display
+        budget = (int)Math.Round(state.Budget.Value);
     }
     else
     {
-        <span>
-            @if (hasBudget)
-            {
-                <span>Budget - @state.Budget</span>
-            }
+        budget = Context.Session.GetInt32("Budget");
+    }
 
-            @if (hasDistance)
-            {
-                <span> | Distance - @state.MaxDistanceKm km or less</span>
-            }
+    int? distance = null;
+    if (state?.MaxDistanceKm.HasValue == true)
+    {
+        distance = state.MaxDistanceKm.Value;
+    }
+    else
+    {
+        distance = Context.Session.GetInt32("Distance");
+    }
 
-            @if (hasPriorities)
-            {
-                <span> | Priorities - @string.Join(", ", state.Priorities)</span>
-            }
+    string? priorities = null;
+    if (state?.Priorities != null && state.Priorities.Count > 0)
+    {
+        priorities = string.Join(", ", state.Priorities);
+    }
+    else
+    {
+        priorities = Context.Session.GetString("Priorities");
+    }
+
+    var hasAny = budget.HasValue || distance.HasValue || !string.IsNullOrWhiteSpace(priorities);
+}
+
+<div class="filter-summary">
+    @if (!hasAny)
+    {
+        <span class="summary-empty">No filters set yet</span>
+    }
+    else
+    {
+        <span class="summary-item">
+            Budget: @(budget.HasValue ? $"${budget}" : "Any")
         </span>
+
+        <span class="summary-separator">|</span>
+
+        <span class="summary-item">
+            Distance: @(distance.HasValue ? $"{distance} km or less" : "Any")
+        </span>
+
+        @if (!string.IsNullOrWhiteSpace(priorities))
+        {
+            <span class="summary-separator">|</span>
+
+            <span class="summary-item">
+                Priorities: @priorities
+            </span>
+        }
     }
 </div>
