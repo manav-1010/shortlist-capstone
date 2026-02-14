@@ -1,17 +1,63 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json
+@using Shortlist.Web.Models
 
 @{
-    var budget = Context.Session.GetInt32("Budget");
-    var distance = Context.Session.GetInt32("Distance");
-    var priorities = Context.Session.GetString("Priorities");
+    // 1) Try "FilterState" JSON first (Nirali's approach)
+    FilterState? state = null;
+    var json = Context.Session.GetString("FilterState");
+
+    if (!string.IsNullOrWhiteSpace(json))
+    {
+        try
+        {
+            state = JsonSerializer.Deserialize<FilterState>(json);
+        }
+        catch
+        {
+            state = null;
+        }
+    }
+
+    // 2) Fallback to separate session keys (main approach)
+    int? budget = null;
+    if (state?.Budget.HasValue == true)
+    {
+        // budget is decimal? in FilterState in your model, so round for display
+        budget = (int)Math.Round(state.Budget.Value);
+    }
+    else
+    {
+        budget = Context.Session.GetInt32("Budget");
+    }
+
+    int? distance = null;
+    if (state?.MaxDistanceKm.HasValue == true)
+    {
+        distance = state.MaxDistanceKm.Value;
+    }
+    else
+    {
+        distance = Context.Session.GetInt32("Distance");
+    }
+
+    string? priorities = null;
+    if (state?.Priorities != null && state.Priorities.Count > 0)
+    {
+        priorities = string.Join(", ", state.Priorities);
+    }
+    else
+    {
+        priorities = Context.Session.GetString("Priorities");
+    }
+
+    var hasAny = budget.HasValue || distance.HasValue || !string.IsNullOrWhiteSpace(priorities);
 }
 
 <div class="filter-summary">
-    @if (budget == null && distance == null && string.IsNullOrEmpty(priorities))
+    @if (!hasAny)
     {
-        <span class="summary-empty">
-            No filters set yet
-        </span>
+        <span class="summary-empty">No filters set yet</span>
     }
     else
     {
@@ -25,7 +71,7 @@
             Distance: @(distance.HasValue ? $"{distance} km or less" : "Any")
         </span>
 
-        @if (!string.IsNullOrEmpty(priorities))
+        @if (!string.IsNullOrWhiteSpace(priorities))
         {
             <span class="summary-separator">|</span>
 
