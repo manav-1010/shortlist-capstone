@@ -1,9 +1,37 @@
-﻿@using Shortlist.Web.Models
+﻿@using Microsoft.AspNetCore.Http
+
 @{
-    // Skeleton: just static text for now
-    // Later: show budget/distance/priorities from session/model
+    var budget = Context.Session.GetInt32("Budget");
+    var distance = Context.Session.GetInt32("Distance");
+    var priorities = Context.Session.GetString("Priorities");
 }
-<div class="summary">
-    <strong>Current Filters:</strong>
-    <span>(will show Budget / Distance / Priorities here)</span>
+
+<div class="filter-summary">
+    @if (budget == null && distance == null && string.IsNullOrEmpty(priorities))
+    {
+        <span class="summary-empty">
+            No filters set yet
+        </span>
+    }
+    else
+    {
+        <span class="summary-item">
+            Budget: @(budget.HasValue ? $"${budget}" : "Any")
+        </span>
+
+        <span class="summary-separator">|</span>
+
+        <span class="summary-item">
+            Distance: @(distance.HasValue ? $"{distance} km or less" : "Any")
+        </span>
+
+        @if (!string.IsNullOrEmpty(priorities))
+        {
+            <span class="summary-separator">|</span>
+
+            <span class="summary-item">
+                Priorities: @priorities
+            </span>
+        }
+    }
 </div>

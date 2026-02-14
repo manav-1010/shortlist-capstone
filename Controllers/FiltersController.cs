@@ -41,6 +41,37 @@ namespace Shortlist.Web.Controllers
         {
             var json = JsonSerializer.Serialize(state);
             HttpContext.Session.SetString("FilterState", json);
+
+            // saving individual keys
+            if (state.Budget.HasValue)
+                HttpContext.Session.SetInt32("Budget", Convert.ToInt32(Math.Round(state.Budget.Value)));
+            else
+                HttpContext.Session.Remove("Budget");
+
+            if (state.MaxDistanceKm.HasValue)
+                HttpContext.Session.SetInt32("Distance", state.MaxDistanceKm.Value);
+            else
+                HttpContext.Session.Remove("Distance");
+
+            var prioritiesText = (state.Priorities != null && state.Priorities.Any())
+                ? string.Join(",", state.Priorities)
+                : null;
+
+            if(!string.IsNullOrWhiteSpace(prioritiesText))
+                HttpContext.Session.SetString("Priorities", prioritiesText);
+            else
+                HttpContext.Session.Remove("Priorities");
+        }
+
+        [HttpPost]
+        public IActionResult Reset()
+        {
+            HttpContext.Session.Remove("FilterState");
+            HttpContext.Session.Remove("Budget");
+            HttpContext.Session.Remove("Distance");
+            HttpContext.Session.Remove("Priorities");
+
+            return RedirectToAction("Index");
         }
     }
 }
