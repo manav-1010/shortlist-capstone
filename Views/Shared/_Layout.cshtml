@@ -9,19 +9,27 @@
     <header class="topbar">
         <div class="brand">Shortlist</div>
         <nav class="nav">
-            <a asp-controller="Home" asp-action="Index">Home</a>
-            <a asp-controller="Filters" asp-action="Index">Filters</a>
-            <a asp-controller="Results" asp-action="Index">Results</a>
+            <a href="/Home/Index">Home</a>
+            <a href="/Filters/Index">Filters</a>
+            <a href="/Results/Index">Results</a>
         </nav>
-    </header>
+        @if (User.Identity?.IsAuthenticated ?? false)
 
+        {
+            <div class="user-section">
+                <span>@User.Identity.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline; margin-left: 10px;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        }
+    </header>
     <div class="page">
         @await Html.PartialAsync("_HeaderSummary")
         <main class="content">
             @RenderBody()
         </main>
     </div>
-
     <script src="~/js/site.js"></script>
 </body>
 </html>
