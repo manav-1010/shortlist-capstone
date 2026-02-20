@@ -3,52 +3,190 @@
     Layout = "_Layout";
 }
 
-<h1>Results</h1>
+<style>
+    .results-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
 
-@if (Model.Filters?.Priorities != null && Model.Filters.Priorities.Count > 0)
-{
-    <p><strong>Selected priorities:</strong> @string.Join(", ", Model.Filters.Priorities)</p>
-}
-else
-{
-    <p><strong>Selected priorities:</strong> (none)</p>
-}
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
+    .clear-btn {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        background: #eee;
+        cursor: pointer;
+        font-weight: 500;
+    }
 
-@if (Model.Items.Count == 0)
-{
-    <p>No results yet.</p>
-}
-else
-{
-    <ul class="results">
-        @foreach (var item in Model.Items)
-        {
-            <li class="card">
-                <div class="card-header">
-                    <strong>@item.Name</strong>
-                    <span>Score: @item.Score</span>
-                </div>
-
-                <button type="button" class="explain-btn">Explain</button>
-
-                <div class="explain-panel" style="display:none;">
-                    <p><strong>Pros</strong></p>
-                    <ul>
-                        @foreach (var p in item.Pros)
-                        {
-                            <li>@p</li>
-                        }
-                    </ul>
-                    <p><strong>Cons</strong></p>
-                    <ul>
-                        @foreach (var c in item.Cons)
-                        {
-                            <li>@c</li>
-                        }
-                    </ul>
-                </div>
-            </li>
+        .clear-btn:hover {
+            background: #ddd;
         }
-    </ul>
-}
+
+    .results-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 28px;
+    }
+
+    .result-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        margin-bottom: 18px;
+        transition: 0.2s ease;
+    }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+        }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .result-title {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .score-badge {
+        background: #111;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+
+    .explain-btn {
+        margin-top: 12px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        background: #f1f1f1;
+        cursor: pointer;
+    }
+
+        .explain-btn:hover {
+            background: #e3e3e3;
+        }
+
+    .explain-panel {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+    }
+
+    .explain-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .map-placeholder {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        height: fit-content;
+    }
+
+    .map-box {
+        margin-top: 14px;
+        height: 300px;
+        background: #f2f2f2;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
+        font-size: 14px;
+    }
+
+    .empty-state {
+        background: #fff;
+        padding: 30px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="results-container">
+
+    <div class="results-header">
+        <h1>Results</h1>
+
+        <form method="post" asp-action="Clear">
+            <button class="clear-btn" type="submit">Clear All</button>
+        </form>
+    </div>
+
+    @if (Model.Items == null || Model.Items.Count == 0)
+    {
+        <div class="empty-state">
+            <h3>No results found</h3>
+            <p>Try adjusting your budget or priorities.</p>
+        </div>
+    }
+    else
+    {
+        <div class="results-layout">
+
+            <div>
+                @foreach (var item in Model.Items)
+                {
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-title">@item.Name</div>
+                            <div class="score-badge">@item.Score</div>
+                        </div>
+
+                        <button type="button" class="explain-btn">Explain</button>
+
+                        <div class="explain-panel" style="display:none;">
+                            <div class="explain-grid">
+                                <div>
+                                    <strong>Pros</strong>
+                                    <ul>
+                                        @foreach (var p in item.Pros)
+                                        {
+                                            <li>@p</li>
+                                        }
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <strong>Cons</strong>
+                                    <ul>
+                                        @foreach (var c in item.Cons)
+                                        {
+                                            <li>@c</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="map-placeholder">
+                <strong>Map Preview</strong>
+                <div class="map-box">
+                    Google Maps will appear here (Sprint 2)
+                </div>
+            </div>
+
+        </div>
+    }
+</div>

@@ -6,11 +6,12 @@ namespace Shortlist.Web.Controllers
 {
     public class ResultsController : Controller
     {
+        [HttpGet]
         public IActionResult Index()
         {
             var state = GetFilterState();
 
-            // Dummy results for skeleton (will replace with real ranking later)
+            // Dummy results for skeleton (Sprint 1)
             var chosen = state.Priorities ?? new List<string>();
             var chosenText = chosen.Count > 0 ? string.Join(", ", chosen) : "None";
 
@@ -32,6 +33,13 @@ namespace Shortlist.Web.Controllers
                 }
             };
 
+            // ✅ Edge case for Testing Assignment:
+            // If Budget is extremely low, show empty results (to test "No results" state).
+            if (state.Budget.HasValue && state.Budget.Value < 100)
+            {
+                results = new List<ResultItem>();
+            }
+
             var vm = new ResultsViewModel
             {
                 Filters = state,
@@ -39,6 +47,13 @@ namespace Shortlist.Web.Controllers
             };
 
             return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult Clear()
+        {
+            HttpContext.Session.Remove("FilterState");
+            return RedirectToAction("Index");
         }
 
         private FilterState GetFilterState()

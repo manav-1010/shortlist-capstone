@@ -2,7 +2,6 @@
 @{
     Layout = "_Layout";
 
-    // Keeping this list short for Sprint 1. We can rename later to match backlog wording.
     var allPriorities = new List<string>
     {
         "Safety",
@@ -21,14 +20,20 @@
 <h1>Filters</h1>
 
 <form method="post" id="filtersForm">
+    <div class="validation">
+        @Html.ValidationSummary(true)
+    </div>
+
     <div>
         <label>Budget</label><br />
-        <input asp-for="Budget" />
+        <input asp-for="Budget" type="number" step="1" min="0" />
+        <span class="field-error" asp-validation-for="Budget"></span>
     </div>
 
     <div>
         <label>Max Distance (Km)</label><br />
-        <input asp-for="MaxDistanceKm" />
+        <input asp-for="MaxDistanceKm" type="number" step="1" min="0" />
+        <span class="field-error" asp-validation-for="MaxDistanceKm"></span>
     </div>
 
     <div style="margin-top:16px;">
@@ -56,7 +61,6 @@
             You can only select up to 3 priorities.
         </div>
 
-        @* hidden inputs are how the selected chips get posted back as Priorities[] *@
         <div id="priorityHiddenInputs">
             @foreach (var p in selected)
             {
@@ -75,5 +79,4 @@
             Reset
         </button>
     </div>
-
 </form>

@@ -9,7 +9,6 @@ namespace Shortlist.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // load last saved filters (if any) so the form stays filled
             var state = GetFilterState();
             return View(state);
         }
@@ -17,7 +16,7 @@ namespace Shortlist.Web.Controllers
         [HttpPost]
         public IActionResult Index(FilterState state)
         {
-            // quick server-side safety check (UI blocks it too): max 3 priorities
+            // Enforce max 3 priorities server-side too
             state.Priorities = (state.Priorities ?? new List<string>())
                 .Where(p => !string.IsNullOrWhiteSpace(p))
                 .Select(p => p.Trim())
@@ -25,9 +24,21 @@ namespace Shortlist.Web.Controllers
                 .Take(3)
                 .ToList();
 
-            // save filters so Results page can read them
+            // If validation fails, re-render page with errors + preserve selections
+            if (!ModelState.IsValid)
+            {
+                return View(state);
+            }
+
             SaveFilterState(state);
             return RedirectToAction("Index", "Results");
+        }
+
+        [HttpPost]
+        public IActionResult Reset()
+        {
+            HttpContext.Session.Remove("FilterState");
+            return RedirectToAction("Index");
         }
 
         private FilterState GetFilterState()
@@ -41,37 +52,6 @@ namespace Shortlist.Web.Controllers
         {
             var json = JsonSerializer.Serialize(state);
             HttpContext.Session.SetString("FilterState", json);
-
-            // saving individual keys
-            if (state.Budget.HasValue)
-                HttpContext.Session.SetInt32("Budget", Convert.ToInt32(Math.Round(state.Budget.Value)));
-            else
-                HttpContext.Session.Remove("Budget");
-
-            if (state.MaxDistanceKm.HasValue)
-                HttpContext.Session.SetInt32("Distance", state.MaxDistanceKm.Value);
-            else
-                HttpContext.Session.Remove("Distance");
-
-            var prioritiesText = (state.Priorities != null && state.Priorities.Any())
-                ? string.Join(",", state.Priorities)
-                : null;
-
-            if(!string.IsNullOrWhiteSpace(prioritiesText))
-                HttpContext.Session.SetString("Priorities", prioritiesText);
-            else
-                HttpContext.Session.Remove("Priorities");
-        }
-
-        [HttpPost]
-        public IActionResult Reset()
-        {
-            HttpContext.Session.Remove("FilterState");
-            HttpContext.Session.Remove("Budget");
-            HttpContext.Session.Remove("Distance");
-            HttpContext.Session.Remove("Priorities");
-
-            return RedirectToAction("Index");
         }
     }
 }
