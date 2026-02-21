@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shortlist.Web.Data;
 using Shortlist.Web.Models;
-using System;
 using System.Security.Claims;
 
 namespace Shortlist.Web.Controllers

@@ -1,25 +1,20 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Shortlist.Web.Data;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// MVC
 builder.Services.AddControllersWithViews();
 
-// Add DbContext (In-Memory for Sprint 1)
+// ✅ SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("ShortlistDb"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
-// Session (for Budget/Distance/Priorities persistence across pages)
+// ✅ Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -28,13 +23,18 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Google Authentication
+// ✅ AUTH: Cookies + OpenIdConnect (Google)
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 })
-.AddCookie()
+.AddCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+})
 .AddOpenIdConnect(options =>
 {
     options.Authority = "https://accounts.google.com";
@@ -42,24 +42,20 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     options.ResponseType = OpenIdConnectResponseType.Code;
     options.CallbackPath = "/signin-google";
+
     options.Scope.Clear();
     options.Scope.Add("openid");
     options.Scope.Add("profile");
     options.Scope.Add("email");
+
     options.SaveTokens = true;
     options.GetClaimsFromUserInfoEndpoint = true;
-    options.ClaimActions.Clear();
-    options.ClaimActions.MapJsonKey("sub", "sub");
-    options.ClaimActions.MapJsonKey("name", "name");
-    options.ClaimActions.MapJsonKey("email", "email");
-    options.ClaimActions.MapJsonKey("picture", "picture");
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        NameClaimType = "email",
-        RoleClaimType = "role"
+        NameClaimType = "email"
     };
 
-    // handles authentication failures
     options.Events = new Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectEvents
     {
         OnRemoteFailure = context =>
@@ -75,10 +71,11 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+// ✅ Ensure db exists
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.EnsureCreated();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
 }
 
 if (!app.Environment.IsDevelopment())
@@ -89,9 +86,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
-app.UseSession();          // must be before authorization/endpoints
-app.UseAuthentication();   // Add this - must be after UseRouting, before UseAuthorization
+
+app.UseSession();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
