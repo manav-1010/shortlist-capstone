@@ -257,14 +257,13 @@
         const radiusInput = document.getElementById("RadiusKm");
 
         // Default center (Barrie-ish). If user already selected, use that.
-        const initialLat = parseFloat(latInput?.value) || 44.3894;
+        const initialLat = parseFloat(latInput?.value) || 4.4516;
         const initialLng = parseFloat(lngInput?.value) || -79.6903;
 
         const mapEl = document.getElementById("filtersMap");
         if (!mapEl) return;
 
-        const map = L.map("filtersMap").setView([initialLat, initialLng], 12);
-
+    const map = L.map("filtersMap").setView([initialLat, initialLng], 13);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
