@@ -14,6 +14,9 @@
 
     var selected = Model?.Priorities ?? new List<string>();
 }
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="" />
 
 <style>
     .filters-wrap {
@@ -164,7 +167,31 @@
             </div>
 
             <div class="divider"></div>
+            <div class="divider"></div>
 
+            <div class="field">
+                <label>Choose location on map</label>
+                <div class="hint">Click the map to drop a pin. We’ll search within your radius.</div>
+
+                <div id="filtersMap" style="height: 360px; border-radius: 12px; border: 1px solid var(--border);"></div>
+
+                <div style="display:flex; gap:14px; align-items:center; margin-top:12px; flex-wrap:wrap;">
+                    <div class="field" style="min-width:180px;">
+                        <label for="RadiusKm">Radius (km)</label>
+                        <input class="input" asp-for="RadiusKm" id="RadiusKm" type="number" min="1" max="25" step="1" />
+                        <div class="hint">Typical: 2–5 km</div>
+                    </div>
+
+                    <div class="field" style="min-width:260px;">
+                        <label for="LocationLabel">Location label (optional)</label>
+                        <input class="input" asp-for="LocationLabel" id="LocationLabel" type="text" placeholder="e.g., Downtown Barrie" />
+                    </div>
+                </div>
+
+                <!-- Hidden fields that the map updates -->
+                <input type="hidden" asp-for="Lat" id="Lat" />
+                <input type="hidden" asp-for="Lng" id="Lng" />
+            </div>
             <div class="prio-header">
                 <p class="prio-title">Priorities (max 3)</p>
                 <span id="priorityCount" class="count-pill">0/3</span>
@@ -217,5 +244,58 @@
         const count = document.getElementById('priorityCount');
         const selected = document.querySelectorAll('.priority-chip.selected').length;
         if (count) count.textContent = `${selected}/3`;
+    })();
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+<script>
+    (function () {
+        const latInput = document.getElementById("Lat");
+        const lngInput = document.getElementById("Lng");
+        const radiusInput = document.getElementById("RadiusKm");
+
+        // Default center (Barrie-ish). If user already selected, use that.
+        const initialLat = parseFloat(latInput?.value) || 44.3894;
+        const initialLng = parseFloat(lngInput?.value) || -79.6903;
+
+        const mapEl = document.getElementById("filtersMap");
+        if (!mapEl) return;
+
+        const map = L.map("filtersMap").setView([initialLat, initialLng], 12);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker = null;
+
+        function setPoint(lat, lng) {
+            if (!marker) {
+                marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                marker.on("dragend", () => {
+                    const p = marker.getLatLng();
+                    latInput.value = p.lat.toFixed(6);
+                    lngInput.value = p.lng.toFixed(6);
+                });
+            } else {
+                marker.setLatLng([lat, lng]);
+            }
+
+            latInput.value = lat.toFixed(6);
+            lngInput.value = lng.toFixed(6);
+        }
+
+        // If existing values are present, show marker
+        if (latInput.value && lngInput.value) {
+            setPoint(initialLat, initialLng);
+        }
+
+        map.on("click", (e) => {
+            setPoint(e.latlng.lat, e.latlng.lng);
+        });
+
     })();
 </script>

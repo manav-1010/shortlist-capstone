@@ -13,5 +13,9 @@ namespace Shortlist.Web.Models
 
         // store selected priorities (max 3 enforced by UI/logic later)
         public List<string> Priorities { get; set; } = new List<string>();
+        public double? Lat { get; set; }
+        public double? Lng { get; set; }
+        public int RadiusKm { get; set; } = 3; // default
+        public string? LocationLabel { get; set; } 
     }
 }
