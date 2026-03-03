@@ -48,15 +48,15 @@ namespace Shortlist.Web.Controllers
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = true
-            };
+            var authProperties = new AuthenticationProperties { IsPersistent = true };
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
+
+            // ✅ store for later (SavedSearchesController will use this)
+            HttpContext.Session.SetInt32("UserId", user.Id);
 
             return RedirectToAction("Index", "Home");
         }
@@ -104,15 +104,16 @@ namespace Shortlist.Web.Controllers
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = true
-            };
+            var authProperties = new AuthenticationProperties { IsPersistent = true };
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
+
+            // ✅ store for later
+            HttpContext.Session.SetInt32("UserId", newUser.Id);
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -128,6 +129,9 @@ namespace Shortlist.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
+            // ✅ clear session + cookie
+            HttpContext.Session.Remove("UserId");
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
         }

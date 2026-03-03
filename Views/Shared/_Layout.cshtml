@@ -15,6 +15,7 @@
             <a asp-controller="Home" asp-action="Index">Home</a>
             <a asp-controller="Filters" asp-action="Index">Filters</a>
             <a asp-controller="Results" asp-action="Index">Results</a>
+            <a href="/SavedSearches/Index">Saved</a>
 
             @if (User?.Identity?.IsAuthenticated == true)
             {

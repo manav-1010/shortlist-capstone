@@ -8,6 +8,6 @@ namespace Shortlist.Web.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users => Set<User>();
-        public DbSet<SavedSearch> SavedSearches => Set<SavedSearch>(); // for later
+        public DbSet<SavedSearch> SavedSearches => Set<SavedSearch>();
     }
 }

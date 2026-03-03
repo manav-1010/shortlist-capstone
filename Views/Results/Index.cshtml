@@ -2,6 +2,7 @@
 @{
     Layout = "_Layout";
 }
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin="" />
@@ -16,21 +17,37 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 12px;
         margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
     }
 
     .clear-btn {
         padding: 8px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         border: none;
         background: #eee;
         cursor: pointer;
-        font-weight: 500;
+        font-weight: 600;
     }
 
         .clear-btn:hover {
             background: #ddd;
         }
+
+    .input {
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        min-width: 220px;
+    }
 
     .results-layout {
         display: grid;
@@ -59,7 +76,7 @@
 
     .result-title {
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .score-badge {
@@ -67,16 +84,17 @@
         color: #fff;
         padding: 6px 14px;
         border-radius: 999px;
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .explain-btn {
         margin-top: 12px;
         padding: 6px 12px;
-        border-radius: 6px;
+        border-radius: 8px;
         border: none;
         background: #f1f1f1;
         cursor: pointer;
+        font-weight: 600;
     }
 
         .explain-btn:hover {
@@ -105,14 +123,10 @@
 
     .map-box {
         margin-top: 14px;
-        height: 300px;
-        background: #f2f2f2;
+        height: 420px;
         border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #888;
-        font-size: 14px;
+        overflow: hidden;
+        border: 1px solid #eee;
     }
 
     .empty-state {
@@ -129,76 +143,39 @@
     <div class="results-header">
         <h1>Results</h1>
 
-        <form method="post" asp-action="Clear">
-            <button class="clear-btn" type="submit">Clear All</button>
-        </form>
+        <div class="header-actions">
+            <form method="post" action="/SavedSearches/SaveCurrent" style="display:flex; gap:8px; align-items:center;">
+                <input name="name" class="input" placeholder="Name (e.g., KW groceries 3km)" />
+                <button class="clear-btn" type="submit">Save Search</button>
+            </form>
+
+            <form method="post" asp-action="Clear">
+                <button class="clear-btn" type="submit">Clear All</button>
+            </form>
+        </div>
     </div>
 
-    @if (Model.Items == null || Model.Items.Count == 0)
-    {
-        <div class="empty-state">
-            <h3>No results found</h3>
-            <p>Try adjusting your budget or priorities.</p>
-        </div>
-    }
-    else
-    {
-        <div class="results-layout">
-            <div id="loadingState" class="empty-state" style="display:none;">
-                <h3>Loading live results...</h3>
-                <p>Fetching nearby places in real time.</p>
-            </div>
+    <div id="loadingState" class="empty-state" style="display:none;">
+        <h3>Loading live results...</h3>
+        <p>Fetching nearby places in real time.</p>
+    </div>
 
-            <div id="emptyState" class="empty-state" style="display:none;">
-                <h3>No results found</h3>
-                <p>Try increasing radius or selecting a different location.</p>
-            </div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+        <h3>No results found</h3>
+        <p>Try increasing radius or selecting a different location.</p>
+    </div>
 
-            <div id="resultsList"></div>
-            <div>
-                @foreach (var item in Model.Items)
-                {
-                    <div class="result-card">
-                        <div class="result-header">
-                            <div class="result-title">@item.Name</div>
-                            <div class="score-badge">@item.Score</div>
-                        </div>
+    <div class="results-layout">
+        <div id="resultsList"></div>
 
-                        <button type="button" class="explain-btn">Explain</button>
-
-                        <div class="explain-panel" style="display:none;">
-                            <div class="explain-grid">
-                                <div>
-                                    <strong>Pros</strong>
-                                    <ul>
-                                        @foreach (var p in item.Pros)
-                                        {
-                                            <li>@p</li>
-                                        }
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <strong>Cons</strong>
-                                    <ul>
-                                        @foreach (var c in item.Cons)
-                                        {
-                                            <li>@c</li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            <div id="resultsMap" class="map-box" style="height: 420px;"></div>
+        <div class="map-placeholder">
+            <strong>Map</strong>
+            <div id="resultsMap" class="map-box"></div>
             <div class="hint" style="margin-top:10px;">Live map results (OpenStreetMap).</div>
-
         </div>
-    }
+    </div>
 </div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
@@ -206,10 +183,10 @@
 <script>
     (async function () {
         const filters = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Filters));
-        const lat = filters.lat ?? filters.Lat;
-        const lng = filters.lng ?? filters.Lng;
-        const radiusKm = filters.radiusKm ?? filters.RadiusKm ?? 3;
-        const priorities = (filters.priorities ?? filters.Priorities ?? []).map(p => (p || "").toLowerCase());
+        const lat = filters.Lat;
+        const lng = filters.Lng;
+        const radiusKm = filters.RadiusKm ?? 3;
+        const priorities = (filters.Priorities ?? []).map(p => (p || "").toLowerCase());
 
         const loading = document.getElementById("loadingState");
         const empty = document.getElementById("emptyState");
@@ -221,7 +198,6 @@
         hide(empty);
         show(loading);
 
-        // Map init (KW default fallback)
         const mapLat = lat ?? 43.4516;
         const mapLng = lng ?? -80.4925;
 
@@ -231,14 +207,10 @@
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        const markersLayer = L.layerGroup().addTo(map);
+        // ✅ fix size issues
+        setTimeout(() => map.invalidateSize(), 200);
 
-        // If user location exists, show it
-        if (lat && lng) {
-            L.circle([lat, lng], { radius: (radiusKm * 1000) }).addTo(map);
-            L.marker([lat, lng]).addTo(map).bindPopup("Your selected location").openPopup();
-            map.setView([lat, lng], 13);
-        }
+        const markersLayer = L.layerGroup().addTo(map);
 
         if (!lat || !lng) {
             hide(loading);
@@ -247,22 +219,24 @@
             return;
         }
 
+        // show user location + radius
+        L.circle([lat, lng], { radius: radiusKm * 1000 }).addTo(map);
+        L.marker([lat, lng]).addTo(map).bindPopup("Selected location").openPopup();
+
         try {
             const resp = await fetch(`/api/search?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radiusKm=${encodeURIComponent(radiusKm)}`);
             if (!resp.ok) throw new Error("Search API failed");
             const data = await resp.json();
 
             const elements = data.elements || [];
-            // Convert Overpass nodes -> normalized POI
             const pois = elements
-              .filter(e => typeof e.lat === "number" && typeof e.lon === "number")
-              .map(e => {
-                  const tags = e.tags || {};
-                  const name = tags.name || "Unnamed place";
-                  return { name, lat: e.lat, lng: e.lon, tags };
-              });
+                .filter(e => typeof e.lat === "number" && typeof e.lon === "number")
+                .map(e => {
+                    const tags = e.tags || {};
+                    const name = tags.name || "Unnamed place";
+                    return { name, lat: e.lat, lng: e.lon, tags };
+                });
 
-            // Score based on user priorities using POI category matches
             function classify(tags) {
                 if (tags.shop === "supermarket") return "grocery";
                 if (tags.highway === "bus_stop" || tags.amenity === "bus_station") return "transit";
@@ -280,10 +254,6 @@
                 byCategory.get(cat).push(p);
             }
 
-            // Build a few "area cards" from categories (judge-friendly)
-            const cards = [];
-
-            // For each selected priority, create a card with nearby POIs
             const priorityToCategory = {
                 "grocery": "grocery",
                 "transit": "transit",
@@ -293,13 +263,10 @@
                 "laundry": "laundry"
             };
 
-            const selectedCats = priorities
-              .map(p => priorityToCategory[p])
-              .filter(Boolean);
-
-            // fallback: show top categories even if no priorities picked
+            const selectedCats = priorities.map(p => priorityToCategory[p]).filter(Boolean);
             const catsToShow = selectedCats.length ? selectedCats : ["grocery","transit","parks","gym/fitness","laundry","parking"];
 
+            const cards = [];
             for (const cat of catsToShow) {
                 const items = (byCategory.get(cat) || []).slice(0, 6);
                 if (items.length === 0) continue;
@@ -324,8 +291,6 @@
             }
 
             hide(empty);
-
-            // Render cards + markers
             list.innerHTML = "";
             markersLayer.clearLayers();
 
@@ -333,32 +298,31 @@
                 const cardEl = document.createElement("div");
                 cardEl.className = "result-card";
                 cardEl.innerHTML = `
-                  <div class="result-header">
-                    <div class="result-title">${card.name}</div>
-                    <div class="score-badge">${card.score}</div>
-                  </div>
-
-                  <button type="button" class="explain-btn">Explain</button>
-
-                  <div class="explain-panel" style="display:none;">
-                    <div class="explain-grid">
-                      <div>
-                        <strong>Pros</strong>
-                        <ul>${card.pros.map(p => `<li>${p}</li>`).join("")}</ul>
-                      </div>
-                      <div>
-                        <strong>Cons</strong>
-                        <ul>${card.cons.map(c => `<li>${c}</li>`).join("")}</ul>
-                      </div>
+                    <div class="result-header">
+                        <div class="result-title">${card.name}</div>
+                        <div class="score-badge">${card.score}</div>
                     </div>
-                    <div style="margin-top:12px;">
-                      <strong>Nearby places</strong>
-                      <ul>${card.pois.map(p => `<li>${p.name}</li>`).join("")}</ul>
+
+                    <button type="button" class="explain-btn">Explain</button>
+
+                    <div class="explain-panel" style="display:none;">
+                        <div class="explain-grid">
+                            <div>
+                                <strong>Pros</strong>
+                                <ul>${card.pros.map(p => `<li>${p}</li>`).join("")}</ul>
+                            </div>
+                            <div>
+                                <strong>Cons</strong>
+                                <ul>${card.cons.map(c => `<li>${c}</li>`).join("")}</ul>
+                            </div>
+                        </div>
+                        <div style="margin-top:12px;">
+                            <strong>Nearby places</strong>
+                            <ul>${card.pois.map(p => `<li>${p.name}</li>`).join("")}</ul>
+                        </div>
                     </div>
-                  </div>
                 `;
 
-                // Explain toggle
                 const btn = cardEl.querySelector(".explain-btn");
                 const panel = cardEl.querySelector(".explain-panel");
                 btn.addEventListener("click", () => {
@@ -367,13 +331,11 @@
 
                 list.appendChild(cardEl);
 
-                // Add markers for POIs
                 for (const p of card.pois) {
                     L.marker([p.lat, p.lng]).addTo(markersLayer).bindPopup(p.name);
                 }
             }
 
-            // Fit bounds to markers
             const bounds = [];
             markersLayer.eachLayer(l => bounds.push(l.getLatLng()));
             if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shortlist.Web.Models
@@ -8,8 +7,9 @@ namespace Shortlist.Web.Models
     {
         public int Id { get; set; }
 
-        public int UserProfileId { get; set; }
-        public UserProfile? UserProfile { get; set; }
+        // Link to the logged-in User (the one you already authenticate)
+        public int UserId { get; set; }
+        public User? User { get; set; }
 
         [MaxLength(60)]
         public string Name { get; set; } = "Saved Search";

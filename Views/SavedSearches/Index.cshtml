@@ -1,0 +1,136 @@
+﻿@model List<Shortlist.Web.Models.SavedSearch>
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        align-items: center;
+    }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+    .name {
+        font-weight: 800;
+    }
+
+    .meta {
+        color: #666;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        border: none;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        background: #f1f1f1;
+    }
+
+        .btn:hover {
+            background: #e6e6e6;
+        }
+
+    .btn-primary {
+        background: #111;
+        color: #fff;
+    }
+
+        .btn-primary:hover {
+            background: #000;
+        }
+
+    .empty {
+        text-align: center;
+        padding: 26px;
+        color: #666;
+    }
+
+    .saveform {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .input {
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        width: 280px;
+    }
+</style>
+
+<div class="wrap">
+    <div class="header">
+        <h1>Saved Searches</h1>
+
+        <form class="saveform" method="post" asp-action="SaveCurrent">
+            <input class="input" name="name" placeholder="Name (e.g., KW groceries 3km)" />
+            <button class="btn btn-primary" type="submit">Save current search</button>
+        </form>
+    </div>
+
+    <div class="card">
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="empty">
+                No saved searches yet. Go to Filters → Apply → then come back here and save.
+            </div>
+        }
+        else
+        {
+            foreach (var s in Model)
+            {
+                <div class="row">
+                    <div>
+                        <div class="name">@s.Name</div>
+                        <div class="meta">Saved: @s.CreatedAtUtc.ToLocalTime()</div>
+                    </div>
+                    <div class="actions">
+                        <form method="post" asp-action="Load" asp-route-id="@s.Id">
+                            <button class="btn btn-primary" type="submit">Load</button>
+                        </form>
+                        <form method="post" asp-action="Delete" asp-route-id="@s.Id" onsubmit="return confirm('Delete this saved search?');">
+                            <button class="btn" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
