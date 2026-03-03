@@ -68,7 +68,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // ✅ Ensure db exists
