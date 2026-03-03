@@ -9,35 +9,44 @@
         --surface2: rgba(255,255,255,0.10);
         --border: rgba(255,255,255,0.12);
         --text: rgba(255,255,255,0.92);
-        --muted: rgba(255,255,255,0.70);
-        --muted2: rgba(255,255,255,0.55);
+        --muted: rgba(255,255,255,0.72);
         --accent: #4f46e5;
         --accent2: #22c55e;
         --shadow: 0 18px 60px rgba(0,0,0,0.35);
     }
 
+    /* Fit content on one screen */
     .home-wrap {
         max-width: 1100px;
         margin: 0 auto;
-        padding: 22px 16px 70px;
+        padding: 16px 16px 18px;
     }
 
-    /* HERO */
     .hero {
         position: relative;
         border-radius: 22px;
-        padding: 34px 28px;
+        padding: 26px 26px;
         overflow: hidden;
-        background: radial-gradient(900px 380px at 20% 0%, rgba(79,70,229,0.45), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.28), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
-        border: 1px solid var(--border);
+        background: radial-gradient(900px 380px at 20% 0%, rgba(79,70,229,0.42), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.25), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+        border: 1px solid rgba(255,255,255,0.14);
         box-shadow: var(--shadow);
         color: var(--text);
     }
 
+        /* Add dark overlay behind text area so it’s readable */
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(700px 360px at 18% 35%, rgba(0,0,0,0.55), transparent 70%), linear-gradient(90deg, rgba(0,0,0,0.42), transparent 65%);
+            pointer-events: none;
+        }
+
     .hero-grid {
+        position: relative; /* above overlay */
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 24px;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 18px;
         align-items: center;
     }
 
@@ -47,13 +56,14 @@
         align-items: center;
         padding: 7px 12px;
         border-radius: 999px;
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.14);
-        color: var(--muted);
-        font-weight: 800;
+        background: rgba(0,0,0,0.35);
+        border: 1px solid rgba(255,255,255,0.16);
+        color: rgba(255,255,255,0.82);
+        font-weight: 900;
         font-size: 12px;
-        letter-spacing: 0.2px;
+        letter-spacing: .2px;
         width: fit-content;
+        backdrop-filter: blur(8px);
     }
 
     .dot {
@@ -65,26 +75,28 @@
     }
 
     .hero h1 {
-        margin: 14px 0 10px;
-        font-size: 44px;
-        line-height: 1.08;
+        margin: 12px 0 8px;
+        font-size: 38px;
+        line-height: 1.10;
         letter-spacing: -0.8px;
-        font-weight: 900;
+        font-weight: 950;
+        color: rgba(255,255,255,0.96);
+        text-shadow: 0 10px 26px rgba(0,0,0,0.35);
     }
 
     .hero p {
         margin: 0;
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.55;
-        color: var(--muted);
-        max-width: 58ch;
+        color: rgba(255,255,255,0.82);
+        max-width: 62ch;
     }
 
     .cta-row {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
-        margin-top: 18px;
+        margin-top: 14px;
     }
 
     .btnx {
@@ -94,31 +106,32 @@
         gap: 10px;
         padding: 11px 14px;
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(255,255,255,0.06);
-        color: var(--text);
+        border: 1px solid rgba(255,255,255,0.18);
+        background: rgba(0,0,0,0.30);
+        color: rgba(255,255,255,0.92);
         text-decoration: none;
-        font-weight: 900;
+        font-weight: 950;
         cursor: pointer;
-        transition: transform 0.12s ease, background 0.12s ease, border 0.12s ease;
+        transition: transform .12s ease, background .12s ease, border .12s ease;
         user-select: none;
-        min-width: 160px;
+        min-width: 165px;
+        backdrop-filter: blur(8px);
     }
 
         .btnx:hover {
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.10);
-            border-color: rgba(255,255,255,0.22);
+            background: rgba(0,0,0,0.40);
+            border-color: rgba(255,255,255,0.26);
         }
 
         .btnx.primary {
-            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.65));
+            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.70));
             border: 1px solid rgba(79,70,229,0.55);
             box-shadow: 0 16px 40px rgba(79,70,229,0.25);
         }
 
             .btnx.primary:hover {
-                background: linear-gradient(135deg, rgba(79,70,229,1), rgba(79,70,229,0.75));
+                background: linear-gradient(135deg, rgba(79,70,229,1), rgba(79,70,229,0.78));
             }
 
         .btnx .arrow {
@@ -130,22 +143,29 @@
             border-radius: 999px;
             background: rgba(255,255,255,0.16);
             font-size: 12px;
-            font-weight: 900;
+            font-weight: 950;
         }
 
-    /* HERO CARD (right side) */
+    .tip {
+        margin-top: 10px;
+        color: rgba(255,255,255,0.68);
+        font-weight: 800;
+        font-size: 12px;
+    }
+
     .hero-card {
         border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.22);
-        padding: 16px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.32);
+        padding: 14px;
+        backdrop-filter: blur(10px);
     }
 
     .stat {
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 10px;
-        padding: 12px;
+        padding: 11px;
         border-radius: 14px;
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.10);
@@ -156,227 +176,128 @@
             margin-bottom: 0;
         }
 
-        .stat .label {
-            color: var(--muted2);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: .2px;
-        }
+    .label {
+        color: rgba(255,255,255,0.66);
+        font-weight: 900;
+        font-size: 12px;
+        letter-spacing: .2px;
+    }
 
-        .stat .value {
-            font-size: 16px;
-            font-weight: 900;
-        }
+    .value {
+        font-size: 15px;
+        font-weight: 950;
+        color: rgba(255,255,255,0.92);
+    }
 
     .pill {
         padding: 6px 10px;
         border-radius: 999px;
-        font-weight: 900;
+        font-weight: 950;
         font-size: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.16);
         background: rgba(255,255,255,0.06);
-        color: var(--text);
+        color: rgba(255,255,255,0.92);
         white-space: nowrap;
+        height: fit-content;
+        align-self: start;
     }
 
         .pill.accent {
             border-color: rgba(34,197,94,0.35);
-            background: rgba(34,197,94,0.10);
+            background: rgba(34,197,94,0.12);
         }
 
         .pill.blue {
             border-color: rgba(79,70,229,0.35);
-            background: rgba(79,70,229,0.10);
+            background: rgba(79,70,229,0.12);
         }
 
-    /* SECTIONS */
-    .section {
-        margin-top: 22px;
-        border-radius: 22px;
-        border: 1px solid rgba(0,0,0,0.08);
+    /* Compact “How it works” to avoid scrolling */
+    .mini {
+        margin-top: 12px;
+        border-radius: 18px;
         background: #fff;
-        padding: 22px;
+        border: 1px solid rgba(0,0,0,0.08);
         box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 14px 16px;
     }
 
-        .section h2 {
-            margin: 0 0 6px;
-            font-size: 22px;
-            font-weight: 950;
-            letter-spacing: -0.3px;
-            color: #0d1320;
-        }
-
-        .section p {
-            margin: 0 0 16px;
-            color: #4b5563;
-            line-height: 1.6;
-        }
-
-    .grid3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-    }
-
-    .card {
-        border-radius: 18px;
-        padding: 16px;
-        border: 1px solid rgba(0,0,0,0.08);
-        background: #ffffff;
-        transition: transform 0.12s ease, box-shadow 0.12s ease;
-    }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 30px rgba(0,0,0,0.07);
-        }
-
-    .icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 950;
-        color: #0d1320;
-        background: rgba(79,70,229,0.10);
-        border: 1px solid rgba(79,70,229,0.22);
-        margin-bottom: 10px;
-    }
-
-    .card h3 {
-        margin: 0 0 6px;
-        font-size: 16px;
-        font-weight: 950;
-        color: #0d1320;
-    }
-
-    .card p {
-        margin: 0;
-        color: #4b5563;
-        font-size: 14px;
-        line-height: 1.6;
-    }
-
-    .how {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-    }
-
-    .step {
-        border-radius: 18px;
-        padding: 16px;
-        border: 1px solid rgba(0,0,0,0.08);
-        background: #fff;
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 12px;
-        align-items: start;
-    }
-
-        .step .num {
-            width: 34px;
-            height: 34px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 950;
-            background: rgba(34,197,94,0.12);
-            border: 1px solid rgba(34,197,94,0.22);
-            color: #065f46;
-        }
-
-        .step .title {
-            font-weight: 950;
-            margin: 0 0 4px;
-            color: #0d1320;
-        }
-
-        .step .desc {
+        .mini h2 {
             margin: 0;
-            color: #4b5563;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-    .footer-cta {
-        margin-top: 16px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        padding: 16px;
-        border-radius: 18px;
-        border: 1px solid rgba(0,0,0,0.08);
-        background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(34,197,94,0.06));
-    }
-
-        .footer-cta .text {
-            color: #111827;
+            font-size: 18px;
             font-weight: 950;
+            color: #0d1320;
             letter-spacing: -0.2px;
         }
 
-        .footer-cta .sub {
+        .mini p {
+            margin: 4px 0 10px;
             color: #4b5563;
             font-weight: 700;
-            margin-top: 2px;
             font-size: 13px;
         }
 
-        .footer-cta .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-    .btnw {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(0,0,0,0.10);
-        background: #fff;
-        color: #111827;
-        text-decoration: none;
-        font-weight: 950;
-        cursor: pointer;
-        transition: transform 0.12s ease, box-shadow 0.12s ease;
+    .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
     }
 
-        .btnw:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 26px rgba(0,0,0,0.08);
-        }
+    .step {
+        border-radius: 14px;
+        padding: 10px 10px;
+        border: 1px solid rgba(0,0,0,0.08);
+        background: #fff;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
 
-        .btnw.primary {
-            background: #111827;
-            color: #fff;
-            border-color: #111827;
-        }
+    .num {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 950;
+        background: rgba(34,197,94,0.12);
+        border: 1px solid rgba(34,197,94,0.22);
+        color: #065f46;
+        flex: 0 0 auto;
+    }
+
+    .st-title {
+        margin: 0;
+        font-weight: 950;
+        color: #0d1320;
+        font-size: 13px;
+        line-height: 1.25;
+    }
+
+    .st-desc {
+        margin: 2px 0 0;
+        color: #4b5563;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 1.35;
+    }
 
     @@media (max-width: 900px) {
         .hero-grid {
             grid-template-columns: 1fr;
         }
 
-        .grid3 {
-            grid-template-columns: 1fr;
-        }
-
-        .how {
-            grid-template-columns: 1fr;
-        }
-
         .hero h1 {
-            font-size: 36px;
+            font-size: 32px;
+        }
+
+        .steps {
+            grid-template-columns: 1fr;
+        }
+
+        .btnx {
+            min-width: 150px;
         }
     }
 </style>
@@ -391,30 +312,27 @@
                     Real-time neighborhood shortlisting for Kitchener–Waterloo
                 </div>
 
-                <h1>Pick your priorities. Drop a pin. Get the best areas — fast.</h1>
+                <h1>Pick priorities. Drop a pin. Get the best areas — fast.</h1>
 
                 <p>
-                    Shortlist helps students and renters quickly find neighborhoods that match what matters most:
-                    grocery, transit, parks, gym/fitness, parking, and more — using live map data.
+                    Shortlist helps students and renters quickly find neighborhoods that match what matters most
+                    using live map data: grocery, transit, parks, gym/fitness, parking, and more.
                 </p>
 
                 <div class="cta-row">
                     <a class="btnx primary" href="/Filters/Index">
-                        Start with Filters
-                        <span class="arrow">→</span>
+                        Start with Filters <span class="arrow">→</span>
                     </a>
                     <a class="btnx" href="/Results/Index">
-                        View Results
-                        <span class="arrow">↗</span>
+                        View Results <span class="arrow">↗</span>
                     </a>
                     <a class="btnx" href="/SavedSearches/Index">
-                        Saved Searches
-                        <span class="arrow">★</span>
+                        Saved <span class="arrow">★</span>
                     </a>
                 </div>
 
-                <div style="margin-top:14px; color: var(--muted2); font-weight:800; font-size:12px;">
-                    Tip: Use Filters → pick a location on the map → Apply Filters → Save your search.
+                <div class="tip">
+                    Tip: Filters → pick a location on the map → Apply Filters → Save your search.
                 </div>
             </div>
 
@@ -426,6 +344,7 @@
                     </div>
                     <div class="pill blue">FREE</div>
                 </div>
+
                 <div class="stat">
                     <div>
                         <div class="label">Real-time Places</div>
@@ -433,10 +352,11 @@
                     </div>
                     <div class="pill accent">LIVE</div>
                 </div>
+
                 <div class="stat">
                     <div>
                         <div class="label">Saved Searches</div>
-                        <div class="value">One click load / reuse</div>
+                        <div class="value">One-click load / reuse</div>
                     </div>
                     <div class="pill">PRO</div>
                 </div>
@@ -444,77 +364,41 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="mini">
         <h2>How it works</h2>
-        <p>A simple flow that feels like a real product (and looks great in a demo).</p>
+        <p>Fast, simple flow (perfect for demo).</p>
 
-        <div class="how">
+        <div class="steps">
             <div class="step">
                 <div class="num">1</div>
                 <div>
-                    <div class="title">Set your budget + distance</div>
-                    <p class="desc">Add monthly budget and max distance to shape your shortlist.</p>
+                    <p class="st-title">Set budget + distance</p>
+                    <p class="st-desc">Shape your shortlist.</p>
                 </div>
             </div>
 
             <div class="step">
                 <div class="num">2</div>
                 <div>
-                    <div class="title">Choose a location on the map</div>
-                    <p class="desc">Drop a pin anywhere in KW. We search within your radius.</p>
+                    <p class="st-title">Pick a map location</p>
+                    <p class="st-desc">Drop a pin in KW.</p>
                 </div>
             </div>
 
             <div class="step">
                 <div class="num">3</div>
                 <div>
-                    <div class="title">Pick priorities (max 3)</div>
-                    <p class="desc">Grocery? Transit? Parks? Select what matters most.</p>
+                    <p class="st-title">Choose priorities</p>
+                    <p class="st-desc">Up to 3.</p>
                 </div>
             </div>
 
             <div class="step">
                 <div class="num">4</div>
                 <div>
-                    <div class="title">Get live results + save searches</div>
-                    <p class="desc">See live map markers and save your best presets for later.</p>
+                    <p class="st-title">See results + save</p>
+                    <p class="st-desc">Reuse anytime.</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <h2>Why judges will like it</h2>
-        <p>These features make it feel “real-world” and portfolio-ready.</p>
-
-        <div class="grid3">
-            <div class="card">
-                <div class="icon">⚡</div>
-                <h3>Real-time data</h3>
-                <p>Results come from live OpenStreetMap queries based on your pin and radius.</p>
-            </div>
-
-            <div class="card">
-                <div class="icon">🗺️</div>
-                <h3>Map-first UX</h3>
-                <p>Users choose the area visually, then see markers + radius right away.</p>
-            </div>
-
-            <div class="card">
-                <div class="icon">💾</div>
-                <h3>Saved searches</h3>
-                <p>Store filter presets as JSON and reload them instantly — like a real app.</p>
-            </div>
-        </div>
-
-        <div class="footer-cta">
-            <div>
-                <div class="text">Ready to shortlist your best KW area?</div>
-                <div class="sub">Start now, then save your search for quick reuse.</div>
-            </div>
-            <div class="actions">
-                <a class="btnw primary" href="/Filters/Index">Start</a>
-                <a class="btnw" href="/SavedSearches/Index">Saved</a>
             </div>
         </div>
     </section>

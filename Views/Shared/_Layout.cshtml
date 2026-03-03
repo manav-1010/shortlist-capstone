@@ -6,6 +6,88 @@
     <title>Shortlist</title>
 
     <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+        /* Layout-only polish (safe) */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: linear-gradient(180deg, #0b0d12, #0b0d12);
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .brand {
+            color: rgba(255,255,255,0.92);
+            font-weight: 950;
+            letter-spacing: -0.3px;
+            font-size: 18px;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .nav a {
+                color: rgba(255,255,255,0.88);
+                text-decoration: none;
+                padding: 8px 10px;
+                border-radius: 10px;
+                font-weight: 850;
+            }
+
+                .nav a:hover {
+                    background: rgba(255,255,255,0.08);
+                    color: rgba(255,255,255,0.96);
+                }
+
+        .nav-btn {
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.92);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+            .nav-btn:hover {
+                background: rgba(255,255,255,0.12);
+            }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .content {
+            padding: 14px 16px 40px;
+        }
+
+        /* If you want the summary to look nicer */
+        .filter-summary {
+            padding: 10px 16px;
+            font-weight: 800;
+            color: rgba(255,255,255,0.80);
+            background: rgba(0,0,0,0.35);
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .summary-item {
+            margin-right: 8px;
+        }
+
+        .summary-separator {
+            margin: 0 8px;
+            opacity: 0.55;
+        }
+    </style>
 </head>
 <body>
     <header class="topbar">
@@ -15,15 +97,18 @@
             <a asp-controller="Home" asp-action="Index">Home</a>
             <a asp-controller="Filters" asp-action="Index">Filters</a>
             <a asp-controller="Results" asp-action="Index">Results</a>
-            <a href="/SavedSearches/Index">Saved</a>
 
             @if (User?.Identity?.IsAuthenticated == true)
             {
                 <a asp-controller="SavedSearches" asp-action="Index">Saved</a>
 
                 <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
-                    <button type="submit" class="linklike">Logout</button>
+                    <button type="submit" class="nav-btn">Logout</button>
                 </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">Login</a>
             }
         </nav>
     </header>

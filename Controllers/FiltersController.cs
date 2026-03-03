@@ -32,8 +32,6 @@ namespace Shortlist.Web.Controllers
 
             SaveFilterState(state);
             return RedirectToAction("Index", "Results");
-            // If user didn't pick a location, you can either allow it OR enforce it.
-            // For judges, it’s better to enforce so results are truly live.
             if (state.Lat is null || state.Lng is null)
             {
                 ModelState.AddModelError("", "Please choose a location on the map.");

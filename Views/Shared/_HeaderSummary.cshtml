@@ -3,7 +3,11 @@
 @using Shortlist.Web.Models
 
 @{
-    // 1) Try "FilterState" JSON first (Nirali's approach)
+    // Show summary only on pages where it adds value
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var show = controller == "Filters" || controller == "Results" || controller == "SavedSearches";
+
+    // 1) Try "FilterState" JSON first
     FilterState? state = null;
     var json = Context.Session.GetString("FilterState");
 
@@ -19,11 +23,10 @@
         }
     }
 
-    // 2) Fallback to separate session keys (main approach)
+    // 2) Fallback to separate session keys
     int? budget = null;
     if (state?.Budget.HasValue == true)
     {
-        // budget is decimal? in FilterState in your model, so round for display
         budget = (int)Math.Round(state.Budget.Value);
     }
     else
@@ -54,13 +57,9 @@
     var hasAny = budget.HasValue || distance.HasValue || !string.IsNullOrWhiteSpace(priorities);
 }
 
-<div class="filter-summary">
-    @if (!hasAny)
-    {
-        <span class="summary-empty">No filters set yet</span>
-    }
-    else
-    {
+@if (show && hasAny)
+{
+    <div class="filter-summary">
         <span class="summary-item">
             Budget: @(budget.HasValue ? $"${budget}" : "Any")
         </span>
@@ -79,5 +78,5 @@
                 Priorities: @priorities
             </span>
         }
-    }
-</div>
+    </div>
+}
