@@ -1,5 +1,7 @@
 ﻿@model Shortlist.Web.Models.FilterState
 @{
+    Layout = "_Layout";
+
     var allPriorities = new List<string>
     {
         "Safety",
@@ -14,256 +16,541 @@
 
     var selected = Model?.Priorities ?? new List<string>();
 }
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin="" />
 
 <style>
+    /* Page background matches Home vibe (dark, clean) */
+    body {
+        background: radial-gradient(1200px 700px at 20% -10%, rgba(79,70,229,0.14), transparent 60%), radial-gradient(900px 600px at 90% 0%, rgba(34,197,94,0.10), transparent 55%), linear-gradient(180deg, #0b0d12, #07090d);
+    }
+
     .filters-wrap {
-        max-width: 900px;
+        max-width: 1100px;
         margin: 0 auto;
+        padding: 14px 16px 18px;
+        color: rgba(255,255,255,0.92);
     }
 
-    .page-title {
-        font-size: 34px;
-        margin: 6px 0;
+    .filters-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
     }
 
-    .page-subtitle {
-        color: var(--muted);
-        margin: 0 0 18px;
+    .title {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 950;
+        letter-spacing: -0.4px;
     }
 
-    .filters-card {
-        padding: 20px;
+    .subtitle {
+        margin: 4px 0 0;
+        color: rgba(255,255,255,0.72);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.4;
+        max-width: 64ch;
     }
 
-    .filters-grid {
+    .hintpill {
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        padding: 8px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 850;
+        color: rgba(255,255,255,0.72);
+        white-space: nowrap;
+    }
+
+    /* Main layout: left controls + right map */
+    .layout {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 14px;
+        align-items: stretch;
+    }
+
+    .panel {
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.22);
+        box-shadow: 0 18px 60px rgba(0,0,0,0.22);
+        overflow: hidden;
+    }
+
+    .panel-inner {
+        padding: 14px;
+    }
+
+    .section-title {
+        margin: 0 0 10px;
+        font-size: 14px;
+        font-weight: 950;
+        letter-spacing: -0.2px;
+        color: rgba(255,255,255,0.90);
+    }
+
+    .grid2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-top: 10px;
+        gap: 10px;
     }
 
     .field {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
     }
 
         .field label {
-            font-weight: 800;
-            font-size: 14px;
+            font-weight: 900;
+            font-size: 12px;
+            color: rgba(255,255,255,0.86);
         }
 
-    .hint {
+    .inputx {
+        width: 100%;
+        padding: 10px 11px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.92);
+        outline: none;
+        font-weight: 850;
+    }
+
+        .inputx::placeholder {
+            color: rgba(255,255,255,0.45);
+            font-weight: 750;
+        }
+
+        .inputx:focus {
+            border-color: rgba(79,70,229,0.65);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.18);
+        }
+
+    .microhint {
+        font-size: 11.5px;
+        font-weight: 750;
+        color: rgba(255,255,255,0.55);
+        line-height: 1.35;
+    }
+
+    .error {
+        color: #fecaca;
+        font-weight: 900;
+        font-size: 12px;
+    }
+
+    /* Priority chips */
+    .prio-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .count-pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 950;
+        font-size: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.80);
+        white-space: nowrap;
+    }
+
+    .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .chip {
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        padding: 9px 12px;
+        border-radius: 999px;
+        cursor: pointer;
         font-size: 13px;
-        color: var(--muted);
-        margin-top: 2px;
+        font-weight: 900;
+        color: rgba(255,255,255,0.88);
+        transition: transform .1s ease, background .1s ease, border .1s ease;
+        user-select: none;
     }
 
-    .divider {
-        height: 1px;
-        background: var(--border);
-        margin: 18px 0;
+        .chip:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255,255,255,0.22);
+            background: rgba(255,255,255,0.10);
+        }
+
+        .chip:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.18);
+            border-color: rgba(79,70,229,0.60);
+        }
+
+        .chip.selected {
+            background: linear-gradient(135deg, rgba(79,70,229,0.98), rgba(79,70,229,0.62));
+            border-color: rgba(79,70,229,0.55);
+        }
+
+    .prio-error {
+        margin-top: 8px;
+        color: #fecaca;
+        font-weight: 900;
+        font-size: 12px;
+        display: none;
     }
 
-    .prio-header {
+    /* Map panel */
+    .map-wrap {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        height: 100%;
+    }
+
+    .map-top {
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
         display: flex;
         align-items: baseline;
         justify-content: space-between;
         gap: 10px;
+        background: rgba(0,0,0,0.18);
     }
 
-    .prio-title {
-        font-weight: 900;
+    .map-title {
         margin: 0;
-        font-size: 16px;
-    }
-
-    .count-pill {
-        background: rgba(29, 78, 216, 0.08);
-        color: var(--primary-dark);
-        border: 1px solid rgba(29, 78, 216, 0.20);
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-weight: 800;
-        font-size: 13px;
-        white-space: nowrap;
-    }
-
-    .priority-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 12px;
-    }
-
-    .priority-chip {
-        border: 1px solid var(--border);
-        background: var(--surface);
-        padding: 10px 14px;
-        border-radius: 999px;
-        cursor: pointer;
         font-size: 14px;
-        font-weight: 800;
-        color: var(--text);
+        font-weight: 950;
+        letter-spacing: -0.2px;
     }
 
-        .priority-chip.selected {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
+    .map-sub {
+        margin: 0;
+        color: rgba(255,255,255,0.60);
+        font-weight: 750;
+        font-size: 12px;
+    }
+
+    /* Make map fit screen: use viewport math */
+    #filtersMap {
+        height: calc(100vh - 260px); /* tuned for your header + title area */
+        min-height: 320px;
+        border-top: 1px solid rgba(255,255,255,0.10);
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .map-controls {
+        padding: 12px 14px;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 10px;
+        background: rgba(0,0,0,0.18);
+    }
+
+    /* Sticky action bar (always visible) */
+    .actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .actionbar {
+        position: sticky;
+        bottom: 10px;
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.30);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .btnx {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.92);
+        font-weight: 950;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .12s ease, background .12s ease, border .12s ease;
+        user-select: none;
+        min-width: 150px;
+    }
+
+        .btnx:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.10);
+            border-color: rgba(255,255,255,0.22);
         }
 
-    .priority-error {
-        margin-top: 10px;
-        color: var(--danger);
-        font-weight: 800;
-        display: none;
+        .btnx.primary {
+            background: linear-gradient(135deg, rgba(79,70,229,0.98), rgba(79,70,229,0.62));
+            border-color: rgba(79,70,229,0.55);
+            box-shadow: 0 16px 40px rgba(79,70,229,0.22);
+        }
+
+        .btnx.danger {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.14);
+        }
+
+    .rightnote {
+        color: rgba(255,255,255,0.60);
+        font-weight: 850;
+        font-size: 12px;
+        line-height: 1.35;
     }
 
-    .actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 18px;
-        flex-wrap: wrap;
-    }
-
-    
+ @@media (max-width: 980px) {
+        .layout
 
     {
         grid-template-columns: 1fr;
     }
 
-    .page-title {
-        font-size: 28px;
+    #filtersMap {
+        height: 360px;
+    }
+
+    .map-controls {
+        grid-template-columns: 1fr;
+    }
+
+    .actionbar {
+        position: static;
     }
 
     }
 </style>
 
 <div class="filters-wrap">
-    <h1 class="page-title">Filters</h1>
-    <p class="page-subtitle">Set your budget, max distance, and up to 3 priorities. Then apply to see your ranked areas.</p>
-
-    <div class="card filters-card">
-        <form method="post" id="filtersForm">
-
-            <div class="filters-grid">
-                <div class="field">
-                    <label for="Budget">Budget (monthly)</label>
-                    <input class="input" asp-for="Budget" id="Budget" type="number" step="1" min="0" placeholder="e.g., 1200" />
-                    <div class="hint">Enter a number (CAD). Leave blank if not sure.</div>
-                    <span class="field-error" asp-validation-for="Budget"></span>
-                </div>
-
-                <div class="field">
-                    <label for="MaxDistanceKm">Max Distance (Km)</label>
-                    <input class="input" asp-for="MaxDistanceKm" id="MaxDistanceKm" type="number" step="1" min="0" placeholder="e.g., 3" />
-                    <div class="hint">How far you’re willing to travel.</div>
-                    <span class="field-error" asp-validation-for="MaxDistanceKm"></span>
-                </div>
-            </div>
-
-            <div class="divider"></div>
-            <div class="divider"></div>
-
-            <div class="field">
-                <label>Choose location on map</label>
-                <div class="hint">Click the map to drop a pin. We’ll search within your radius.</div>
-
-                <div id="filtersMap" style="height: 360px; border-radius: 12px; border: 1px solid var(--border);"></div>
-
-                <div style="display:flex; gap:14px; align-items:center; margin-top:12px; flex-wrap:wrap;">
-                    <div class="field" style="min-width:180px;">
-                        <label for="RadiusKm">Radius (km)</label>
-                        <input class="input" asp-for="RadiusKm" id="RadiusKm" type="number" min="1" max="25" step="1" />
-                        <div class="hint">Typical: 2–5 km</div>
-                    </div>
-
-                    <div class="field" style="min-width:260px;">
-                        <label for="LocationLabel">Location label (optional)</label>
-                        <input class="input" asp-for="LocationLabel" id="LocationLabel" type="text" placeholder="e.g., Downtown Barrie" />
-                    </div>
-                </div>
-
-                <!-- Hidden fields that the map updates -->
-                <input type="hidden" asp-for="Lat" id="Lat" />
-                <input type="hidden" asp-for="Lng" id="Lng" />
-            </div>
-            <div class="prio-header">
-                <p class="prio-title">Priorities (max 3)</p>
-                <span id="priorityCount" class="count-pill">0/3</span>
-            </div>
-
-            <div class="hint">Click to select. Click again to remove.</div>
-
-            <div id="priorityChips" class="priority-chips">
-                @foreach (var p in allPriorities)
-                {
-                    var isSelected = selected.Contains(p);
-                    <button type="button"
-                            class="priority-chip @(isSelected ? "selected" : "")"
-                            data-value="@p"
-                            aria-pressed="@(isSelected.ToString().ToLower())">
-                        @p
-                    </button>
-                }
-            </div>
-
-            <div id="priorityError" class="priority-error">
-                You can only select up to 3 priorities.
-            </div>
-
-            <div id="priorityHiddenInputs">
-                @foreach (var p in selected)
-                {
-                    <input type="hidden" name="Priorities" value="@p" />
-                }
-            </div>
-
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Apply Filters</button>
-
-                <button type="submit"
-                        class="btn"
-                        formaction="@Url.Action("Reset", "Filters")"
-                        formmethod="post">
-                    Reset
-                </button>
-
-                <a class="btn" href="/Results/Index">View Results</a>
-            </div>
-        </form>
+    <div class="filters-head">
+        <div>
+            <h1 class="title">Filters</h1>
+            <p class="subtitle">
+                Pick a location on the map, then set budget + distance and choose up to 3 priorities.
+            </p>
+        </div>
+        <div class="hintpill">Click map → drop pin → Apply</div>
     </div>
+
+    <form method="post" id="filtersForm">
+        <div class="layout">
+
+            <!-- LEFT: Controls -->
+            <section class="panel">
+                <div class="panel-inner">
+                    <div class="section-title">Budget & Distance</div>
+
+                    <div class="grid2">
+                        <div class="field">
+                            <label for="Budget">Budget (monthly CAD)</label>
+                            <input class="inputx" asp-for="Budget" id="Budget" type="number" step="1" min="0" placeholder="e.g., 1200" />
+                            <div class="microhint">Leave blank if not sure.</div>
+                            <span class="error" asp-validation-for="Budget"></span>
+                        </div>
+
+                        <div class="field">
+                            <label for="MaxDistanceKm">Max Distance (km)</label>
+                            <input class="inputx" asp-for="MaxDistanceKm" id="MaxDistanceKm" type="number" step="1" min="0" placeholder="e.g., 3" />
+                            <div class="microhint">How far you're willing to travel.</div>
+                            <span class="error" asp-validation-for="MaxDistanceKm"></span>
+                        </div>
+                    </div>
+
+                    <div class="prio-head">
+                        <div class="section-title" style="margin:12px 0 0;">Priorities</div>
+                        <span id="priorityCount" class="count-pill">0/3</span>
+                    </div>
+                    <div class="microhint">Select up to 3. Click again to remove.</div>
+
+                    <div id="priorityChips" class="chips" role="group" aria-label="Priorities">
+                        @foreach (var p in allPriorities)
+                        {
+                            var isSelected = selected.Contains(p);
+                            <button type="button"
+                                    class="chip @(isSelected ? "selected" : "")"
+                                    data-value="@p"
+                                    aria-pressed="@(isSelected.ToString().ToLower())">
+                                @p
+                            </button>
+                        }
+                    </div>
+
+                    <div id="priorityError" class="prio-error">
+                        You can only select up to 3 priorities.
+                    </div>
+
+                    <div id="priorityHiddenInputs">
+                        @foreach (var p in selected)
+                        {
+                            <input type="hidden" name="Priorities" value="@p" />
+                        }
+                    </div>
+
+                    <!-- Hidden fields updated by map -->
+                    <input type="hidden" asp-for="Lat" id="Lat" />
+                    <input type="hidden" asp-for="Lng" id="Lng" />
+
+                    <div class="actionbar">
+                        <div class="rightnote">
+                            Best results: choose a pin + 2–5 km radius.
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                            <button type="submit" class="btnx primary">Apply Filters</button>
+
+                            <button type="submit"
+                                    class="btnx danger"
+                                    formaction="@Url.Action("Reset", "Filters")"
+                                    formmethod="post">
+                                Reset
+                            </button>
+
+                            <a class="btnx" href="/Results/Index">View Results</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT: Map -->
+            <section class="panel map-wrap">
+                <div class="map-top">
+                    <div>
+                        <p class="map-title">Choose location on map</p>
+                        <p class="map-sub">Click to drop a pin (drag to adjust).</p>
+                    </div>
+                    <div class="hintpill" style="padding:6px 10px;">Live Map</div>
+                </div>
+
+                <div id="filtersMap"></div>
+
+                <div class="map-controls">
+                    <div class="field">
+                        <label for="RadiusKm">Radius (km)</label>
+                        <input class="inputx" asp-for="RadiusKm" id="RadiusKm" type="number" min="1" max="25" step="1" />
+                        <div class="microhint">Typical: 2–5 km</div>
+                    </div>
+
+                    <div class="field">
+                        <label for="LocationLabel">Location label (optional)</label>
+                        <input class="inputx" asp-for="LocationLabel" id="LocationLabel" type="text" placeholder="e.g., Uptown Waterloo" />
+                        <div class="microhint">Helps you remember the spot.</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </form>
 </div>
 
-<script>
-    (function () {
-        const count = document.getElementById('priorityCount');
-        const selected = document.querySelectorAll('.priority-chip.selected').length;
-        if (count) count.textContent = `${selected}/3`;
-    })();
-</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
 
 <script>
     (function () {
+        const countEl = document.getElementById('priorityCount');
+        const chipsWrap = document.getElementById('priorityChips');
+        const hiddenWrap = document.getElementById('priorityHiddenInputs');
+        const errorEl = document.getElementById('priorityError');
+
+        function getSelected() {
+            return Array.from(document.querySelectorAll('.chip.selected')).map(b => b.dataset.value);
+        }
+
+        function syncHidden(selected) {
+            hiddenWrap.innerHTML = "";
+            for (const p of selected) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "Priorities";
+                input.value = p;
+                hiddenWrap.appendChild(input);
+            }
+        }
+
+        function syncCount(selected) {
+            if (countEl) countEl.textContent = `${selected.length}/3`;
+        }
+
+        function showError(show) {
+            if (!errorEl) return;
+            errorEl.style.display = show ? "block" : "none";
+        }
+
+        // init count
+        const initSel = getSelected();
+        syncCount(initSel);
+        syncHidden(initSel);
+
+        // click behavior
+        chipsWrap?.addEventListener("click", (e) => {
+            const btn = e.target.closest(".chip");
+            if (!btn) return;
+
+            const isSelected = btn.classList.contains("selected");
+
+            if (!isSelected) {
+                const current = getSelected();
+                if (current.length >= 3) {
+                    showError(true);
+                    return;
+                }
+                btn.classList.add("selected");
+                btn.setAttribute("aria-pressed", "true");
+                showError(false);
+            } else {
+                btn.classList.remove("selected");
+                btn.setAttribute("aria-pressed", "false");
+                showError(false);
+            }
+
+            const now = getSelected();
+            syncCount(now);
+            syncHidden(now);
+        });
+    })();
+</script>
+
+<script>
+    (function () {
         const latInput = document.getElementById("Lat");
         const lngInput = document.getElementById("Lng");
-        const radiusInput = document.getElementById("RadiusKm");
 
-        // Default center (Barrie-ish). If user already selected, use that.
+        // Default center: Kitchener/Waterloo (not Barrie)
         const initialLat = parseFloat(latInput?.value) || 43.4516;
         const initialLng = parseFloat(lngInput?.value) || -80.4925;
 
         const mapEl = document.getElementById("filtersMap");
         if (!mapEl) return;
 
-    const map = L.map("filtersMap").setView([initialLat, initialLng], 13);
+        const map = L.map("filtersMap").setView([initialLat, initialLng], 13);
+
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
@@ -296,5 +583,7 @@
             setPoint(e.latlng.lat, e.latlng.lng);
         });
 
+        // If map loads inside a flex/grid, invalidate after paint
+        setTimeout(() => map.invalidateSize(), 150);
     })();
 </script>
