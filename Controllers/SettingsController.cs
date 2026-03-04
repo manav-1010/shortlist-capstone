@@ -148,5 +148,10 @@ namespace Shortlist.Web.Controllers
             HttpContext.Session.SetInt32("UserId", newUser.Id);
             return newUser.Id;
         }
+        [HttpGet]
+        public IActionResult Legal()
+        {
+            return View();
+        }
     }
 }
