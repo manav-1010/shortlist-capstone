@@ -109,6 +109,25 @@
             margin: 0 8px;
             opacity: 0.55;
         }
+
+        .footer {
+            margin-top: 18px;
+            padding: 14px 16px 20px;
+            color: rgba(255,255,255,0.55);
+            font-weight: 750;
+            font-size: 12px;
+            border-top: 1px solid rgba(255,255,255,0.10);
+        }
+
+            .footer a {
+                color: rgba(255,255,255,0.70);
+                text-decoration: none;
+            }
+
+                .footer a:hover {
+                    color: rgba(255,255,255,0.88);
+                    text-decoration: underline;
+                }
     </style>
 </head>
 <body>
@@ -152,6 +171,11 @@
         <main class="content">
             @RenderBody()
         </main>
+        <footer class="footer">
+            © @DateTime.Now.Year Shortlist. All rights reserved.
+            <span style="opacity:.6">•</span>
+            Map data © OpenStreetMap contributors.
+        </footer>
     </div>
 
     <script src="~/js/site.js"></script>
