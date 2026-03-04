@@ -67,7 +67,42 @@
         font-weight: 850;
         color: rgba(255,255,255,0.72);
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
+
+    .head-right {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .icon-link {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform .12s ease, background .12s ease, border .12s ease;
+    }
+
+        .icon-link:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.10);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .icon-link svg {
+            width: 18px;
+            height: 18px;
+            fill: rgba(255,255,255,0.86);
+        }
 
     /* Main layout: left controls + right map */
     .layout {
@@ -247,7 +282,7 @@
 
     /* Make map fit screen: use viewport math */
     #filtersMap {
-        height: calc(100vh - 260px); /* tuned for your header + title area */
+        height: calc(100vh - 260px);
         min-height: 320px;
         border-top: 1px solid rgba(255,255,255,0.10);
         border-bottom: 1px solid rgba(255,255,255,0.10);
@@ -262,13 +297,6 @@
     }
 
     /* Sticky action bar (always visible) */
-    .actions {
-        margin-top: 12px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
     .actionbar {
         position: sticky;
         bottom: 10px;
@@ -319,6 +347,19 @@
             border-color: rgba(255,255,255,0.14);
         }
 
+        .btnx.iconbtn {
+            min-width: auto;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+        }
+
+            .btnx.iconbtn svg {
+                width: 18px;
+                height: 18px;
+                fill: rgba(255,255,255,0.90);
+            }
+
     .rightnote {
         color: rgba(255,255,255,0.60);
         font-weight: 850;
@@ -326,25 +367,22 @@
         line-height: 1.35;
     }
 
- @@media (max-width: 980px) {
-        .layout
+    @@media (max-width: 980px) {
+        .layout {
+            grid-template-columns: 1fr;
+        }
 
-    {
-        grid-template-columns: 1fr;
-    }
+        #filtersMap {
+            height: 360px;
+        }
 
-    #filtersMap {
-        height: 360px;
-    }
+        .map-controls {
+            grid-template-columns: 1fr;
+        }
 
-    .map-controls {
-        grid-template-columns: 1fr;
-    }
-
-    .actionbar {
-        position: static;
-    }
-
+        .actionbar {
+            position: static;
+        }
     }
 </style>
 
@@ -356,7 +394,17 @@
                 Pick a location on the map, then set budget + distance and choose up to 3 priorities.
             </p>
         </div>
-        <div class="hintpill">Click map → drop pin → Apply</div>
+
+        <!-- RIGHT: Hint + Settings shortcut -->
+        <div class="head-right">
+            <div class="hintpill">Click map → drop pin → Apply</div>
+
+            <a asp-controller="Settings" asp-action="Index" class="icon-link" aria-label="Settings" title="Settings">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,13.8,2H10.2a.5.5,0,0,0-.49.42L9.33,5.07a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.86,11.06a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.49.42h3.6a.5.5,0,0,0,.49-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+                </svg>
+            </a>
+        </div>
     </div>
 
     <form method="post" id="filtersForm">
@@ -421,7 +469,15 @@
                         <div class="rightnote">
                             Best results: choose a pin + 2–5 km radius.
                         </div>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;">
+                            <!-- Settings shortcut inside action bar too -->
+                            <a asp-controller="Settings" asp-action="Index" class="btnx iconbtn" aria-label="Settings" title="Settings">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,13.8,2H10.2a.5.5,0,0,0-.49.42L9.33,5.07a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.86,11.06a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.49.42h3.6a.5.5,0,0,0,.49-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+                                </svg>
+                            </a>
+
                             <button type="submit" class="btnx primary">Apply Filters</button>
 
                             <button type="submit"
@@ -431,7 +487,7 @@
                                 Reset
                             </button>
 
-                            <a class="btnx" href="/Results/Index">View Results</a>
+                            <a class="btnx" asp-controller="Results" asp-action="Index">View Results</a>
                         </div>
                     </div>
                 </div>
@@ -542,7 +598,7 @@
         const latInput = document.getElementById("Lat");
         const lngInput = document.getElementById("Lng");
 
-        // Default center: Kitchener/Waterloo (not Barrie)
+        // Default center: Kitchener/Waterloo
         const initialLat = parseFloat(latInput?.value) || 43.4516;
         const initialLng = parseFloat(lngInput?.value) || -80.4925;
 
@@ -583,7 +639,6 @@
             setPoint(e.latlng.lat, e.latlng.lng);
         });
 
-        // If map loads inside a flex/grid, invalidate after paint
         setTimeout(() => map.invalidateSize(), 150);
     })();
 </script>
