@@ -4,6 +4,12 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Content Remove="Views\TenantChecklist\Index.cshtml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Include="Views\TenantChecklist\Index.cshtml" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.22" />

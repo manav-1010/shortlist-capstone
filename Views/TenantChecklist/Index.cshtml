@@ -1,0 +1,445 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --bg: #0b0d12;
+        --surface: rgba(255,255,255,0.06);
+        --surface2: rgba(255,255,255,0.10);
+        --border: rgba(255,255,255,0.12);
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.72);
+        --muted2: rgba(255,255,255,0.58);
+        --accent: #4f46e5;
+        --good: #22c55e;
+        --warn: #f59e0b;
+        --bad: #ef4444;
+        --shadow: 0 18px 60px rgba(0,0,0,0.35);
+        --radius: 18px;
+    }
+
+    body {
+        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+    }
+
+    .shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 16px 28px;
+        color: var(--text);
+    }
+
+    .hero {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+        box-shadow: var(--shadow);
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 14px;
+        align-items: center;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: -0.6px;
+        font-weight: 950;
+    }
+
+    .sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        padding: 11px 14px;
+        font-weight: 950;
+        cursor: pointer;
+        white-space: nowrap;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .btn.primary {
+            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
+            border-color: rgba(79,70,229,0.55);
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.10);
+        }
+
+    .grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 14px;
+    }
+
+    .card {
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.20);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        padding: 16px;
+    }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 950;
+            letter-spacing: -0.2px;
+        }
+
+    .hint {
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 12px;
+        line-height: 1.55;
+        margin-top: -4px;
+        margin-bottom: 10px;
+    }
+
+    .list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 10px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.04);
+    }
+
+        .item input {
+            margin-top: 3px;
+            transform: scale(1.1);
+        }
+
+        .item .t {
+            font-weight: 900;
+            color: rgba(255,255,255,0.90);
+            font-size: 13px;
+        }
+
+        .item .p {
+            margin-top: 4px;
+            color: rgba(255,255,255,0.72);
+            font-weight: 750;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+    .pillRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .pill {
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.82);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+        .pill.good {
+            border-color: rgba(34,197,94,0.35);
+        }
+
+        .pill.warn {
+            border-color: rgba(245,158,11,0.35);
+        }
+
+        .pill.bad {
+            border-color: rgba(239,68,68,0.35);
+        }
+
+    details {
+        margin-top: 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.18);
+        padding: 12px;
+    }
+
+        details summary {
+            cursor: pointer;
+            font-weight: 950;
+            color: rgba(255,255,255,0.92);
+            list-style: none;
+        }
+
+            details summary::-webkit-details-marker {
+                display: none;
+            }
+
+        details .content {
+            margin-top: 10px;
+            color: rgba(255,255,255,0.78);
+            font-weight: 750;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+    .links a {
+        color: rgba(99,102,241,0.95);
+        font-weight: 900;
+        text-decoration: none;
+    }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+    @@media (max-width: 980px) {
+        .hero {
+            grid-template-columns: 1fr;
+        }
+
+        .actions {
+            justify-content: flex-start;
+        }
+
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media print {
+        body {
+            background: #fff !important;
+        }
+
+        .hero, .card, details {
+            box-shadow: none !important;
+        }
+
+        .btn {
+            display: none !important;
+        }
+
+        .shell {
+            color: #000 !important;
+        }
+
+        .item, .card {
+            background: #fff !important;
+            border: 1px solid #ddd !important;
+        }
+
+            .item .t, .item .p {
+                color: #000 !important;
+            }
+
+        .hint, .sub {
+            color: #111 !important;
+        }
+
+        .pill {
+            color: #000 !important;
+        }
+
+        .links a {
+            color: #000 !important;
+            text-decoration: underline !important;
+        }
+    }
+</style>
+
+<div class="shell">
+    <section class="hero">
+        <div>
+            <h1>Tenant Checklist</h1>
+            <div class="sub">
+                A real, practical checklist to help you move from “Shortlist results” → “sign the lease” with confidence.
+                You can print this page and take it with you for viewings.
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn primary" type="button" onclick="window.print()">Print / Save PDF</button>
+            <a class="btn" href="/Results">Back to Results</a>
+        </div>
+    </section>
+
+    <section class="grid">
+        <!-- LEFT COLUMN -->
+        <div class="card">
+            <h2>Before you book a viewing</h2>
+            <div class="hint">Goal: avoid scams + filter out bad listings early.</div>
+
+            <div class="list">
+                <div class="item">
+                    <input type="checkbox" />
+                    <div>
+                        <div class="t">Confirm the address is real</div>
+                        <div class="p">Search the address and check if photos match (be cautious if the same images appear on multiple sites).</div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <input type="checkbox" />
+                    <div>
+                        <div class="t">Ask basic questions in writing</div>
+                        <div class="p">Rent, utilities, parking, availability date, lease length, and application requirements.</div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <input type="checkbox" />
+                    <div>
+                        <div class="t">Never pay to “hold” a unit before you view</div>
+                        <div class="p">A legit landlord will allow a viewing and provide paperwork before money changes hands.</div>
+                    </div>
+                </div>
+            </div>
+
+            <details>
+                <summary>Viewing checklist (what to check on-site)</summary>
+                <div class="content">
+                    <div class="list">
+                        <div class="item">
+                            <input type="checkbox" />
+                            <div>
+                                <div class="t">Water pressure + hot water</div>
+                                <div class="p">Test sinks/shower. Check for leaks under the sink.</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <input type="checkbox" />
+                            <div>
+                                <div class="t">Windows/locks + cell signal</div>
+                                <div class="p">Open/close windows; confirm doors lock properly; check signal if important.</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <input type="checkbox" />
+                            <div>
+                                <div class="t">Noise level</div>
+                                <div class="p">Hallway noise, traffic, and nearby construction can be deal breakers.</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <input type="checkbox" />
+                            <div>
+                                <div class="t">Heating/cooling + ventilation</div>
+                                <div class="p">Ask how heating works and who controls it (unit vs building).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details>
+                <summary>Application package (what to prepare)</summary>
+                <div class="content">
+                    <div class="list">
+                        <div class="item"><input type="checkbox" /><div><div class="t">Proof of income</div><div class="p">Pay stubs / offer letter / bank statements (only what’s required).</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">References</div><div class="p">Previous landlord + employer references if possible.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">ID (safe sharing)</div><div class="p">Bring ID for viewing; avoid sending unnecessary sensitive docs unless required.</div></div></div>
+                    </div>
+                </div>
+            </details>
+
+            <details>
+                <summary>Lease signing (don’t skip these)</summary>
+                <div class="content">
+                    <div class="list">
+                        <div class="item"><input type="checkbox" /><div><div class="t">Read everything + clarify utilities</div><div class="p">Confirm what’s included: hydro, water, internet, parking, storage.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">Get receipts + keep a copy</div><div class="p">Always keep proof for deposits/first month and a signed copy of the lease.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">Move-in inspection photos</div><div class="p">Record condition on day 1 (photos/video) to avoid disputes later.</div></div></div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="card">
+            <h2>Scam red flags</h2>
+            <div class="hint">If you see more than one red flag, walk away.</div>
+
+            <div class="pillRow">
+                <span class="pill bad">Money before viewing</span>
+                <span class="pill bad">Pressure / urgency</span>
+                <span class="pill warn">Unverified identity</span>
+                <span class="pill warn">Too-good-to-be-true price</span>
+                <span class="pill bad">No lease / no paperwork</span>
+            </div>
+
+            <div class="list" style="margin-top:12px;">
+                <div class="item">
+                    <input type="checkbox" />
+                    <div>
+                        <div class="t">They won’t show the unit</div>
+                        <div class="p">Excuses like “I’m out of the country” + asks for deposit → classic scam pattern.</div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <input type="checkbox" />
+                    <div>
+                        <div class="t">They insist on unusual payments</div>
+                        <div class="p">Gift cards, crypto, wire transfers, or “friends & family” payments are unsafe.</div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <input type="checkbox" />
+                    <div>
+                        <div class="t">The listing details keep changing</div>
+                        <div class="p">Rent amount, address, or included utilities changes when you ask questions.</div>
+                    </div>
+                </div>
+            </div>
+
+            <details>
+                <summary>Quick tips that impress judges</summary>
+                <div class="content">
+                    This page makes your app more “end-to-end”: not only finding a location, but helping users
+                    take action safely. It’s realistic, useful, and easy to demo in 20 seconds.
+                </div>
+            </details>
+
+            <details class="links">
+                <summary>Helpful links (Ontario)</summary>
+                <div class="content">
+                    <div>• Landlord and Tenant Board (LTB): <a href="https://tribunalsontario.ca/ltb/" target="_blank" rel="noopener noreferrer">tribunalsontario.ca/ltb</a></div>
+                    <div>• Ontario Standard Lease info: <a href="https://www.ontario.ca/page/guide-ontarios-standard-lease" target="_blank" rel="noopener noreferrer">ontario.ca/page/guide-ontarios-standard-lease</a></div>
+                    <div>• Tenant rights overview: <a href="https://www.ontario.ca/page/renting-ontario-your-rights" target="_blank" rel="noopener noreferrer">ontario.ca/page/renting-ontario-your-rights</a></div>
+                    <div style="margin-top:8px; color: rgba(255,255,255,0.70);">
+                        Tip: If you want, we can add a “Resources” section per city later (Waterloo, Kitchener, Toronto).
+                    </div>
+                </div>
+            </details>
+        </div>
+    </section>
+</div>
