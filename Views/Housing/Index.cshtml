@@ -1,0 +1,259 @@
+﻿@model List<Shortlist.Web.Models.HousingProvider>
+@{
+    Layout = "_Layout";
+    var q = (ViewBag.Query as string) ?? "";
+}
+
+<style>
+    :root {
+        --bg: #0b0d12;
+        --surface: rgba(255,255,255,0.06);
+        --surface2: rgba(255,255,255,0.10);
+        --border: rgba(255,255,255,0.12);
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.72);
+        --accent: #4f46e5;
+        --shadow: 0 18px 60px rgba(0,0,0,0.35);
+        --radius: 18px;
+    }
+
+    body {
+        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+    }
+
+    .shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 16px 28px;
+        color: var(--text);
+    }
+
+    .hero {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+        box-shadow: var(--shadow);
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 14px;
+        align-items: center;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: -0.6px;
+        font-weight: 950;
+    }
+
+    .sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .searchRow {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .input {
+        width: min(420px, 100%);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 850;
+        outline: none;
+    }
+
+        .input::placeholder {
+            color: rgba(255,255,255,0.50);
+            font-weight: 750;
+        }
+
+    .btn {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        padding: 11px 14px;
+        font-weight: 950;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .btn.primary {
+            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
+            border-color: rgba(79,70,229,0.55);
+        }
+
+    .grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .card {
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.20);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 160px;
+    }
+
+    .nameRow {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .name {
+        font-weight: 950;
+        font-size: 16px;
+        letter-spacing: -0.2px;
+    }
+
+    .city {
+        color: rgba(255,255,255,0.70);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+    .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 2px;
+    }
+
+    .chip {
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.82);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+    .notes {
+        color: rgba(255,255,255,0.76);
+        font-weight: 750;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .linkBtn {
+        margin-top: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        padding: 10px 12px;
+        font-weight: 950;
+        text-decoration: none;
+    }
+
+        .linkBtn:hover {
+            background: rgba(255,255,255,0.10);
+        }
+
+    .empty {
+        margin-top: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.22);
+        padding: 16px;
+        color: rgba(255,255,255,0.80);
+        font-weight: 800;
+    }
+
+    @@media (max-width: 1020px) {
+        .hero {
+            grid-template-columns: 1fr;
+        }
+
+        .grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .searchRow {
+            justify-content: flex-start;
+        }
+    }
+
+    @@media (max-width: 620px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="shell">
+    <section class="hero">
+        <div>
+            <h1>Housing Providers</h1>
+            <div class="sub">
+                Real rental sources to help you take action after Shortlist results (no mock listings).
+                Search by city, provider, or tags.
+            </div>
+        </div>
+
+        <form method="get" class="searchRow">
+            <input class="input" name="q" value="@q" placeholder="Search (e.g., Waterloo, student, Accommod8u)" />
+            <button class="btn primary" type="submit">Search</button>
+            <a class="btn" href="/Housing">Reset</a>
+        </form>
+    </section>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty">No providers matched your search. Try a different keyword.</div>
+    }
+    else
+    {
+        <section class="grid">
+            @foreach (var p in Model)
+            {
+                <div class="card">
+                    <div class="nameRow">
+                        <div>
+                            <div class="name">@p.Name</div>
+                            <div class="city">@p.City</div>
+                        </div>
+                    </div>
+
+                    <div class="tags">
+                        @foreach (var t in (p.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                        {
+                            <span class="chip">@t</span>
+                        }
+                    </div>
+
+                    <div class="notes">@p.Notes</div>
+
+                    <a class="linkBtn" href="@p.Url" target="_blank" rel="noopener noreferrer">
+                        Open website ↗
+                    </a>
+                </div>
+            }
+        </section>
+    }
+</div>
