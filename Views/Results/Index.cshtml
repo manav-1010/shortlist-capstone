@@ -579,7 +579,9 @@
             <div class="controls">
                 <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
-
+                <button onclick="addToCompare(@item.Id)">
+                    Compare
+                </button>
                 <form method="post" asp-action="Clear" style="margin:0;">
                     <button class="btnx" type="submit">Clear All</button>
                 </form>
@@ -666,6 +668,7 @@
                     <div class="line"><span>Total Area Covered</span><strong id="radArea">—</strong></div>
                     <div class="line"><span>Coordinates</span><strong id="radCoord">—</strong></div>
                 </div>
+
 
             </div>
 
@@ -1145,6 +1148,15 @@
                 list.appendChild(card);
             }
         }
-
+            function addToCompare(id)
+    {
+        fetch("/Compare/Add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id })
+        });
+    }
     })();
 </script>

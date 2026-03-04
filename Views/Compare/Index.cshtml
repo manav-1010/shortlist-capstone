@@ -1,0 +1,31 @@
+﻿@model List<int>
+
+@{
+    Layout = "_Layout";
+}
+
+<h1>Compare Locations</h1>
+
+@if (!Model.Any())
+{
+    <p>No locations selected for comparison.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Listing ID</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var id in Model)
+            {
+                <tr>
+                    <td>@id</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
