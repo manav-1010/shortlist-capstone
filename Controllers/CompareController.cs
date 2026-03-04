@@ -1,22 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shortlist.Web.Helpers;
 using Shortlist.Web.Models;
-using System.Text.Json;
+using System.Globalization;
+using System.Text;
 
 namespace Shortlist.Web.Controllers
 {
     [Authorize]
-    [IgnoreAntiforgeryToken] // because we're calling via fetch() from JS
     public class CompareController : Controller
     {
-        private const string SessionKey = "CompareItems";
-        private const int MaxItems = 3;
+        private const string CompareSessionKey = "CompareItems";
 
         [HttpGet]
         public IActionResult Index()
         {
-            var items = GetCompareItems();
-            var vm = new CompareIndexViewModel { Items = items };
+            var vm = new CompareIndexViewModel
+            {
+                Items = GetCompareItems()
+            };
             return View(vm);
         }
 
@@ -24,20 +26,16 @@ namespace Shortlist.Web.Controllers
         public IActionResult Add([FromBody] CompareItem item)
         {
             if (item == null || string.IsNullOrWhiteSpace(item.Id))
-                return BadRequest("Invalid compare item.");
+                return BadRequest("Missing item id.");
 
             var items = GetCompareItems();
 
-            // Prevent duplicates
+            // prevent duplicates
             if (!items.Any(x => x.Id == item.Id))
             {
-                // Max 3
-                if (items.Count >= MaxItems)
-                    return BadRequest($"You can compare up to {MaxItems} places.");
-
-                // Clean fields
-                item.Name = string.IsNullOrWhiteSpace(item.Name) ? "Unnamed place" : item.Name.Trim();
-                item.Category = string.IsNullOrWhiteSpace(item.Category) ? "OTHER" : item.Category.Trim();
+                // cap to 3
+                if (items.Count >= 3)
+                    return BadRequest("You can compare up to 3 places.");
 
                 items.Add(item);
                 SaveCompareItems(items);
@@ -49,7 +47,8 @@ namespace Shortlist.Web.Controllers
         [HttpPost]
         public IActionResult Remove([FromBody] string id)
         {
-            if (string.IsNullOrWhiteSpace(id)) return BadRequest("Missing id.");
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest("Missing id.");
 
             var items = GetCompareItems();
             items.RemoveAll(x => x.Id == id);
@@ -61,38 +60,47 @@ namespace Shortlist.Web.Controllers
         [HttpPost]
         public IActionResult Clear()
         {
-            HttpContext.Session.Remove(SessionKey);
-            return Ok(new { count = 0 });
+            SaveCompareItems(new List<CompareItem>());
+            return Ok();
         }
 
         [HttpGet]
-        public IActionResult Count()
+        public IActionResult ExportCsv()
         {
             var items = GetCompareItems();
-            return Ok(new { count = items.Count });
+            if (items.Count == 0) return BadRequest("No compare items to export.");
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Name,Category,DistanceKm,Lat,Lng,Id");
+
+            foreach (var x in items)
+            {
+                sb.AppendLine(string.Join(",",
+                    Csv(x.Name),
+                    Csv(x.Category),
+                    x.DistKm.ToString("0.00", CultureInfo.InvariantCulture),
+                    x.Lat.ToString("0.000000", CultureInfo.InvariantCulture),
+                    x.Lng.ToString("0.000000", CultureInfo.InvariantCulture),
+                    Csv(x.Id)
+                ));
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "shortlist-compare.csv");
         }
 
-        // -------- helpers --------
-
+        // ---------------- helpers ----------------
         private List<CompareItem> GetCompareItems()
-        {
-            var json = HttpContext.Session.GetString(SessionKey);
-            if (string.IsNullOrWhiteSpace(json)) return new List<CompareItem>();
-
-            try
-            {
-                return JsonSerializer.Deserialize<List<CompareItem>>(json) ?? new List<CompareItem>();
-            }
-            catch
-            {
-                return new List<CompareItem>();
-            }
-        }
+            => HttpContext.Session.GetJson<List<CompareItem>>(CompareSessionKey) ?? new List<CompareItem>();
 
         private void SaveCompareItems(List<CompareItem> items)
+            => HttpContext.Session.SetJson(CompareSessionKey, items);
+
+        private static string Csv(string? s)
         {
-            var json = JsonSerializer.Serialize(items);
-            HttpContext.Session.SetString(SessionKey, json);
+            s ??= "";
+            s = s.Replace("\"", "\"\"");
+            return $"\"{s}\"";
         }
     }
 }

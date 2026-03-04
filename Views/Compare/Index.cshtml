@@ -63,6 +63,8 @@
         padding: 10px 12px;
         font-weight: 900;
         cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
     }
 
         .btnx.primary {
@@ -146,11 +148,12 @@
     <div class="top">
         <div class="title">
             <h1>Compare</h1>
-            <p>Select up to 3 places from Results → compare side-by-side with a map.</p>
+            <p>Select up to 3 places from Results → compare side-by-side + export CSV.</p>
         </div>
 
-        <div style="display:flex; gap:10px; align-items:center;">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
             <a class="btnx" href="/Results">Back to Results</a>
+            <a class="btnx" href="/Compare/ExportCsv">Export CSV</a>
             <button id="btnClear" class="btnx primary" type="button">Clear Compare</button>
         </div>
     </div>
@@ -222,7 +225,7 @@
         const bounds = [];
         items.forEach((x) => {
             const m = L.marker([x.lat, x.lng]).addTo(map).bindPopup(
-                `<b>${x.name}</b><br/>${x.category}<br/>${x.distKm.toFixed(2)} km`
+                `<b>${x.name}</b><br/>${x.category}<br/>${Number(x.distKm).toFixed(2)} km`
             );
             bounds.push(m.getLatLng());
         });
