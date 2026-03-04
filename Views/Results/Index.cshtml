@@ -72,7 +72,7 @@
 
     .controls {
         display: grid;
-        grid-template-columns: 1fr auto auto;
+        grid-template-columns: 1fr auto auto auto;
         gap: 10px;
         align-items: center;
         justify-self: end;
@@ -106,6 +106,10 @@
         transition: transform .12s ease, background .12s ease, border .12s ease;
         user-select: none;
         white-space: nowrap;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
         .btnx:hover {
@@ -254,7 +258,7 @@
             font-size: 13px;
         }
 
-    /* RESULT CARD (spacious) */
+    /* RESULT CARD */
     .rCard {
         border-radius: 20px;
         border: 1px solid rgba(255,255,255,0.12);
@@ -495,11 +499,6 @@
         font-weight: 850 !important;
     }
 
-    .leaflet-container a {
-        color: rgba(99, 102, 241, 0.95) !important;
-        font-weight: 900;
-    }
-
     @@media (max-width: 1040px) {
         .mainGrid {
             grid-template-columns: 1fr;
@@ -525,35 +524,23 @@
         .overviewRow {
             grid-template-columns: 1fr;
         }
-        /* ✅ Force readable text on dark theme (overrides any global bootstrap/site css) */
+
         .results-shell, .results-shell * {
             color: var(--text);
         }
-        /* Category titles like PARKING/TRANSIT */
-        .rTitle .name,
-        .rTitle .sub,
-        .kpi .value,
-        .kpi .label,
-        .kpi .mini,
-        .snap .t,
-        .snap .v,
-        .snap .s,
-        .barLabel,
-        .box h4 {
+
+        .rTitle .name, .rTitle .sub, .kpi .value, .kpi .label, .kpi .mini, .snap .t, .snap .v, .snap .s, .barLabel, .box h4 {
             color: var(--text) !important;
         }
-        /* chips + small labels */
-        .chip,
-        .badgeRow,
-        .badgeRow * {
+
+        .chip, .badgeRow, .badgeRow * {
             color: rgba(255,255,255,0.85) !important;
         }
-        /* lists inside cards */
-        .box ul,
-        .box li {
+
+        .box ul, .box li {
             color: rgba(255,255,255,0.82) !important;
         }
-        /* tab buttons text */
+
         .tabs button {
             color: rgba(255,255,255,0.78) !important;
         }
@@ -572,16 +559,17 @@
             <div class="titleBlock">
                 <h1>Results</h1>
                 <div class="sub">
-                    Clean overview for decisions + a full analytics view 
+                    Clean overview for decisions + a full analytics view
                 </div>
             </div>
 
             <div class="controls">
                 <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
-                <button onclick="addToCompare(@item.Id)">
-                    Compare
-                </button>
+
+                <!-- ✅ Compare badge -->
+                <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
+
                 <form method="post" asp-action="Clear" style="margin:0;">
                     <button class="btnx" type="submit">Clear All</button>
                 </form>
@@ -668,7 +656,6 @@
                     <div class="line"><span>Total Area Covered</span><strong id="radArea">—</strong></div>
                     <div class="line"><span>Coordinates</span><strong id="radCoord">—</strong></div>
                 </div>
-
 
             </div>
 
@@ -776,29 +763,72 @@
 
         setPinAndCircle(lat, lng);
 
-        // Save -> POST /SavedSearches/SaveCurrent
-            document.getElementById("btnSave").addEventListener("click", async () => {
-      const name = (document.getElementById("saveName").value || "").trim() || "Saved Search";
+        // ----------------------------
+        // Save Search
+        // ----------------------------
+        document.getElementById("btnSave").addEventListener("click", async () => {
+            const name = (document.getElementById("saveName").value || "").trim() || "Saved Search";
 
-      const res = await fetch("/SavedSearches/SaveCurrent", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ name })
-      });
+            const res = await fetch("/SavedSearches/SaveCurrent", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ name })
+            });
 
-      if (res.status === 401) {
-        alert("You are not logged in. Please login again.");
-        return;
-      }
+            if (res.status === 401) {
+                alert("You are not logged in. Please login again.");
+                return;
+            }
 
-      if (!res.ok) {
-        const t = await res.text();
-        alert("Save failed: " + t);
-        return;
-      }
+            if (!res.ok) {
+                const t = await res.text();
+                alert("Save failed: " + t);
+                return;
+            }
 
-      alert("Saved!");
-    });
+            alert("Saved!");
+        });
+
+        // ----------------------------
+        // Compare badge + API calls
+        // ----------------------------
+        async function refreshCompareCount() {
+            try {
+                const r = await fetch("/Compare/Count");
+                if (!r.ok) return;
+                const j = await r.json();
+                const link = document.getElementById("compareLink");
+                if (link) link.textContent = `Compare (${j.count})`;
+            } catch {}
+        }
+
+        async function addToCompare(p) {
+            const payload = {
+                id: p.id,
+                name: p.name,
+                category: p.category,
+                lat: p.lat,
+                lng: p.lng,
+                distKm: p.distKm
+            };
+
+            const res = await fetch("/Compare/Add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const t = await res.text();
+                alert("Compare failed: " + t);
+                return;
+            }
+
+            await refreshCompareCount();
+            alert("Added to Compare!");
+        }
+
+        refreshCompareCount();
 
         // ----------------------------
         // Helpers
@@ -894,7 +924,11 @@
                         const tags = e.tags || {};
                         const name = tags.name || "Unnamed place";
                         const distKm = haversineKm(lat, lng, e.lat, e.lon);
-                        return { name, lat: e.lat, lng: e.lon, tags, distKm };
+
+                        // ✅ stable id for compare
+                        const id = `${e.type}:${e.id}`;
+
+                        return { id, name, lat: e.lat, lng: e.lon, tags, distKm };
                     })
                     .filter(p => p.distKm <= radiusKm + 0.0001);
 
@@ -1058,7 +1092,6 @@
                     `<span class="chip">Confidence: ${c.conf.label}</span>`
                 ];
 
-                // OVERVIEW always shown (spacious + readable)
                 const overviewHtml = `
                     <div class="overviewRow">
                         <div class="box">
@@ -1101,7 +1134,7 @@
                     </div>
                 `;
 
-                // ANALYTICS only shown when tab is Analytics
+                // ✅ Compare button per place
                 const analyticsHtml = `
                     <div class="analyticsBlock ${analyticsMode ? "on" : ""}">
                         <div class="box">
@@ -1117,7 +1150,26 @@
                         <div class="box">
                             <h4>Nearby places (sample)</h4>
                             <ul>
-                                ${c.pois.slice(0,8).map(p => `<li>${p.name} <span style="color:rgba(255,255,255,0.70); font-weight:800;">(${fmt(p.distKm,2)} km)</span></li>`).join("")}
+                                ${c.pois.slice(0,8).map(p => {
+                                    const safeName = (p.name || "Unnamed place").replace(/'/g, "\\'");
+                                    return `
+                                      <li style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                                        <span>
+                                          ${p.name}
+                                          <span style="color:rgba(255,255,255,0.70); font-weight:800;">(${fmt(p.distKm,2)} km)</span>
+                                        </span>
+                                        <button class="btnx" style="padding:6px 10px;" type="button"
+                                          data-compare="1"
+                                          data-id="${p.id}"
+                                          data-name="${safeName}"
+                                          data-cat="${c.name}"
+                                          data-lat="${p.lat}"
+                                          data-lng="${p.lng}"
+                                          data-dist="${p.distKm}">
+                                          Compare
+                                        </button>
+                                      </li>`;
+                                }).join("")}
                             </ul>
                         </div>
 
@@ -1147,16 +1199,22 @@
 
                 list.appendChild(card);
             }
+
+            //✅Wire compare buttons after rendering
+            document.querySelectorAll("button[data-compare='1']").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const p = {
+                        id: btn.getAttribute("data-id"),
+                        name: btn.getAttribute("data-name"),
+                        category: btn.getAttribute("data-cat"),
+                        lat: Number(btn.getAttribute("data-lat")),
+                        lng: Number(btn.getAttribute("data-lng")),
+                        distKm: Number(btn.getAttribute("data-dist"))
+                    };
+                    await addToCompare(p);
+                });
+            });
         }
-            function addToCompare(id)
-    {
-        fetch("/Compare/Add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ id })
-        });
-    }
+
     })();
 </script>
