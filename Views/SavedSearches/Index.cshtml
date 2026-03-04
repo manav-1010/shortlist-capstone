@@ -59,7 +59,7 @@
 
     .saveForm {
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: 1fr;
         gap: 10px;
         justify-self: end;
         width: 100%;
@@ -121,6 +121,11 @@
                 border-color: rgba(239,68,68,0.35);
             }
 
+        .btnx.mini {
+            padding: 9px 12px;
+            font-weight: 950;
+        }
+
     .board {
         border-radius: var(--radius);
         border: 1px solid var(--border);
@@ -174,6 +179,23 @@
         font-size: 12px;
         font-weight: 750;
         margin-top: 6px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.85);
+        font-weight: 900;
+        font-size: 11px;
     }
 
     .actions {
@@ -198,7 +220,12 @@
         padding: 12px 14px;
         color: rgba(255,255,255,0.92);
         font-weight: 900;
+        display: none;
     }
+
+        .toast.on {
+            display: block;
+        }
 
     @@media (max-width: 900px) {
         .topbar {
@@ -221,31 +248,32 @@
 </style>
 
 <div class="shell">
+    <div id="toast" class="toast"></div>
 
     @if (TempData["Toast"] != null)
     {
-        <div class="toast">@TempData["Toast"]</div>
+        <div class="toast on">@TempData["Toast"]</div>
     }
 
     <section class="topbar">
         <div class="title">
             <h1>Saved Searches</h1>
             <div class="sub">
-                Save your current filters + reload them anytime. Perfect for quick comparisons during demo/judging.
+                Load, share, or delete your saved filter setups. Sharing creates a link anyone can open.
             </div>
         </div>
 
-        <form class="saveForm" method="post" asp-action="SaveCurrent">
-            <input id="autoName" class="inputx" name="name"
-                   placeholder="Name (auto generated from filters)" />
-           
-        </form>
+        <!-- Just show the auto-name preview (NO save button here as requested) -->
+        <div class="saveForm">
+            <input id="autoName" class="inputx" readonly
+                   placeholder="Auto-name preview (based on your current Filters)" />
+        </div>
     </section>
 
     <section class="board">
         <div class="boardHead">
             <div class="hint">
-                Tip: Use <strong>Load</strong> to restore your Filters + jump back to Results instantly.
+                Tip: Use <strong>Load</strong> to restore Filters → jump back to Results. Use <strong>Share</strong> to copy a link.
             </div>
         </div>
 
@@ -260,20 +288,40 @@
             {
                 foreach (var s in Model)
                 {
+                    var shareUrl = Url.Action(
+                    "Share",
+                    "SavedSearches",
+                    new { token = s.ShareToken },
+                    protocol: Context.Request.Scheme
+                    );
+
                     <div class="rowCard">
                         <div>
                             <div class="name">@s.Name</div>
-                            <div class="meta">Saved: @s.CreatedAtUtc.ToLocalTime()</div>
+                            <div class="meta">
+                                <span>Saved: @s.CreatedAtUtc.ToLocalTime()</span>
+                                <span class="pill">Shareable link</span>
+                            </div>
                         </div>
 
                         <div class="actions">
                             <form method="post" asp-action="Load" asp-route-id="@s.Id" style="margin:0;">
-                                <button class="btnx primary" type="submit">Load</button>
+                                <button class="btnx primary mini" type="submit">Load</button>
                             </form>
+
+                            <button class="btnx ghost mini" type="button"
+                                    onclick="copyShareLink('@shareUrl')">
+                                Share
+                            </button>
+
+                            <button class="btnx ghost mini" type="button"
+                                    onclick="regenerateShare(@s.Id)">
+                                Regenerate
+                            </button>
 
                             <form method="post" asp-action="Delete" asp-route-id="@s.Id" style="margin:0;"
                                   onsubmit="return confirm('Delete this saved search?');">
-                                <button class="btnx danger" type="submit">Delete</button>
+                                <button class="btnx danger mini" type="submit">Delete</button>
                             </form>
                         </div>
                     </div>
@@ -281,29 +329,66 @@
             }
         </div>
     </section>
-
 </div>
+
 <script>
+    function showToast(msg) {
+        const t = document.getElementById("toast");
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add("on");
+        setTimeout(() => t.classList.remove("on"), 2200);
+    }
+
+    async function copyShareLink(url) {
+        try {
+            await navigator.clipboard.writeText(url);
+            showToast("Share link copied ✅");
+        } catch {
+            prompt("Copy this link:", url);
+        }
+    }
+
+    // Calls SavedSearchesController.RegenerateShareLink(id) which returns { token: "..." }
+    async function regenerateShare(id) {
+        try {
+            const res = await fetch(`/SavedSearches/RegenerateShareLink?id=${encodeURIComponent(id)}`, {
+                method: "POST"
+            });
+
+            if (!res.ok) {
+                const t = await res.text();
+                alert("Failed to regenerate link: " + t);
+                return;
+            }
+
+            // easiest UX: just refresh page (new token shown in generated share link)
+            showToast("New share link generated ✅");
+            setTimeout(() => location.reload(), 800);
+        } catch (e) {
+            alert("Failed to regenerate link.");
+        }
+    }
+
     async function getAutoName() {
         try {
             const res = await fetch("/Filters/GetCurrentFilterState");
             if (!res.ok) return;
 
             const data = await res.json();
-
             let parts = [];
 
-            if (data.budget)
-                parts.push("Budget $" + data.budget);
+            // adapt to your payload keys
+            const budget = data.budget ?? data.Budget;
+            const dist = data.maxDistanceKm ?? data.distanceKm ?? data.MaxDistanceKm;
+            const priorities = data.priorities ?? data.Priorities ?? [];
 
-            if (data.distanceKm)
-                parts.push(data.distanceKm + "km");
+            if (budget) parts.push("Budget $" + budget);
+            if (dist) parts.push(dist + "km");
+            if (priorities && priorities.length) parts.push(priorities.slice(0, 2).join("+"));
 
-            if (data.priorities && data.priorities.length)
-                parts.push(data.priorities.slice(0,2).join("+"));
-
-            document.getElementById("autoName").value = parts.join(" • ");
-        } catch {}
+            document.getElementById("autoName").value = parts.join(" • ") || "No active filter state found";
+        } catch { }
     }
 
     getAutoName();

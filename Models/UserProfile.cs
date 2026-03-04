@@ -17,5 +17,6 @@ namespace Shortlist.Web.Models
         public string Password { get; set; } = "";
 
         public List<SavedSearch> SavedSearches { get; set; } = new();
+        public UserSettings? Settings { get; set; }
     }
 }

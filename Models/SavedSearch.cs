@@ -17,5 +17,6 @@ namespace Shortlist.Web.Models
         public string FilterStateJson { get; set; } = "";
 
         public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+        public Guid ShareToken { get; set; }
     }
 }

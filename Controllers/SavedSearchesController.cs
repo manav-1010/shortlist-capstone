@@ -173,5 +173,42 @@ namespace Shortlist.Web.Controllers
             // ✅ MUST return something on all paths
             return parts.Count > 0 ? string.Join(" • ", parts) : "Saved Search";
         }
+        [AllowAnonymous]
+        [HttpGet("/SavedSearches/Share/{token:guid}")]
+        public async Task<IActionResult> Share(Guid token)
+        {
+            var saved = await _db.SavedSearches
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.ShareToken == token);
+
+            if (saved == null)
+                return NotFound("Share link is invalid or expired.");
+
+            var state = JsonSerializer.Deserialize<FilterState>(saved.FilterStateJson);
+            if (state == null)
+                return BadRequest("Saved search is corrupted.");
+
+            SaveFilterState(state);
+
+            // Optional: small toast for user experience
+            TempData["Toast"] = $"Loaded shared search: {saved.Name}";
+            return RedirectToAction("Index", "Results");
+        }
+        [HttpPost]
+        public async Task<IActionResult> RegenerateShareLink(int id)
+        {
+            var userId = await EnsureUserIdAsync();
+            if (userId == null) return Unauthorized();
+
+            var saved = await _db.SavedSearches
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId.Value);
+
+            if (saved == null) return NotFound();
+
+            saved.ShareToken = Guid.NewGuid();
+            await _db.SaveChangesAsync();
+
+            return Ok(new { token = saved.ShareToken });
+        }
     }
 }

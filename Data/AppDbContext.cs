@@ -9,7 +9,7 @@ namespace Shortlist.Web.Data
 
         public DbSet<UserProfile> Users => Set<UserProfile>();
         public DbSet<SavedSearch> SavedSearches => Set<SavedSearch>();
-
+        public DbSet<UserSettings> UserSettings => Set<UserSettings>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,6 +23,17 @@ namespace Shortlist.Web.Data
                 .WithMany(u => u.SavedSearches)
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserSettings>()
+     .HasIndex(x => x.UserId)
+     .IsUnique();
+
+            modelBuilder.Entity<UserSettings>()
+                .HasOne(x => x.User)
+                .WithOne(u => u.Settings)
+                .HasForeignKey<UserSettings>(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
