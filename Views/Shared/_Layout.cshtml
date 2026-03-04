@@ -106,6 +106,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="/Compare">Compare</a>
             </li>
+            <a href="/Settings" class="nav-link">Settings</a>
             @if (User?.Identity?.IsAuthenticated == true)
             {
                 <a asp-controller="SavedSearches" asp-action="Index">Saved</a>

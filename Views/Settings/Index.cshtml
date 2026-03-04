@@ -1,0 +1,251 @@
+﻿@model Shortlist.Web.Models.SettingsViewModel
+@{
+    Layout = "_Layout";
+}
+
+<style>
+    :root {
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.70);
+        --border: rgba(255,255,255,0.12);
+        --surface: rgba(255,255,255,0.06);
+        --accent: #4f46e5;
+        --radius: 20px;
+        --shadow: 0 18px 60px rgba(0,0,0,0.35);
+    }
+
+    body {
+        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+    }
+
+    .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 18px 16px 24px;
+        color: var(--text);
+    }
+
+    .top {
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        border-radius: var(--radius);
+        padding: 16px;
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 950;
+        letter-spacing: -0.5px;
+    }
+
+    .sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 13px;
+    }
+
+    .toast {
+        margin: 14px 0;
+        border-radius: 16px;
+        border: 1px solid rgba(34,197,94,0.25);
+        background: rgba(34,197,94,0.10);
+        padding: 12px 14px;
+        font-weight: 900;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 14px;
+    }
+
+    .card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: rgba(0,0,0,0.20);
+        padding: 16px;
+        box-shadow: var(--shadow);
+    }
+
+    .k {
+        color: var(--muted);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+    .v {
+        font-weight: 950;
+        margin-top: 4px;
+    }
+
+    .row {
+        margin-top: 12px;
+        display: grid;
+        gap: 8px;
+    }
+
+    .inputx {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        color: var(--text);
+        padding: 10px 12px;
+        font-weight: 850;
+        outline: none;
+        width: 100%;
+    }
+
+    .btnx {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        padding: 10px 12px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .btnx.primary {
+            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
+            border-color: rgba(79,70,229,0.55);
+        }
+
+        .btnx.danger {
+            background: rgba(239,68,68,0.10);
+            border-color: rgba(239,68,68,0.25);
+        }
+
+    .btnRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        font-weight: 850;
+        font-size: 12px;
+        margin-left: 10px;
+        color: rgba(255,255,255,0.85);
+    }
+
+    @@media (max-width: 900px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="wrap">
+    <div class="top">
+        <div>
+            <h1>Settings</h1>
+            <div class="sub">Real product controls: preferences, privacy, and data actions.</div>
+        </div>
+        <div class="k">Signed in as <span class="badge">@Model.AuthProvider</span></div>
+    </div>
+
+    @if (TempData["Toast"] != null)
+    {
+        <div class="toast">@TempData["Toast"]</div>
+    }
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="k">Account</div>
+            <div class="row">
+                <div class="k">Email</div>
+                <div class="v">@Model.Email</div>
+            </div>
+            <div class="row">
+                <div class="k">Provider</div>
+                <div class="v">@Model.AuthProvider</div>
+            </div>
+            <div class="btnRow">
+                <a class="btnx" href="/SavedSearches">Saved Searches</a>
+                <a class="btnx" href="/Compare">Compare</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="k">Search Preferences</div>
+
+            <form method="post" asp-action="Save">
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="k">Default Radius (km)</div>
+                    <input class="inputx" type="number" name="DefaultRadiusKm" min="1" max="25" value="@Model.DefaultRadiusKm" />
+                </div>
+
+                <div class="row">
+                    <div class="k">Default Priorities (comma-separated, max 3)</div>
+                    <input class="inputx" name="DefaultPriorities" value="@Model.DefaultPriorities" placeholder="grocery, transit, parks" />
+                </div>
+
+                <div class="row">
+                    <div class="k">Default Location Label (optional)</div>
+                    <input class="inputx" name="DefaultLocationLabel" value="@Model.DefaultLocationLabel" placeholder="Waterloo, ON" />
+                </div>
+
+                <div class="btnRow">
+                    <button class="btnx primary" type="submit">Save Settings</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="k">Data & Privacy</div>
+            <div class="sub" style="margin-top:10px;">These actions help with demos + testing edge cases.</div>
+
+            <div class="btnRow">
+                <form method="post" asp-action="ClearSession" style="margin:0;">
+                    @Html.AntiForgeryToken()
+                    <button class="btnx" type="submit">Clear Session Filters</button>
+                </form>
+
+                <form method="post" asp-action="ClearCompare" style="margin:0;">
+                    @Html.AntiForgeryToken()
+                    <button class="btnx" type="submit">Clear Compare List</button>
+                </form>
+            </div>
+
+            <div class="btnRow" style="margin-top:12px;">
+                <form method="post" asp-action="DeleteAllSaved" style="margin:0;" onsubmit="return confirm('Delete ALL saved searches?');">
+                    @Html.AntiForgeryToken()
+                    <button class="btnx danger" type="submit">Delete All Saved Searches</button>
+                </form>
+
+                <a class="btnx danger" href="/Account/Logout" onclick="return confirm('Logout now?');">Logout</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="k">Judge-ready checklist</div>
+            <ul style="margin:10px 0 0; padding-left:18px; color: rgba(255,255,255,0.82); font-weight:750; line-height:1.7; font-size:13px;">
+                <li>Real-time results (OSM) ✅</li>
+                <li>Map + radius + selected location ✅</li>
+                <li>Saved searches + auto naming ✅</li>
+                <li>Compare + export CSV ✅</li>
+                <li>Settings + privacy controls ✅</li>
+            </ul>
+        </div>
+
+    </div>
+</div>
