@@ -4,133 +4,307 @@
 }
 
 <style>
-    .wrap {
-        max-width: 900px;
+    :root {
+        --bg: #0b0d12;
+        --surface: rgba(255,255,255,0.06);
+        --surface2: rgba(255,255,255,0.10);
+        --border: rgba(255,255,255,0.12);
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.74);
+        --muted2: rgba(255,255,255,0.60);
+        --accent: #4f46e5;
+        --shadow: 0 18px 60px rgba(0,0,0,0.35);
+        --shadow2: 0 10px 30px rgba(0,0,0,0.25);
+        --radius: 20px;
+    }
+
+    body {
+        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+    }
+
+    .shell {
+        max-width: 1080px;
         margin: 0 auto;
+        padding: 18px 16px 24px;
+        color: var(--text);
     }
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-    }
-
-    .card {
-        background: #fff;
-        border-radius: 16px;
+    .topbar {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+        box-shadow: var(--shadow2);
         padding: 18px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    }
-
-    .row {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 12px 0;
-        border-bottom: 1px solid #eee;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 14px;
         align-items: center;
+        margin-bottom: 14px;
     }
 
-        .row:last-child {
-            border-bottom: none;
+    .title h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: -0.6px;
+        font-weight: 950;
+    }
+
+    .title .sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.45;
+    }
+
+    .saveForm {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        justify-self: end;
+        width: 100%;
+        max-width: 520px;
+    }
+
+    .inputx {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 850;
+        outline: none;
+    }
+
+        .inputx::placeholder {
+            color: rgba(255,255,255,0.50);
+            font-weight: 750;
         }
 
+    .btnx {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        padding: 11px 14px;
+        font-weight: 950;
+        cursor: pointer;
+        transition: transform .12s ease, background .12s ease, border .12s ease;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+        .btnx:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.10);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .btnx.primary {
+            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
+            border-color: rgba(79,70,229,0.55);
+            box-shadow: 0 14px 34px rgba(79,70,229,0.20);
+        }
+
+        .btnx.ghost {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .btnx.danger {
+            background: rgba(239,68,68,0.10);
+            border-color: rgba(239,68,68,0.25);
+        }
+
+            .btnx.danger:hover {
+                background: rgba(239,68,68,0.18);
+                border-color: rgba(239,68,68,0.35);
+            }
+
+    .board {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        box-shadow: var(--shadow2);
+        overflow: hidden;
+    }
+
+    .boardHead {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .boardHead .hint {
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+    .list {
+        padding: 10px 12px;
+    }
+
+    .rowCard {
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.20);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+        padding: 14px;
+        margin: 10px 4px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+    }
+
     .name {
-        font-weight: 800;
+        font-weight: 950;
+        font-size: 15px;
+        letter-spacing: -0.2px;
     }
 
     .meta {
-        color: #666;
-        font-size: 13px;
-        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 750;
+        margin-top: 6px;
     }
 
     .actions {
         display: flex;
         gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
     }
-
-    .btn {
-        border: none;
-        padding: 8px 12px;
-        border-radius: 10px;
-        cursor: pointer;
-        background: #f1f1f1;
-    }
-
-        .btn:hover {
-            background: #e6e6e6;
-        }
-
-    .btn-primary {
-        background: #111;
-        color: #fff;
-    }
-
-        .btn-primary:hover {
-            background: #000;
-        }
 
     .empty {
+        padding: 22px 16px;
+        color: var(--muted);
+        font-weight: 800;
         text-align: center;
-        padding: 26px;
-        color: #666;
     }
 
-    .saveform {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
+    .toast {
+        margin: 0 0 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(34,197,94,0.25);
+        background: rgba(34,197,94,0.10);
+        padding: 12px 14px;
+        color: rgba(255,255,255,0.92);
+        font-weight: 900;
     }
 
-    .input {
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid #ddd;
-        width: 280px;
+    @@media (max-width: 900px) {
+        .topbar {
+            grid-template-columns: 1fr;
+        }
+
+        .saveForm {
+            justify-self: stretch;
+            max-width: none;
+        }
+
+        .rowCard {
+            grid-template-columns: 1fr;
+        }
+
+        .actions {
+            justify-content: flex-start;
+        }
     }
 </style>
 
-<div class="wrap">
-    <div class="header">
-        <h1>Saved Searches</h1>
+<div class="shell">
 
-        <form class="saveform" method="post" asp-action="SaveCurrent">
-            <input class="input" name="name" placeholder="Name (e.g., KW groceries 3km)" />
-            <button class="btn btn-primary" type="submit">Save current search</button>
-        </form>
-    </div>
+    @if (TempData["Toast"] != null)
+    {
+        <div class="toast">@TempData["Toast"]</div>
+    }
 
-    <div class="card">
-        @if (Model == null || Model.Count == 0)
-        {
-            <div class="empty">
-                No saved searches yet. Go to Filters → Apply → then come back here and save.
+    <section class="topbar">
+        <div class="title">
+            <h1>Saved Searches</h1>
+            <div class="sub">
+                Save your current filters + reload them anytime. Perfect for quick comparisons during demo/judging.
             </div>
-        }
-        else
-        {
-            foreach (var s in Model)
+        </div>
+
+        <form class="saveForm" method="post" asp-action="SaveCurrent">
+            <input id="autoName" class="inputx" name="name"
+                   placeholder="Name (auto generated from filters)" />
+            <button class="btnx primary" type="submit">Save current search</button>
+        </form>
+    </section>
+
+    <section class="board">
+        <div class="boardHead">
+            <div class="hint">
+                Tip: Use <strong>Load</strong> to restore your Filters + jump back to Results instantly.
+            </div>
+        </div>
+
+        <div class="list">
+            @if (Model == null || Model.Count == 0)
             {
-                <div class="row">
-                    <div>
-                        <div class="name">@s.Name</div>
-                        <div class="meta">Saved: @s.CreatedAtUtc.ToLocalTime()</div>
-                    </div>
-                    <div class="actions">
-                        <form method="post" asp-action="Load" asp-route-id="@s.Id">
-                            <button class="btn btn-primary" type="submit">Load</button>
-                        </form>
-                        <form method="post" asp-action="Delete" asp-route-id="@s.Id" onsubmit="return confirm('Delete this saved search?');">
-                            <button class="btn" type="submit">Delete</button>
-                        </form>
-                    </div>
+                <div class="empty">
+                    No saved searches yet. Go to <strong>Filters</strong> → Apply → then come back here to save.
                 </div>
             }
-        }
-    </div>
+            else
+            {
+                foreach (var s in Model)
+                {
+                    <div class="rowCard">
+                        <div>
+                            <div class="name">@s.Name</div>
+                            <div class="meta">Saved: @s.CreatedAtUtc.ToLocalTime()</div>
+                        </div>
+
+                        <div class="actions">
+                            <form method="post" asp-action="Load" asp-route-id="@s.Id" style="margin:0;">
+                                <button class="btnx primary" type="submit">Load</button>
+                            </form>
+
+                            <form method="post" asp-action="Delete" asp-route-id="@s.Id" style="margin:0;"
+                                  onsubmit="return confirm('Delete this saved search?');">
+                                <button class="btnx danger" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
 </div>
+<script>
+    async function getAutoName() {
+        try {
+            const res = await fetch("/Filters/GetCurrentFilterState");
+            if (!res.ok) return;
+
+            const data = await res.json();
+
+            let parts = [];
+
+            if (data.budget)
+                parts.push("Budget $" + data.budget);
+
+            if (data.distanceKm)
+                parts.push(data.distanceKm + "km");
+
+            if (data.priorities && data.priorities.length)
+                parts.push(data.priorities.slice(0,2).join("+"));
+
+            document.getElementById("autoName").value = parts.join(" • ");
+        } catch {}
+    }
+
+    getAutoName();
+</script>

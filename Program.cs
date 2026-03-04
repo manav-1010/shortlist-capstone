@@ -72,7 +72,7 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-// Ensure db exists
+// Use migrations (NOT EnsureCreated)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -95,7 +95,6 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ✅ better default route (login is still your LoginPath)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

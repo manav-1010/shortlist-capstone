@@ -63,5 +63,15 @@ namespace Shortlist.Web.Controllers
             var json = JsonSerializer.Serialize(state);
             HttpContext.Session.SetString("FilterState", json);
         }
+        [HttpGet]
+        public IActionResult GetCurrentFilterState()
+        {
+            var json = HttpContext.Session.GetString("FilterState");
+
+            if (string.IsNullOrEmpty(json))
+                return BadRequest();
+
+            return Content(json, "application/json");
+        }
     }
 }

@@ -8,171 +8,668 @@
       crossorigin="" />
 
 <style>
-    .results-container {
-        max-width: 1100px;
+    :root {
+        --bg: #0b0d12;
+        --surface: rgba(255,255,255,0.06);
+        --surface2: rgba(255,255,255,0.10);
+        --border: rgba(255,255,255,0.12);
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.74);
+        --muted2: rgba(255,255,255,0.60);
+        --accent: #4f46e5;
+        --good: #22c55e;
+        --shadow: 0 18px 60px rgba(0,0,0,0.35);
+        --shadow2: 0 10px 30px rgba(0,0,0,0.25);
+        --radius: 20px;
+    }
+
+    body {
+        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+    }
+
+    .results-shell {
+        max-width: 1280px;
         margin: 0 auto;
+        padding: 18px 16px 16px;
     }
 
-    .results-header {
-        display: flex;
-        justify-content: space-between;
+    .viewport {
+        height: calc(100vh - 24px);
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 14px;
+        min-height: 0;
+    }
+
+    /* TOP BAR */
+    .topbar {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+        box-shadow: var(--shadow2);
+        padding: 18px;
+        color: var(--text);
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 14px;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
     }
 
-    .header-actions {
+    .titleBlock h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: -0.6px;
+        font-weight: 950;
+    }
+
+    .titleBlock .sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.45;
+    }
+
+    .controls {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 10px;
+        align-items: center;
+        justify-self: end;
+        width: 100%;
+    }
+
+    .inputx {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 850;
+        outline: none;
+    }
+
+        .inputx::placeholder {
+            color: rgba(255,255,255,0.50);
+            font-weight: 750;
+        }
+
+    .btnx {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 950;
+        cursor: pointer;
+        transition: transform .12s ease, background .12s ease, border .12s ease;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+        .btnx:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.10);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .btnx.primary {
+            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
+            border-color: rgba(79,70,229,0.55);
+            box-shadow: 0 14px 34px rgba(79,70,229,0.20);
+        }
+
+    /* TABS ROW */
+    .tabsRow {
         display: flex;
         gap: 10px;
         align-items: center;
-        flex-wrap: wrap;
+        justify-content: space-between;
+        min-height: 0;
     }
 
-    .clear-btn {
-        padding: 8px 14px;
-        border-radius: 10px;
-        border: none;
-        background: #eee;
-        cursor: pointer;
-        font-weight: 600;
+    .tabs {
+        display: inline-flex;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        border-radius: 999px;
+        overflow: hidden;
     }
 
-        .clear-btn:hover {
-            background: #ddd;
+        .tabs button {
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            padding: 10px 14px;
+            font-weight: 950;
+            cursor: pointer;
         }
 
-    .input {
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid #ddd;
+            .tabs button.active {
+                background: rgba(255,255,255,0.10);
+                color: var(--text);
+            }
+
+    .sortRow {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .selectx {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        color: var(--text);
+        padding: 10px 12px;
+        font-weight: 950;
+        outline: none;
+        cursor: pointer;
         min-width: 220px;
     }
 
-    .results-layout {
+    /* MAIN GRID */
+    .mainGrid {
         display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 28px;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 14px;
+        min-height: 0;
     }
 
-    .result-card {
-        background: #ffffff;
+    /* LEFT */
+    .leftPanel {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        box-shadow: var(--shadow2);
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto 1fr;
+    }
+
+    .kpiRow {
+        padding: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        border-top-left-radius: var(--radius);
+        border-top-right-radius: var(--radius);
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+    }
+
+    .kpi {
         border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        margin-bottom: 18px;
-        transition: 0.2s ease;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.18);
+        padding: 14px;
     }
 
-        .result-card:hover {
-            transform: translateY(-3px);
+        .kpi .label {
+            color: var(--muted2);
+            font-weight: 850;
+            font-size: 11px;
         }
 
-    .result-header {
+        .kpi .value {
+            color: var(--text);
+            font-weight: 950;
+            font-size: 18px;
+            margin-top: 4px;
+        }
+
+        .kpi .mini {
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+    .cardsScroll {
+        padding: 16px;
+        overflow: auto;
+        min-height: 0;
+    }
+
+    .loadingBox, .emptyBox {
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.22);
+        padding: 16px;
+        color: var(--text);
+        margin-bottom: 12px;
+    }
+
+        .loadingBox .t, .emptyBox .t {
+            font-weight: 950;
+            font-size: 16px;
+        }
+
+        .loadingBox .p, .emptyBox .p {
+            color: var(--muted);
+            font-weight: 750;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+    /* RESULT CARD (spacious) */
+    .rCard {
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.20);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        padding: 16px;
+        margin-bottom: 14px;
+    }
+
+    .rHead {
         display: flex;
+        align-items: center;
         justify-content: space-between;
+        gap: 12px;
+    }
+
+    .rTitle {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .rTitle .name {
+            font-weight: 950;
+            letter-spacing: -0.2px;
+            font-size: 16px;
+        }
+
+        .rTitle .sub {
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+        }
+
+    .badgeRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .chip {
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.80);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+    .score {
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #111;
+        border: 1px solid rgba(255,255,255,0.10);
+        color: #fff;
+        font-weight: 950;
+        min-width: 64px;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .overviewRow {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 14px;
+        margin-top: 14px;
+    }
+
+    .box {
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.04);
+        padding: 14px;
+    }
+
+        .box h4 {
+            margin: 0 0 10px;
+            font-weight: 950;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .box ul {
+            margin: 0;
+            padding-left: 18px;
+            color: rgba(255,255,255,0.82);
+            font-weight: 750;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+    .bars {
+        display: grid;
+        gap: 10px;
+    }
+
+    .barLine {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
         align-items: center;
     }
 
-    .result-title {
-        font-size: 18px;
-        font-weight: 700;
+    .barLabel {
+        color: rgba(255,255,255,0.80);
+        font-weight: 850;
+        font-size: 12px;
     }
 
-    .score-badge {
-        background: #111;
-        color: #fff;
-        padding: 6px 14px;
+    .barPct {
+        color: var(--text);
+        font-weight: 950;
+        font-size: 12px;
+    }
+
+    .bar {
+        height: 11px;
         border-radius: 999px;
-        font-weight: 700;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.24);
+        overflow: hidden;
+        margin-top: 6px;
     }
 
-    .explain-btn {
-        margin-top: 12px;
-        padding: 6px 12px;
-        border-radius: 8px;
-        border: none;
-        background: #f1f1f1;
-        cursor: pointer;
-        font-weight: 600;
+    .fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(79,70,229,0.9), rgba(34,197,94,0.75));
     }
 
-        .explain-btn:hover {
-            background: #e3e3e3;
+    .analyticsBlock {
+        margin-top: 14px;
+        display: none;
+    }
+
+        .analyticsBlock.on {
+            display: grid;
+            gap: 14px;
         }
 
-    .explain-panel {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #eee;
+    /* RIGHT */
+    .rightPanel {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.05);
+        box-shadow: var(--shadow2);
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 12px;
+        padding: 14px;
     }
 
-    .explain-grid {
+    .snapGrid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 12px;
     }
 
-    .map-placeholder {
-        background: #fff;
+    .snap {
         border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        height: fit-content;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.22);
+        padding: 14px;
     }
 
-    .map-box {
-        margin-top: 14px;
-        height: 420px;
-        border-radius: 10px;
+        .snap .t {
+            color: var(--muted2);
+            font-weight: 850;
+            font-size: 11px;
+        }
+
+        .snap .v {
+            color: var(--text);
+            font-weight: 950;
+            font-size: 18px;
+            margin-top: 4px;
+        }
+
+        .snap .s {
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+    .mapBox {
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.12);
         overflow: hidden;
-        border: 1px solid #eee;
+        background: rgba(0,0,0,0.22);
+        min-height: 0;
     }
 
-    .empty-state {
-        background: #fff;
-        padding: 30px;
+    #resultsMap {
+        height: 100%;
+        width: 100%;
+        min-height: 0;
+    }
+
+    .radiusBox {
         border-radius: 16px;
-        text-align: center;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.22);
+        padding: 14px;
+        color: var(--text);
+    }
+
+        .radiusBox .line {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            color: rgba(255,255,255,0.80);
+            font-weight: 800;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+            .radiusBox .line strong {
+                color: var(--text);
+                font-weight: 950;
+            }
+
+    /* Dark themed Leaflet popups */
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+        background: rgba(10, 12, 18, 0.95) !important;
+        color: rgba(255,255,255,0.92) !important;
+        border: 1px solid rgba(255,255,255,0.14) !important;
+        box-shadow: 0 18px 60px rgba(0,0,0,0.55) !important;
+    }
+
+    .leaflet-popup-content {
+        color: rgba(255,255,255,0.92) !important;
+        font-weight: 850 !important;
+    }
+
+    .leaflet-container a {
+        color: rgba(99, 102, 241, 0.95) !important;
+        font-weight: 900;
+    }
+
+    @@media (max-width: 1040px) {
+        .mainGrid {
+            grid-template-columns: 1fr;
+        }
+
+        .controls {
+            grid-template-columns: 1fr;
+            justify-self: stretch;
+        }
+
+        .viewport {
+            height: auto;
+        }
+
+        .cardsScroll {
+            max-height: 60vh;
+        }
+
+        .kpiRow {
+            grid-template-columns: 1fr;
+        }
+
+        .overviewRow {
+            grid-template-columns: 1fr;
+        }
+        /* ✅ Force readable text on dark theme (overrides any global bootstrap/site css) */
+        .results-shell, .results-shell * {
+            color: var(--text);
+        }
+        /* Category titles like PARKING/TRANSIT */
+        .rTitle .name,
+        .rTitle .sub,
+        .kpi .value,
+        .kpi .label,
+        .kpi .mini,
+        .snap .t,
+        .snap .v,
+        .snap .s,
+        .barLabel,
+        .box h4 {
+            color: var(--text) !important;
+        }
+        /* chips + small labels */
+        .chip,
+        .badgeRow,
+        .badgeRow * {
+            color: rgba(255,255,255,0.85) !important;
+        }
+        /* lists inside cards */
+        .box ul,
+        .box li {
+            color: rgba(255,255,255,0.82) !important;
+        }
+        /* tab buttons text */
+        .tabs button {
+            color: rgba(255,255,255,0.78) !important;
+        }
+
+            .tabs button.active {
+                color: rgba(255,255,255,0.95) !important;
+            }
     }
 </style>
 
-<div class="results-container">
+<div class="results-shell">
+    <div class="viewport">
 
-    <div class="results-header">
-        <h1>Results</h1>
+        <!-- TOP BAR -->
+        <section class="topbar">
+            <div class="titleBlock">
+                <h1>Results</h1>
+                <div class="sub">
+                    Clean overview for decisions + a full analytics view for judges (weights, confidence, distance stats, transparency).
+                </div>
+            </div>
 
-        <div class="header-actions">
-            <form method="post" action="/SavedSearches/SaveCurrent" style="display:flex; gap:8px; align-items:center;">
-                <input name="name" class="input" placeholder="Name (e.g., KW groceries 3km)" />
-                <button class="clear-btn" type="submit">Save Search</button>
-            </form>
+            <div class="controls">
+                <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
+                <button id="btnSave" class="btnx primary" type="button">Save Search</button>
 
-            <form method="post" asp-action="Clear">
-                <button class="clear-btn" type="submit">Clear All</button>
-            </form>
+                <form method="post" asp-action="Clear" style="margin:0;">
+                    <button class="btnx" type="submit">Clear All</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Tabs + Sort -->
+        <div class="tabsRow">
+            <div class="tabs" role="tablist" aria-label="Results view">
+                <button id="tabOverview" class="active" type="button">Overview</button>
+                <button id="tabAnalytics" type="button">Analytics</button>
+            </div>
+
+            <div class="sortRow">
+                <select id="sortMode" class="selectx">
+                    <option value="match">Sort: Highest Match</option>
+                    <option value="closest">Sort: Closest First</option>
+                    <option value="balanced">Sort: Most Balanced</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div id="loadingState" class="empty-state" style="display:none;">
-        <h3>Loading live results...</h3>
-        <p>Fetching nearby places in real time.</p>
-    </div>
+        <!-- MAIN GRID -->
+        <section class="mainGrid">
 
-    <div id="emptyState" class="empty-state" style="display:none;">
-        <h3>No results found</h3>
-        <p>Try increasing radius or selecting a different location.</p>
-    </div>
+            <!-- LEFT -->
+            <div class="leftPanel">
+                <div class="kpiRow">
+                    <div class="kpi">
+                        <div class="label">Overall Match</div>
+                        <div id="kpiOverall" class="value">—</div>
+                        <div id="kpiOverallSub" class="mini">Waiting for live data…</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="label">Top Strength</div>
+                        <div id="kpiStrength" class="value">—</div>
+                        <div id="kpiStrengthSub" class="mini">—</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="label">Weakest Area</div>
+                        <div id="kpiWeak" class="value">—</div>
+                        <div id="kpiWeakSub" class="mini">—</div>
+                    </div>
+                </div>
 
-    <div class="results-layout">
-        <div id="resultsList"></div>
+                <div class="cardsScroll">
+                    <div id="loadingState" class="loadingBox" style="display:none;">
+                        <div class="t">Loading live results…</div>
+                        <div class="p">Fetching nearby places in real time (OpenStreetMap).</div>
+                    </div>
 
-        <div class="map-placeholder">
-            <strong>Map</strong>
-            <div id="resultsMap" class="map-box"></div>
-            <div class="hint" style="margin-top:10px;">Live map results (OpenStreetMap).</div>
-        </div>
+                    <div id="emptyState" class="emptyBox" style="display:none;">
+                        <div class="t">No results found</div>
+                        <div class="p">Try increasing radius or choosing a different location.</div>
+                    </div>
+
+                    <div id="resultsList"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="rightPanel">
+
+                <div class="snapGrid">
+                    <div class="snap">
+                        <div class="t">Live Data Snapshot</div>
+                        <div id="snapTotal" class="v">—</div>
+                        <div class="s" id="snapSub">Total nearby places</div>
+                    </div>
+                    <div class="snap">
+                        <div class="t">Confidence</div>
+                        <div id="snapConf" class="v">—</div>
+                        <div class="s" id="snapConfSub">Based on match volume</div>
+                    </div>
+                </div>
+
+                <div class="mapBox">
+                    <div id="resultsMap"></div>
+                </div>
+
+                <div class="radiusBox">
+                    <div style="font-weight:950;">Radius & Location</div>
+                    <div class="line"><span>Search Radius</span><strong id="radRadius">—</strong></div>
+                    <div class="line"><span>Total Area Covered</span><strong id="radArea">—</strong></div>
+                    <div class="line"><span>Coordinates</span><strong id="radCoord">—</strong></div>
+                </div>
+
+            </div>
+
+        </section>
     </div>
 </div>
 
@@ -181,23 +678,64 @@
         crossorigin=""></script>
 
 <script>
-    (async function () {
+    (function () {
+        // ----------------------------
+        // Inputs from server model
+        // ----------------------------
         const filters = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Filters));
-        const lat = filters.Lat;
-        const lng = filters.Lng;
-        const radiusKm = filters.RadiusKm ?? 3;
-        const priorities = (filters.Priorities ?? []).map(p => (p || "").toLowerCase());
+        const lat = filters.lat ?? filters.Lat;
+        const lng = filters.lng ?? filters.Lng;
+        const radiusKm = filters.radiusKm ?? filters.RadiusKm ?? 3;
+        const priorities = (filters.priorities ?? filters.Priorities ?? []).map(p => (p || "").toLowerCase());
 
+        // ----------------------------
+        // DOM
+        // ----------------------------
         const loading = document.getElementById("loadingState");
         const empty = document.getElementById("emptyState");
         const list = document.getElementById("resultsList");
 
-        function show(el){ if(el) el.style.display = ""; }
-        function hide(el){ if(el) el.style.display = "none"; }
+        const kpiOverall = document.getElementById("kpiOverall");
+        const kpiOverallSub = document.getElementById("kpiOverallSub");
+        const kpiStrength = document.getElementById("kpiStrength");
+        const kpiStrengthSub = document.getElementById("kpiStrengthSub");
+        const kpiWeak = document.getElementById("kpiWeak");
+        const kpiWeakSub = document.getElementById("kpiWeakSub");
+
+        const sortMode = document.getElementById("sortMode");
+
+        const snapTotal = document.getElementById("snapTotal");
+        const snapConf = document.getElementById("snapConf");
+
+        const radRadius = document.getElementById("radRadius");
+        const radArea = document.getElementById("radArea");
+        const radCoord = document.getElementById("radCoord");
+
+        const tabOverview = document.getElementById("tabOverview");
+        const tabAnalytics = document.getElementById("tabAnalytics");
+        let analyticsMode = false;
+
+        function show(el){ if(el) el.style.display=""; }
+        function hide(el){ if(el) el.style.display="none"; }
 
         hide(empty);
         show(loading);
 
+        // ----------------------------
+        // Tabs
+        // ----------------------------
+        function setTab(mode){
+            analyticsMode = mode === "analytics";
+            tabOverview.classList.toggle("active", !analyticsMode);
+            tabAnalytics.classList.toggle("active", analyticsMode);
+            renderCards();
+        }
+        tabOverview.addEventListener("click", () => setTab("overview"));
+        tabAnalytics.addEventListener("click", () => setTab("analytics"));
+
+        // ----------------------------
+        // Map init
+        // ----------------------------
         const mapLat = lat ?? 43.4516;
         const mapLng = lng ?? -80.4925;
 
@@ -207,144 +745,406 @@
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // ✅ fix size issues
-        setTimeout(() => map.invalidateSize(), 200);
-
         const markersLayer = L.layerGroup().addTo(map);
+        let radiusCircle = null;
+        let pinMarker = null;
+
+        function setPinAndCircle(lat0, lng0){
+            if (radiusCircle) radiusCircle.remove();
+            if (pinMarker) pinMarker.remove();
+
+            radiusCircle = L.circle([lat0, lng0], { radius: radiusKm * 1000 }).addTo(map);
+            pinMarker = L.marker([lat0, lng0]).addTo(map).bindPopup("Selected location").openPopup();
+            map.setView([lat0, lng0], 13);
+        }
+
+        setTimeout(() => { try { map.invalidateSize(); } catch(e){} }, 200);
 
         if (!lat || !lng) {
             hide(loading);
             show(empty);
-            empty.querySelector("p").textContent = "Go back to Filters and pick a location on the map.";
+            empty.querySelector(".p").textContent = "Go back to Filters and pick a location on the map.";
+            kpiOverall.textContent = "—";
+            kpiOverallSub.textContent = "No location selected";
+            snapTotal.textContent = "—";
+            snapConf.textContent = "—";
             return;
         }
 
-        // show user location + radius
-        L.circle([lat, lng], { radius: radiusKm * 1000 }).addTo(map);
-        L.marker([lat, lng]).addTo(map).bindPopup("Selected location").openPopup();
+        setPinAndCircle(lat, lng);
 
-        try {
-            const resp = await fetch(`/api/search?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radiusKm=${encodeURIComponent(radiusKm)}`);
-            if (!resp.ok) throw new Error("Search API failed");
-            const data = await resp.json();
+        // Save -> POST /SavedSearches/SaveCurrent
+            document.getElementById("btnSave").addEventListener("click", async () => {
+      const name = (document.getElementById("saveName").value || "").trim() || "Saved Search";
 
-            const elements = data.elements || [];
-            const pois = elements
-                .filter(e => typeof e.lat === "number" && typeof e.lon === "number")
-                .map(e => {
-                    const tags = e.tags || {};
-                    const name = tags.name || "Unnamed place";
-                    return { name, lat: e.lat, lng: e.lon, tags };
-                });
+      const res = await fetch("/SavedSearches/SaveCurrent", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ name })
+      });
 
-            function classify(tags) {
-                if (tags.shop === "supermarket") return "grocery";
-                if (tags.highway === "bus_stop" || tags.amenity === "bus_station") return "transit";
-                if (tags.leisure === "fitness_centre") return "gym/fitness";
-                if (tags.leisure === "park") return "parks";
-                if (tags.amenity === "parking") return "parking";
-                if (tags.amenity === "laundry" || tags.shop === "laundry") return "laundry";
-                return "other";
-            }
+      if (res.status === 401) {
+        alert("You are not logged in. Please login again.");
+        return;
+      }
 
-            const byCategory = new Map();
-            for (const p of pois) {
-                const cat = classify(p.tags);
-                if (!byCategory.has(cat)) byCategory.set(cat, []);
-                byCategory.get(cat).push(p);
-            }
+      if (!res.ok) {
+        const t = await res.text();
+        alert("Save failed: " + t);
+        return;
+      }
 
-            const priorityToCategory = {
-                "grocery": "grocery",
-                "transit": "transit",
-                "gym/fitness": "gym/fitness",
-                "parks": "parks",
-                "parking": "parking",
-                "laundry": "laundry"
-            };
+      alert("Saved!");
+    });
 
-            const selectedCats = priorities.map(p => priorityToCategory[p]).filter(Boolean);
-            const catsToShow = selectedCats.length ? selectedCats : ["grocery","transit","parks","gym/fitness","laundry","parking"];
+        // ----------------------------
+        // Helpers
+        // ----------------------------
+        function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+        function fmt(n, digits=0){ return Number.isFinite(n) ? n.toFixed(digits) : "—"; }
 
-            const cards = [];
-            for (const cat of catsToShow) {
-                const items = (byCategory.get(cat) || []).slice(0, 6);
-                if (items.length === 0) continue;
+        function haversineKm(aLat, aLng, bLat, bLng){
+            const R = 6371;
+            const dLat = (bLat-aLat) * Math.PI/180;
+            const dLng = (bLng-aLng) * Math.PI/180;
+            const s1 = Math.sin(dLat/2), s2 = Math.sin(dLng/2);
+            const x = s1*s1 + Math.cos(aLat*Math.PI/180)*Math.cos(bLat*Math.PI/180)*s2*s2;
+            return 2*R*Math.asin(Math.sqrt(x));
+        }
 
-                const score = Math.min(100, 60 + items.length * 6);
+        function percentile(arr, p){
+            if (!arr.length) return 0;
+            const s = [...arr].sort((a,b)=>a-b);
+            const idx = (s.length-1)*p;
+            const lo = Math.floor(idx), hi = Math.ceil(idx);
+            if (lo === hi) return s[lo];
+            return s[lo] + (s[hi]-s[lo])*(idx-lo);
+        }
 
-                cards.push({
-                    name: cat.toUpperCase(),
-                    score,
-                    pros: [`${items.length} nearby matches within ${radiusKm}km`, "Live OpenStreetMap data"],
-                    cons: items.length < 2 ? ["Limited options in this radius"] : [],
-                    pois: items
-                });
-            }
+        function confidenceLabel(total){
+            if (total >= 25) return { label:"High", pct: 92 };
+            if (total >= 12) return { label:"Medium", pct: 76 };
+            if (total >= 5)  return { label:"Low", pct: 58 };
+            return { label:"Very Low", pct: 40 };
+        }
 
-            hide(loading);
+        function classify(tags) {
+            if (tags.shop === "supermarket" || tags.shop === "convenience") return "grocery";
+            if (tags.highway === "bus_stop" || tags.amenity === "bus_station" || tags.railway === "station") return "transit";
+            if (tags.leisure === "fitness_centre" || tags.amenity === "gym") return "gym/fitness";
+            if (tags.leisure === "park") return "parks";
+            if (tags.amenity === "parking") return "parking";
+            if (tags.amenity === "laundry" || tags.shop === "laundry") return "laundry";
+            if (tags.amenity === "police" || tags.amenity === "fire_station") return "safety";
+            if (tags.amenity === "library" || tags.amenity === "community_centre") return "quiet";
+            return "other";
+        }
 
-            if (cards.length === 0) {
+        const priorityToCategory = {
+            "grocery": "grocery",
+            "transit": "transit",
+            "gym/fitness": "gym/fitness",
+            "parks": "parks",
+            "parking": "parking",
+            "laundry": "laundry",
+            "safety": "safety",
+            "quiet": "quiet"
+        };
+
+        const weightModel = { density: 0.50, anchor: 0.30, access: 0.20 };
+
+        function anchorScore(cat, tags){
+            if (cat === "transit" && (tags.railway === "station" || tags.public_transport === "station" || tags.amenity === "bus_station")) return 1;
+            if (cat === "grocery" && (tags.shop === "supermarket")) return 1;
+            if (cat === "parks" && (tags.leisure === "park" && (tags.name || "").length > 0)) return 1;
+            if (cat === "gym/fitness" && (tags.leisure === "fitness_centre" || tags.amenity === "gym")) return 1;
+            if (cat === "parking" && tags.amenity === "parking") return 1;
+            if (cat === "laundry" && (tags.amenity === "laundry" || tags.shop === "laundry")) return 1;
+            if (cat === "safety" && (tags.amenity === "police" || tags.amenity === "fire_station")) return 1;
+            return 0;
+        }
+
+        // ----------------------------
+        // UI state
+        // ----------------------------
+        let cards = [];
+        sortMode.addEventListener("change", () => renderCards());
+
+        // ----------------------------
+        // Fetch live data + compute
+        // ----------------------------
+        (async function run() {
+            try {
+                radRadius.textContent = `${fmt(radiusKm,0)} km`;
+                const areaKm2 = Math.PI * radiusKm * radiusKm;
+                radArea.textContent = `${fmt(areaKm2,1)} km²`;
+                radCoord.textContent = `${fmt(lat,4)}, ${fmt(lng,4)}`;
+
+                const resp = await fetch(`/api/search?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radiusKm=${encodeURIComponent(radiusKm)}`);
+                if (!resp.ok) throw new Error("Search API failed");
+                const data = await resp.json();
+
+                const elements = data.elements || [];
+                const pois = elements
+                    .filter(e => typeof e.lat === "number" && typeof e.lon === "number")
+                    .map(e => {
+                        const tags = e.tags || {};
+                        const name = tags.name || "Unnamed place";
+                        const distKm = haversineKm(lat, lng, e.lat, e.lon);
+                        return { name, lat: e.lat, lng: e.lon, tags, distKm };
+                    })
+                    .filter(p => p.distKm <= radiusKm + 0.0001);
+
+                hide(loading);
+
+                if (!pois.length) {
+                    show(empty);
+                    snapTotal.textContent = "0";
+                    snapConf.textContent = "Very Low";
+                    kpiOverall.textContent = "—";
+                    kpiOverallSub.textContent = "No matches in radius";
+                    return;
+                }
+
+                hide(empty);
+
+                snapTotal.textContent = `${pois.length}`;
+                const conf = confidenceLabel(pois.length);
+                snapConf.textContent = conf.label;
+
+                // group by category
+                const byCategory = new Map();
+                for (const p of pois) {
+                    const cat = classify(p.tags);
+                    if (!byCategory.has(cat)) byCategory.set(cat, []);
+                    byCategory.get(cat).push(p);
+                }
+
+                const selectedCats = priorities.map(p => priorityToCategory[p]).filter(Boolean);
+                const catsToShow = selectedCats.length
+                    ? selectedCats
+                    : ["grocery","transit","parks","gym/fitness","laundry","parking","safety","quiet"];
+
+                function computeCategoryCard(cat){
+                    const items = (byCategory.get(cat) || []);
+                    if (!items.length) return null;
+
+                    const count = items.length;
+                    const topItems = items.slice(0, 8);
+
+                    const densityCap = 12;
+                    const densityPct = clamp((count / densityCap) * 100, 5, 100);
+
+                    const anchors = items.reduce((acc,p)=>acc + anchorScore(cat,p.tags), 0);
+                    const anchorPct = clamp((anchors / 3) * 100, 0, 100);
+
+                    const avgDist = items.reduce((a,p)=>a+p.distKm,0) / count;
+                    const accessPct = clamp(100 - (avgDist / radiusKm) * 100, 0, 100);
+
+                    const score = Math.round(
+                        densityPct * weightModel.density +
+                        anchorPct * weightModel.anchor +
+                        accessPct * weightModel.access
+                    );
+
+                    const catConf = confidenceLabel(count);
+                    const dists = items.map(x=>x.distKm);
+                    const p50 = percentile(dists, 0.50);
+                    const p80 = percentile(dists, 0.80);
+
+                    const strengths = [];
+                    if (densityPct >= 70) strengths.push("High density coverage");
+                    if (anchorPct >= 35) strengths.push("Strong anchor presence");
+                    if (accessPct >= 70) strengths.push("Excellent access (close matches)");
+                    if (!strengths.length) strengths.push("Decent coverage within radius");
+
+                    const weaknesses = [];
+                    if (densityPct < 35) weaknesses.push("Limited options in this radius");
+                    if (anchorPct < 20) weaknesses.push("Few major anchor locations");
+                    if (accessPct < 40) weaknesses.push("Matches are spread out");
+
+                    return {
+                        key: cat,
+                        name: cat.toUpperCase(),
+                        score,
+                        count,
+                        avgDist,
+                        p50,
+                        p80,
+                        conf: catConf,
+                        densityPct: Math.round(densityPct),
+                        anchorPct: Math.round(anchorPct),
+                        accessPct: Math.round(accessPct),
+                        strengths,
+                        weaknesses,
+                        pois: topItems
+                    };
+                }
+
+                cards = [];
+                for (const cat of catsToShow) {
+                    const c = computeCategoryCard(cat);
+                    if (!c) continue;
+                    cards.push(c);
+                }
+
+                const overall = Math.round(cards.reduce((a,c)=>a+c.score,0) / cards.length);
+                const sorted = [...cards].sort((a,b)=>b.score-a.score);
+                const best = sorted[0];
+                const worst = sorted[sorted.length-1];
+
+                kpiOverall.textContent = `${overall} / 100`;
+                kpiOverallSub.textContent = selectedCats.length
+                    ? `Across your priorities (${selectedCats.length})`
+                    : `Across top categories in your radius`;
+
+                kpiStrength.textContent = best ? best.name : "—";
+                kpiStrengthSub.textContent = best ? `${best.count} matches • ${best.conf.label}` : "—";
+
+                kpiWeak.textContent = worst ? worst.name : "—";
+                kpiWeakSub.textContent = worst ? `${worst.count} matches • ${worst.conf.label}` : "—";
+
+                // markers (sample)
+                markersLayer.clearLayers();
+                const bounds = [];
+                for (const c of cards) {
+                    for (const p of c.pois) {
+                        const m = L.marker([p.lat, p.lng]).addTo(markersLayer)
+                            .bindPopup(`${p.name}<br/><span style="font-size:12px; color:rgba(255,255,255,0.80); font-weight:800;">${c.name}</span>`);
+                        bounds.push(m.getLatLng());
+                    }
+                }
+                if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+
+                renderCards();
+
+            } catch (err) {
+                hide(loading);
                 show(empty);
-                list.innerHTML = "";
-                return;
+                empty.querySelector(".p").textContent = "Live search failed. Try again or reduce radius.";
+                console.error(err);
+            }
+        })();
+
+        // ----------------------------
+        // Rendering
+        // ----------------------------
+        function renderCards(){
+            if (!cards || !cards.length) return;
+
+            const mode = sortMode.value;
+
+            let sorted = [...cards];
+            if (mode === "match") sorted.sort((a,b)=> b.score - a.score);
+            else if (mode === "closest") sorted.sort((a,b)=> a.avgDist - b.avgDist);
+            else if (mode === "balanced") {
+                const avg = sorted.reduce((a,c)=>a+c.score,0)/sorted.length;
+                sorted.sort((a,b)=> Math.abs(a.score-avg) - Math.abs(b.score-avg));
             }
 
-            hide(empty);
             list.innerHTML = "";
-            markersLayer.clearLayers();
 
-            for (const card of cards) {
-                const cardEl = document.createElement("div");
-                cardEl.className = "result-card";
-                cardEl.innerHTML = `
-                    <div class="result-header">
-                        <div class="result-title">${card.name}</div>
-                        <div class="score-badge">${card.score}</div>
-                    </div>
+            for (const c of sorted) {
+                const card = document.createElement("div");
+                card.className = "rCard";
 
-                    <button type="button" class="explain-btn">Explain</button>
+                const chips = [
+                    `<span class="chip">${c.count} matches</span>`,
+                    `<span class="chip">Median ${fmt(c.p50,2)} km</span>`,
+                    `<span class="chip">P80 ${fmt(c.p80,2)} km</span>`,
+                    `<span class="chip">Confidence: ${c.conf.label}</span>`
+                ];
 
-                    <div class="explain-panel" style="display:none;">
-                        <div class="explain-grid">
-                            <div>
-                                <strong>Pros</strong>
-                                <ul>${card.pros.map(p => `<li>${p}</li>`).join("")}</ul>
-                            </div>
-                            <div>
-                                <strong>Cons</strong>
-                                <ul>${card.cons.map(c => `<li>${c}</li>`).join("")}</ul>
-                            </div>
+                // OVERVIEW always shown (spacious + readable)
+                const overviewHtml = `
+                    <div class="overviewRow">
+                        <div class="box">
+                            <h4>Why this scores well</h4>
+                            <ul>
+                                <li>${c.strengths[0] ?? "Good live coverage in your radius"}</li>
+                                <li>${c.count} matches within ${radiusKm} km</li>
+                                <li>Median distance ${fmt(c.p50,2)} km (closer is better)</li>
+                            </ul>
                         </div>
-                        <div style="margin-top:12px;">
-                            <strong>Nearby places</strong>
-                            <ul>${card.pois.map(p => `<li>${p.name}</li>`).join("")}</ul>
+
+                        <div class="box">
+                            <h4>Score breakdown (visual)</h4>
+                            <div class="bars">
+                                <div>
+                                    <div class="barLine">
+                                        <div class="barLabel">Density / Coverage</div>
+                                        <div class="barPct">${c.densityPct}%</div>
+                                    </div>
+                                    <div class="bar"><div class="fill" style="width:${c.densityPct}%;"></div></div>
+                                </div>
+
+                                <div>
+                                    <div class="barLine">
+                                        <div class="barLabel">Major Anchors</div>
+                                        <div class="barPct">${c.anchorPct}%</div>
+                                    </div>
+                                    <div class="bar"><div class="fill" style="width:${c.anchorPct}%;"></div></div>
+                                </div>
+
+                                <div>
+                                    <div class="barLine">
+                                        <div class="barLabel">Central Access</div>
+                                        <div class="barPct">${c.accessPct}%</div>
+                                    </div>
+                                    <div class="bar"><div class="fill" style="width:${c.accessPct}%;"></div></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
 
-                const btn = cardEl.querySelector(".explain-btn");
-                const panel = cardEl.querySelector(".explain-panel");
-                btn.addEventListener("click", () => {
-                    panel.style.display = (panel.style.display === "none" ? "" : "none");
-                });
+                // ANALYTICS only shown when tab is Analytics
+                const analyticsHtml = `
+                    <div class="analyticsBlock ${analyticsMode ? "on" : ""}">
+                        <div class="box">
+                            <h4>Transparent weights</h4>
+                            <ul>
+                                <li>Density weight: ${(0.50*100).toFixed(0)}%</li>
+                                <li>Anchor weight: ${(0.30*100).toFixed(0)}%</li>
+                                <li>Access weight: ${(0.20*100).toFixed(0)}%</li>
+                                <li>Confidence: ${c.conf.label} (${c.conf.pct}%)</li>
+                            </ul>
+                        </div>
 
-                list.appendChild(cardEl);
+                        <div class="box">
+                            <h4>Nearby places (sample)</h4>
+                            <ul>
+                                ${c.pois.slice(0,8).map(p => `<li>${p.name} <span style="color:rgba(255,255,255,0.70); font-weight:800;">(${fmt(p.distKm,2)} km)</span></li>`).join("")}
+                            </ul>
+                        </div>
 
-                for (const p of card.pois) {
-                    L.marker([p.lat, p.lng]).addTo(markersLayer).bindPopup(p.name);
-                }
+                        <div class="box">
+                            <h4>Weaknesses</h4>
+                            <ul>
+                                ${(c.weaknesses.length ? c.weaknesses : ["No major weaknesses detected in this radius."]).map(w => `<li>${w}</li>`).join("")}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div class="rHead">
+                        <div class="rTitle">
+                            <div class="name">${c.name}</div>
+                            <div class="sub">Live matches inside your ${radiusKm} km radius</div>
+                        </div>
+                        <div class="score">${c.score}</div>
+                    </div>
+
+                    <div class="badgeRow">${chips.join("")}</div>
+
+                    ${overviewHtml}
+                    ${analyticsHtml}
+                `;
+
+                list.appendChild(card);
             }
-
-            const bounds = [];
-            markersLayer.eachLayer(l => bounds.push(l.getLatLng()));
-            if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
-
-        } catch (err) {
-            hide(loading);
-            show(empty);
-            empty.querySelector("p").textContent = "Live search failed. Try again or reduce radius.";
-            console.error(err);
         }
+
     })();
 </script>

@@ -31,18 +31,24 @@ namespace Shortlist.Web.Controllers
 
             return View(items);
         }
-
         [HttpPost]
         public async Task<IActionResult> SaveCurrent(string name)
         {
             var userId = await EnsureUserIdAsync();
-            if (userId == null) return RedirectToAction("Login", "Account");
+            if (userId == null) return Unauthorized();
 
             var state = GetFilterState();
-            if (state == null) return RedirectToAction("Index", "Filters");
+            if (state == null) return BadRequest("No filter state in session.");
 
-            name = string.IsNullOrWhiteSpace(name) ? "Saved Search" : name.Trim();
-            if (name.Length > 60) name = name[..60];
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = BuildAutoName(state);
+            }
+
+            name = name.Trim();
+
+            if (name.Length > 60)
+                name = name[..60]; if (name.Length > 60) name = name[..60];
 
             var entity = new SavedSearch
             {
@@ -55,8 +61,7 @@ namespace Shortlist.Web.Controllers
             _db.SavedSearches.Add(entity);
             await _db.SaveChangesAsync();
 
-            TempData["Toast"] = "Saved!";
-            return RedirectToAction("Index");
+            return Ok(new { message = "Saved" });
         }
 
         [HttpPost]
@@ -99,37 +104,33 @@ namespace Shortlist.Web.Controllers
 
         private async Task<int?> EnsureUserIdAsync()
         {
-            // 1) Try claim NameIdentifier (works for email/password login)
-            var idStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (int.TryParse(idStr, out var userIdFromClaim))
-            {
-                HttpContext.Session.SetInt32("UserId", userIdFromClaim);
-                return userIdFromClaim;
-            }
-
-            // 2) Try session (works once we set it)
+            // 1) Session first (fast + stable)
             var userIdFromSession = HttpContext.Session.GetInt32("UserId");
             if (userIdFromSession.HasValue) return userIdFromSession.Value;
 
-            // 3) Fallback: use Email claim (works for Google)
-            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.FindFirstValue(ClaimTypes.Name);
+            // 2) Get email from claims (Google + cookie auth)
+            var email =
+                User.FindFirstValue(ClaimTypes.Email) ??
+                User.FindFirstValue("email") ??
+                User.Identity?.Name;
+
             if (string.IsNullOrWhiteSpace(email)) return null;
 
-            var existing = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+            email = email.Trim().ToLowerInvariant();
+
+            // 3) Find existing user
+            var existing = await _db.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email);
             if (existing != null)
             {
                 HttpContext.Session.SetInt32("UserId", existing.Id);
                 return existing.Id;
             }
 
-            // 4) If Google user doesn't exist in our DB, create it (simple + works)
-            var displayName = User.Identity?.Name ?? email;
-
-            var newUser = new User
+            // 4) Create user (Google user won't have password)
+            var newUser = new UserProfile
             {
-                Name = displayName,
                 Email = email,
-                Password = Guid.NewGuid().ToString("N") // random; they won't use it
+                Password = Guid.NewGuid().ToString("N") // placeholder; not used for Google
             };
 
             _db.Users.Add(newUser);
@@ -150,6 +151,27 @@ namespace Shortlist.Web.Controllers
         {
             var json = JsonSerializer.Serialize(state);
             HttpContext.Session.SetString("FilterState", json);
+        }
+        private static string BuildAutoName(FilterState state)
+        {
+            var parts = new List<string>();
+
+            if (state.Budget.HasValue && state.Budget.Value > 0)
+                parts.Add($"Budget ${state.Budget.Value:0}");
+
+            // Use RadiusKm (your search radius)
+            if (state.RadiusKm > 0)
+                parts.Add($"{state.RadiusKm}km");
+
+            // Optional nicer label if you store it
+            if (!string.IsNullOrWhiteSpace(state.LocationLabel))
+                parts.Add(state.LocationLabel.Trim());
+
+            if (state.Priorities != null && state.Priorities.Any())
+                parts.Add(string.Join("+", state.Priorities.Take(2)));
+
+            // ✅ MUST return something on all paths
+            return parts.Count > 0 ? string.Join(" • ", parts) : "Saved Search";
         }
     }
 }

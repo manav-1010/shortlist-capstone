@@ -7,7 +7,22 @@ namespace Shortlist.Web.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<User> Users => Set<User>();
+        public DbSet<UserProfile> Users => Set<UserProfile>();
         public DbSet<SavedSearch> SavedSearches => Set<SavedSearch>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserProfile>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<SavedSearch>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.SavedSearches)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

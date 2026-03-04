@@ -22,17 +22,20 @@ namespace Shortlist.Web.Controllers
         public IActionResult Login(string returnUrl = "/")
         {
             if (User.Identity?.IsAuthenticated ?? false)
-            {
                 return RedirectToAction("Index", "Home");
-            }
 
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password, string returnUrl = "/")
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+            email = (email ?? "").Trim();
+            password = password ?? "";
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
 
             if (user == null)
             {
@@ -40,34 +43,16 @@ namespace Shortlist.Web.Controllers
                 return View();
             }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
+            await SignInUserAsync(user);
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
-
-            // ✅ store for later (SavedSearchesController will use this)
-            HttpContext.Session.SetInt32("UserId", user.Id);
-
-            return RedirectToAction("Index", "Home");
+            return LocalRedirect(returnUrl);
         }
 
         [HttpGet]
         public IActionResult Register()
         {
             if (User.Identity?.IsAuthenticated ?? false)
-            {
                 return RedirectToAction("Index", "Home");
-            }
 
             return View();
         }
@@ -75,44 +60,34 @@ namespace Shortlist.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string password, string confirmPassword)
         {
+            name = (name ?? "").Trim();
+            email = (email ?? "").Trim();
+            password = password ?? "";
+            confirmPassword = confirmPassword ?? "";
+
             if (password != confirmPassword)
             {
                 TempData["ErrorMessage"] = "Passwords do not match.";
                 return View();
             }
-            if (_context.Users.Any(u => u.Email == email))
+
+            if (await _context.Users.AnyAsync(u => u.Email == email))
             {
                 TempData["ErrorMessage"] = "An account with this email already exists.";
                 return View();
             }
 
-            var newUser = new User
+            var newUser = new UserProfile
             {
-                Name = name,
+                Name = string.IsNullOrWhiteSpace(name) ? "User" : name,
                 Email = email,
                 Password = password
             };
 
             _context.Users.Add(newUser);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, newUser.Name),
-                new Claim(ClaimTypes.Email, newUser.Email),
-                new Claim(ClaimTypes.NameIdentifier, newUser.Id.ToString())
-            };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
-
-            // ✅ store for later
-            HttpContext.Session.SetInt32("UserId", newUser.Id);
+            await SignInUserAsync(newUser);
 
             return RedirectToAction("Index", "Home");
         }
@@ -129,9 +104,7 @@ namespace Shortlist.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            // ✅ clear session + cookie
             HttpContext.Session.Remove("UserId");
-
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
         }
@@ -141,6 +114,26 @@ namespace Shortlist.Web.Controllers
         {
             TempData["ErrorMessage"] = "Login was cancelled or access was denied. Please try again.";
             return RedirectToAction("Login");
+        }
+
+        private async Task SignInUserAsync(UserProfile user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
+            HttpContext.Session.SetInt32("UserId", user.Id);
         }
     }
 }
