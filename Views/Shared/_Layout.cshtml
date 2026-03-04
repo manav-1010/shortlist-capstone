@@ -97,6 +97,9 @@
             <a asp-controller="Home" asp-action="Index">Home</a>
             <a asp-controller="Filters" asp-action="Index">Filters</a>
             <a asp-controller="Results" asp-action="Index">Results</a>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="HousingProviders" asp-action="Index">Housing Providers</a>
+            </li>
 
             @if (User?.Identity?.IsAuthenticated == true)
             {

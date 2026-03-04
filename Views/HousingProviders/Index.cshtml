@@ -1,0 +1,307 @@
+﻿@model List<Shortlist.Web.Models.HousingProvider>
+@{
+    Layout = "_Layout";
+    var q = (ViewBag.Query as string) ?? "";
+    var total = (int)(ViewBag.Total ?? 0);
+}
+
+<style>
+    :root {
+        --bg: #0b0d12;
+        --surface: rgba(255,255,255,0.06);
+        --surface2: rgba(255,255,255,0.10);
+        --border: rgba(255,255,255,0.12);
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.72);
+        --muted2: rgba(255,255,255,0.58);
+        --accent: #4f46e5;
+        --shadow: 0 18px 60px rgba(0,0,0,0.35);
+        --radius: 18px;
+    }
+
+    body {
+        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+    }
+
+    .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 22px 16px 40px;
+        color: var(--text);
+    }
+
+    .hero {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+        box-shadow: var(--shadow);
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: 14px;
+        align-items: center;
+    }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 950;
+            letter-spacing: -0.6px;
+        }
+
+        .hero .sub {
+            margin-top: 8px;
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+    .searchbar {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        justify-self: end;
+        width: 100%;
+    }
+
+    .input {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.22);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 850;
+        outline: none;
+    }
+
+        .input::placeholder {
+            color: rgba(255,255,255,0.52);
+            font-weight: 750;
+        }
+
+    .btn {
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+        padding: 11px 14px;
+        font-weight: 950;
+        cursor: pointer;
+        transition: transform .12s ease, background .12s ease, border .12s ease;
+        white-space: nowrap;
+    }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.10);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+    .metaRow {
+        margin-top: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .pill {
+        border-radius: 999px;
+        padding: 8px 12px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.22);
+        color: rgba(255,255,255,0.84);
+        font-weight: 900;
+        font-size: 12px;
+    }
+
+    .grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .card {
+        border-radius: var(--radius);
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.20);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 210px;
+    }
+
+    .title {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .name {
+        font-weight: 950;
+        letter-spacing: -0.2px;
+        font-size: 16px;
+        line-height: 1.2;
+    }
+
+    .city {
+        margin-top: 6px;
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 12px;
+    }
+
+    .tagRow {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 2px;
+    }
+
+    .tag {
+        border-radius: 999px;
+        padding: 6px 10px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.88);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+    .notes {
+        color: rgba(255,255,255,0.84);
+        font-weight: 750;
+        font-size: 12px;
+        line-height: 1.6;
+        margin-top: 2px;
+        flex: 1;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 6px;
+    }
+
+    .linkBtn {
+        border-radius: 12px;
+        border: 1px solid rgba(79,70,229,0.55);
+        background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
+        color: #fff;
+        padding: 10px 12px;
+        font-weight: 950;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .hint {
+        color: rgba(255,255,255,0.68);
+        font-weight: 800;
+        font-size: 11px;
+        text-align: right;
+    }
+
+    .empty {
+        margin-top: 16px;
+        border-radius: var(--radius);
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.20);
+        padding: 18px;
+        color: rgba(255,255,255,0.85);
+        font-weight: 800;
+    }
+
+    @@media (max-width: 1040px) {
+        .hero {
+            grid-template-columns: 1fr;
+        }
+
+        .searchbar {
+            justify-self: stretch;
+        }
+
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="wrap">
+    <section class="hero">
+        <div>
+            <h1>Housing Providers</h1>
+            <div class="sub">
+                Real rental companies + trusted listing sources. Use this after you shortlist an area in <strong>Results</strong>.
+                All links go to the official websites (no mock).
+            </div>
+
+            <div class="metaRow">
+                <div class="pill">Showing: @total provider(s)</div>
+                <div class="pill">Tip: open in a new tab + compare lease terms</div>
+            </div>
+        </div>
+
+        <form method="get" class="searchbar">
+            <input class="input" name="q" value="@q" placeholder="Search: accommod8u, Waterloo, student housing, apartments..." />
+            <button class="btn" type="submit">Search</button>
+        </form>
+    </section>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty">
+            No providers match your search. Try a broader keyword (e.g., “Waterloo” or “apartments”).
+        </div>
+    }
+    else
+    {
+        <div class="grid">
+            @foreach (var p in Model)
+            {
+                var tags = (p.Tags ?? "")
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Take(4)
+                .ToList();
+
+                <div class="card">
+                    <div class="title">
+                        <div>
+                            <div class="name">@p.Name</div>
+                            <div class="city">@p.City</div>
+                        </div>
+                        <div class="pill">Verified</div>
+                    </div>
+
+                    <div class="tagRow">
+                        @foreach (var t in tags)
+                        {
+                            <span class="tag">@t</span>
+                        }
+                    </div>
+
+                    <div class="notes">@p.Notes</div>
+
+                    <div class="actions">
+                        <a class="linkBtn" href="@p.WebsiteUrl" target="_blank" rel="noopener noreferrer">
+                            Visit Website →
+                        </a>
+                        <div class="hint">Always confirm fees + lease terms</div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
