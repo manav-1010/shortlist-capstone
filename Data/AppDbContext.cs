@@ -42,13 +42,30 @@ namespace Shortlist.Web.Data
      .HasIndex(x => x.UserId)
      .IsUnique();
 
-            // One USer = One settings record.
+            // One User = One settings record.
             modelBuilder.Entity<UserSettings>()
                 .HasOne(x => x.User)
                 .WithOne(u => u.Settings)
                 .HasForeignKey<UserSettings>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+        }
+        // automatically populate timestamps before saving changes.
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker
+                .Entries<SavedSearch>()
+                .Where(e => e.State == EntityState.Added);
+
+            foreach (var entry in entries)
+            {
+                if (entry.Entity.CreatedAtUtc == default)
+                {
+                    entry.Entity.CreatedAtUtc = DateTime.UtcNow;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }
