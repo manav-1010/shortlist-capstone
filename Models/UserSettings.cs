@@ -12,7 +12,7 @@ namespace Shortlist.Web.Models
         [Range(1, 25)]
         public int DefaultRadiusKm { get; set; } = 3;
 
-        // Store up to 3 priorities as CSV (simple + SQLite-friendly)
+        // Store up to 3 priorities as CSV 
         [MaxLength(120)]
         public string DefaultPrioritiesCsv { get; set; } = "";
 

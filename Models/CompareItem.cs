@@ -2,7 +2,7 @@
 {
     public class CompareItem
     {
-        public string Id { get; set; } = "";          // stable client id like "node:123"
+        public string Id { get; set; } = "";          
         public string Name { get; set; } = "Unnamed";
         public string Category { get; set; } = "Other";
 

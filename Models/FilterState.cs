@@ -11,7 +11,7 @@ namespace Shortlist.Web.Models
         [Range(0,100, ErrorMessage = "Distance must be between 0 and 100 km.")]
         public int? MaxDistanceKm { get; set; }
 
-        // store selected priorities (max 3 enforced by UI/logic later)
+        // store selected priorities
         public List<string> Priorities { get; set; } = new List<string>();
         public double? Lat { get; set; }
         public double? Lng { get; set; }
