@@ -9,6 +9,10 @@ using System.Security.Claims;
 
 namespace Shortlist.Web.Controllers
 {
+    // handles authentication for the app:
+    // - Local login/register using Users table
+    // - Google Login via OpenID Connect
+    // - Cookie-based sign-in and session user id stroage
     public class AccountController : Controller
     {
         private readonly AppDbContext _context;
@@ -17,7 +21,8 @@ namespace Shortlist.Web.Controllers
         {
             _context = context;
         }
-
+        // Shows the login page
+        // returnUrl is used to redirect back to the page the user was on after successful login
         [HttpGet]
         public IActionResult Login(string returnUrl = "/")
         {
@@ -47,7 +52,7 @@ namespace Shortlist.Web.Controllers
 
             return LocalRedirect(returnUrl);
         }
-
+        // registration page, if already logged in, redirect to home page
         [HttpGet]
         public IActionResult Register()
         {
@@ -56,7 +61,7 @@ namespace Shortlist.Web.Controllers
 
             return View();
         }
-
+        // creates local account and signs in the user, then redirects to home page, if email already exists or passwords don't match, shows error message
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string password, string confirmPassword)
         {
@@ -92,6 +97,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // starts google sign in using OpenID Connect, after successful login, user is redirected back to the returnUrl or home page
         [HttpGet]
         public IActionResult GoogleLogin(string returnUrl = "/")
         {
@@ -101,6 +107,9 @@ namespace Shortlist.Web.Controllers
             }, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
+        // logs the user out by 
+        // - clearing the session UserId
+        // - removing the auth cookie
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -109,6 +118,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Login", "Account");
         }
 
+        // this is called when Google auth fails/cancels or access is denied
         [HttpGet]
         public IActionResult AccessDenied()
         {
@@ -116,6 +126,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Login");
         }
 
+        // Creates the user's ClaimsPrincipal and signs them in via cookie authentication.
         private async Task SignInUserAsync(UserProfile user)
         {
             var claims = new List<Claim>
@@ -128,6 +139,7 @@ namespace Shortlist.Web.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties { IsPersistent = true };
 
+            // issue the auth cookie.
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),

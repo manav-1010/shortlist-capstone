@@ -17,23 +17,27 @@ namespace Shortlist.Web.Controllers
             _db = db;
         }
 
+        // loads the current user + their saved preferences from the database.
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            // resolve current user's DB id
             var userId = await EnsureUserIdAsync();
             if (userId == null) return RedirectToAction("Login", "Account");
 
+            // include settings navigation property 
             var user = await _db.Users
                 .Include(u => u.Settings)
                 .FirstOrDefaultAsync(u => u.Id == userId.Value);
 
             if (user == null) return RedirectToAction("Login", "Account");
 
-            // detect provider (basic heuristic)
+            // detect provider 
             var provider = User.FindFirstValue("iss") != null || User.FindFirstValue("urn:google:picture") != null
                 ? "Google"
                 : "Local";
 
+            // build view model with safe defaults
             var vm = new SettingsViewModel
             {
                 Email = user.Email,
@@ -46,6 +50,8 @@ namespace Shortlist.Web.Controllers
             return View(vm);
         }
 
+        // persists user preferences to the database
+        // uses antiforgery for standard form protection.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(SettingsViewModel vm)
@@ -63,6 +69,7 @@ namespace Shortlist.Web.Controllers
 
             var csv = string.Join(",", tokens);
 
+            // upsert: create settings row it it doesn't exist yet.
             var settings = await _db.UserSettings.FirstOrDefaultAsync(x => x.UserId == userId.Value);
             if (settings == null)
             {
@@ -70,6 +77,7 @@ namespace Shortlist.Web.Controllers
                 _db.UserSettings.Add(settings);
             }
 
+            // save preferences
             settings.DefaultRadiusKm = vm.DefaultRadiusKm;
             settings.DefaultPrioritiesCsv = csv;
             settings.DefaultLocationLabel = string.IsNullOrWhiteSpace(vm.DefaultLocationLabel) ? null : vm.DefaultLocationLabel.Trim();
@@ -81,6 +89,8 @@ namespace Shortlist.Web.Controllers
         }
 
         // Data controls
+
+        // clears current session.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ClearSession()
@@ -90,6 +100,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        // clears compare list from session.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ClearCompare()
@@ -99,6 +110,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        // Deletes all saved searches for current user.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAllSaved()
@@ -114,7 +126,9 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        // same helper you already use
+       // ---------- User identity helper ----------
+
+        // resolve current user's UserProfile ID.
         private async Task<int?> EnsureUserIdAsync()
         {
             var userIdFromSession = HttpContext.Session.GetInt32("UserId");
@@ -136,6 +150,7 @@ namespace Shortlist.Web.Controllers
                 return existing.Id;
             }
 
+            // for google maps, we create a minimal local profile to save preferences.
             var newUser = new UserProfile
             {
                 Email = email,
@@ -148,6 +163,9 @@ namespace Shortlist.Web.Controllers
             HttpContext.Session.SetInt32("UserId", newUser.Id);
             return newUser.Id;
         }
+
+        // Legal page (Privacy Policy / Terms / Credits)
+        // Accessible from Settings 
         [HttpGet]
         public IActionResult Legal()
         {

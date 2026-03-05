@@ -18,6 +18,7 @@ namespace Shortlist.Web.Controllers
             _db = db;
         }
 
+        // lists the signed-in user's saved searches.
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -31,6 +32,8 @@ namespace Shortlist.Web.Controllers
 
             return View(items);
         }
+
+        // Saves the user's current filter state to the DB.
         [HttpPost]
         public async Task<IActionResult> SaveCurrent(string name)
         {
@@ -54,6 +57,7 @@ namespace Shortlist.Web.Controllers
             {
                 UserId = userId.Value,
                 Name = name,
+                // stores the entire filter state as JSON 
                 FilterStateJson = JsonSerializer.Serialize(state),
                 CreatedAtUtc = DateTime.UtcNow
             };
@@ -64,6 +68,8 @@ namespace Shortlist.Web.Controllers
             return Ok(new { message = "Saved" });
         }
 
+        // loads saved search by ID
+        // writes it into Session as the active FilterState and redirects to results page
         [HttpPost]
         public async Task<IActionResult> Load(int id)
         {
@@ -81,7 +87,8 @@ namespace Shortlist.Web.Controllers
             SaveFilterState(state);
             return RedirectToAction("Index", "Results");
         }
-
+        
+        // Deletes one saved search.
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -130,7 +137,7 @@ namespace Shortlist.Web.Controllers
             var newUser = new UserProfile
             {
                 Email = email,
-                Password = Guid.NewGuid().ToString("N") // placeholder; not used for Google
+                Password = Guid.NewGuid().ToString("N") 
             };
 
             _db.Users.Add(newUser);
@@ -152,6 +159,8 @@ namespace Shortlist.Web.Controllers
             var json = JsonSerializer.Serialize(state);
             HttpContext.Session.SetString("FilterState", json);
         }
+
+        // generates a friendly default name.
         private static string BuildAutoName(FilterState state)
         {
             var parts = new List<string>();
@@ -159,20 +168,22 @@ namespace Shortlist.Web.Controllers
             if (state.Budget.HasValue && state.Budget.Value > 0)
                 parts.Add($"Budget ${state.Budget.Value:0}");
 
-            // Use RadiusKm (your search radius)
+            // Use RadiusKm (search radius)
             if (state.RadiusKm > 0)
                 parts.Add($"{state.RadiusKm}km");
 
-            // Optional nicer label if you store it
             if (!string.IsNullOrWhiteSpace(state.LocationLabel))
                 parts.Add(state.LocationLabel.Trim());
 
             if (state.Priorities != null && state.Priorities.Any())
                 parts.Add(string.Join("+", state.Priorities.Take(2)));
 
-            // ✅ MUST return something on all paths
+            // MUST return something on all paths
             return parts.Count > 0 ? string.Join(" • ", parts) : "Saved Search";
         }
+
+        // Share endpoint
+        // anyone with the tken can load the saved search into Session and  view Results.
         [AllowAnonymous]
         [HttpGet("/SavedSearches/Share/{token:guid}")]
         public async Task<IActionResult> Share(Guid token)
@@ -194,6 +205,8 @@ namespace Shortlist.Web.Controllers
             TempData["Toast"] = $"Loaded shared search: {saved.Name}";
             return RedirectToAction("Index", "Results");
         }
+
+        // Generates a new share token for an existing saved search.
         [HttpPost]
         public async Task<IActionResult> RegenerateShareLink(int id)
         {
@@ -207,6 +220,7 @@ namespace Shortlist.Web.Controllers
 
             saved.ShareToken = Guid.NewGuid();
             await _db.SaveChangesAsync();
+
 
             return Ok(new { token = saved.ShareToken });
         }

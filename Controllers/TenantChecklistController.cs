@@ -6,6 +6,7 @@ namespace Shortlist.Web.Controllers
     [Authorize]
     public class TenantChecklistController : Controller
     {
+        // displays tenant checklist page.
         [HttpGet]
         public IActionResult Index()
         {

@@ -9,8 +9,10 @@ namespace Shortlist.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            // Read the most recent filters selected by the user
             var state = GetFilterState();
 
+            // viewmodel contains filters and an initially empty list of results
             var vm = new ResultsViewModel
             {
                 Filters = state,
@@ -19,7 +21,7 @@ namespace Shortlist.Web.Controllers
 
             return View(vm);
         }
-
+        // clears the current filter state and reloads the Results page.
         [HttpPost]
         public IActionResult Clear()
         {
@@ -27,6 +29,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        // Reads FilterState JSON from Session.
         private FilterState GetFilterState()
         {
             var json = HttpContext.Session.GetString("FilterState");

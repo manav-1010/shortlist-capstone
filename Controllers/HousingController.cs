@@ -7,6 +7,7 @@ namespace Shortlist.Web.Controllers
     [Authorize]
     public class HousingController : Controller
     {
+        // displays a list of housing providers.
         [HttpGet]
         public IActionResult Index(string? q)
         {
@@ -28,6 +29,7 @@ namespace Shortlist.Web.Controllers
             return View(providers);
         }
 
+        // returns a curated list of housing providers commonly used by students.
         private static List<HousingProvider> GetProviders() => new()
         {
             new HousingProvider { Name="Accommod8u", City="Waterloo", Tags="student rentals, apartments", Url="https://accommod8u.com/", Notes="Popular student rentals in Waterloo/Kitchener." },

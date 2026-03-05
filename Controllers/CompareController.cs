@@ -7,11 +7,15 @@ using System.Text;
 
 namespace Shortlist.Web.Controllers
 {
+    // lets a signed-in user manage their compare list stored in session:
+    // Data is stored in Session
     [Authorize]
     public class CompareController : Controller
     {
+        // Session key for storing compare list for current user session.
         private const string CompareSessionKey = "CompareItems";
 
+        // compare page: loads the current session compare list.
         [HttpGet]
         public IActionResult Index()
         {
@@ -22,6 +26,7 @@ namespace Shortlist.Web.Controllers
             return View(vm);
         }
 
+        // adds a place to compare list, preventing duplicates and capping at 3 items.
         [HttpPost]
         public IActionResult Add([FromBody] CompareItem item)
         {
@@ -44,6 +49,7 @@ namespace Shortlist.Web.Controllers
             return Ok(new { count = items.Count });
         }
 
+        // removes one place from compare list (AJAX/JSON)
         [HttpPost]
         public IActionResult Remove([FromBody] string id)
         {
@@ -57,6 +63,7 @@ namespace Shortlist.Web.Controllers
             return Ok(new { count = items.Count });
         }
 
+        // clears the entire compare list (AJAX/JSON)   
         [HttpPost]
         public IActionResult Clear()
         {
@@ -64,6 +71,8 @@ namespace Shortlist.Web.Controllers
             return Ok();
         }
 
+        // exports the compare list as CSV file
+        // uses invariant culture so decimals are consistent across machines
         [HttpGet]
         public IActionResult ExportCsv()
         {
@@ -90,12 +99,15 @@ namespace Shortlist.Web.Controllers
         }
 
         // ---------------- helpers ----------------
+        // reads the compare list from JSON
         private List<CompareItem> GetCompareItems()
             => HttpContext.Session.GetJson<List<CompareItem>>(CompareSessionKey) ?? new List<CompareItem>();
-
+        
+        // writes the compare list back to session
         private void SaveCompareItems(List<CompareItem> items)
             => HttpContext.Session.SetJson(CompareSessionKey, items);
 
+        // safe CSV escaping: wraps in quotes and doubles any internal quotes
         private static string Csv(string? s)
         {
             s ??= "";
