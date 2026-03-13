@@ -9,22 +9,31 @@
 
 <style>
     :root {
-        --bg: #0b0d12;
-        --surface: rgba(255,255,255,0.06);
-        --surface2: rgba(255,255,255,0.10);
-        --border: rgba(255,255,255,0.12);
-        --text: rgba(255,255,255,0.92);
-        --muted: rgba(255,255,255,0.74);
-        --muted2: rgba(255,255,255,0.60);
+        --bg: #f5f7fb;
+        --bg2: #eef3f9;
+        --surface: #ffffff;
+        --surface-soft: #f8fafc;
+        --surface-tint: #eef2ff;
+        --border: #dbe3ee;
+        --border-strong: #cbd5e1;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
         --accent: #4f46e5;
-        --good: #22c55e;
-        --shadow: 0 18px 60px rgba(0,0,0,0.35);
-        --shadow2: 0 10px 30px rgba(0,0,0,0.25);
+        --accent-hover: #4338ca;
+        --accent-soft: #e9e7ff;
+        --good: #15803d;
+        --good-soft: #e8f7ee;
+        --danger: #b91c1c;
+        --danger-soft: #fef2f2;
+        --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+        --shadow2: 0 10px 24px rgba(15, 23, 42, 0.06);
         --radius: 20px;
+        --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
     }
 
     body {
-        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+        background: radial-gradient(1000px 500px at 10% -5%, rgba(79,70,229,0.10), transparent 60%), radial-gradient(900px 460px at 100% 0%, rgba(34,197,94,0.08), transparent 58%), linear-gradient(180deg, var(--bg), var(--bg2));
     }
 
     .results-shell {
@@ -41,11 +50,10 @@
         min-height: 0;
     }
 
-    /* TOP BAR */
-    .topbar {
+    .results-topbar {
         border-radius: var(--radius);
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
         box-shadow: var(--shadow2);
         padding: 18px;
         color: var(--text);
@@ -60,6 +68,7 @@
         font-size: 28px;
         letter-spacing: -0.6px;
         font-weight: 950;
+        color: var(--text);
     }
 
     .titleBlock .sub {
@@ -67,7 +76,7 @@
         color: var(--muted);
         font-size: 13px;
         font-weight: 750;
-        line-height: 1.45;
+        line-height: 1.5;
     }
 
     .controls {
@@ -82,8 +91,8 @@
     .inputx {
         width: 100%;
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.22);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 12px;
         font-weight: 850;
@@ -91,40 +100,56 @@
     }
 
         .inputx::placeholder {
-            color: rgba(255,255,255,0.50);
+            color: var(--muted2);
             font-weight: 750;
+        }
+
+        .inputx:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
         }
 
     .btnx {
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 12px;
-        font-weight: 950;
+        font-weight: 900;
         cursor: pointer;
-        transition: transform .12s ease, background .12s ease, border .12s ease;
+        transition: transform .12s ease, background .12s ease, border .12s ease, box-shadow .12s ease;
         user-select: none;
         white-space: nowrap;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        box-shadow: var(--shadow2);
     }
 
         .btnx:hover {
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.10);
-            border-color: rgba(255,255,255,0.22);
+            background: var(--surface-soft);
+            border-color: var(--border-strong);
+        }
+
+        .btnx:focus-visible {
+            outline: none;
+            box-shadow: var(--focus);
         }
 
         .btnx.primary {
-            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
-            border-color: rgba(79,70,229,0.55);
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            border-color: var(--accent);
+            color: #ffffff;
             box-shadow: 0 14px 34px rgba(79,70,229,0.20);
         }
 
-    /* TABS ROW */
+            .btnx.primary:hover {
+                background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+                border-color: var(--accent-hover);
+            }
+
     .tabsRow {
         display: flex;
         gap: 10px;
@@ -135,10 +160,11 @@
 
     .tabs {
         display: inline-flex;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.22);
+        border: 1px solid var(--border);
+        background: var(--surface);
         border-radius: 999px;
         overflow: hidden;
+        box-shadow: var(--shadow2);
     }
 
         .tabs button {
@@ -146,13 +172,13 @@
             background: transparent;
             color: var(--muted);
             padding: 10px 14px;
-            font-weight: 950;
+            font-weight: 900;
             cursor: pointer;
         }
 
             .tabs button.active {
-                background: rgba(255,255,255,0.10);
-                color: var(--text);
+                background: var(--surface-tint);
+                color: var(--accent);
             }
 
     .sortRow {
@@ -164,17 +190,22 @@
 
     .selectx {
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.22);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
         color: var(--text);
         padding: 10px 12px;
-        font-weight: 950;
+        font-weight: 900;
         outline: none;
         cursor: pointer;
         min-width: 220px;
+        box-shadow: var(--shadow2);
     }
 
-    /* MAIN GRID */
+        .selectx:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
+        }
+
     .mainGrid {
         display: grid;
         grid-template-columns: 1.15fr 0.85fr;
@@ -182,11 +213,10 @@
         min-height: 0;
     }
 
-    /* LEFT */
     .leftPanel {
         border-radius: var(--radius);
         border: 1px solid var(--border);
-        background: rgba(255,255,255,0.05);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
         box-shadow: var(--shadow2);
         min-height: 0;
         display: grid;
@@ -195,8 +225,8 @@
 
     .kpiRow {
         padding: 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.10);
-        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #fafcff, #f6f9ff);
         border-top-left-radius: var(--radius);
         border-top-right-radius: var(--radius);
         display: grid;
@@ -206,9 +236,10 @@
 
     .kpi {
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.18);
+        border: 1px solid var(--border);
+        background: var(--surface);
         padding: 14px;
+        box-shadow: var(--shadow2);
     }
 
         .kpi .label {
@@ -239,11 +270,12 @@
 
     .loadingBox, .emptyBox {
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.22);
+        border: 1px solid var(--border);
+        background: var(--surface);
         padding: 16px;
         color: var(--text);
         margin-bottom: 12px;
+        box-shadow: var(--shadow2);
     }
 
         .loadingBox .t, .emptyBox .t {
@@ -258,12 +290,11 @@
             font-size: 13px;
         }
 
-    /* RESULT CARD */
     .rCard {
         border-radius: 20px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.20);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: var(--shadow2);
         padding: 16px;
         margin-bottom: 14px;
     }
@@ -285,6 +316,7 @@
             font-weight: 950;
             letter-spacing: -0.2px;
             font-size: 16px;
+            color: var(--text);
         }
 
         .rTitle .sub {
@@ -303,9 +335,9 @@
     .chip {
         padding: 7px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.05);
-        color: rgba(255,255,255,0.80);
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+        color: var(--muted);
         font-weight: 850;
         font-size: 12px;
     }
@@ -313,9 +345,9 @@
     .score {
         padding: 8px 14px;
         border-radius: 999px;
-        background: #111;
-        border: 1px solid rgba(255,255,255,0.10);
-        color: #fff;
+        background: var(--surface-tint);
+        border: 1px solid #c7d2fe;
+        color: var(--accent);
         font-weight: 950;
         min-width: 64px;
         text-align: center;
@@ -331,8 +363,8 @@
 
     .box {
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
         padding: 14px;
     }
 
@@ -346,10 +378,10 @@
         .box ul {
             margin: 0;
             padding-left: 18px;
-            color: rgba(255,255,255,0.82);
+            color: var(--muted);
             font-weight: 750;
             font-size: 12px;
-            line-height: 1.65;
+            line-height: 1.7;
         }
 
     .bars {
@@ -365,7 +397,7 @@
     }
 
     .barLabel {
-        color: rgba(255,255,255,0.80);
+        color: var(--muted);
         font-weight: 850;
         font-size: 12px;
     }
@@ -379,8 +411,8 @@
     .bar {
         height: 11px;
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.24);
+        border: 1px solid var(--border);
+        background: #eef2f7;
         overflow: hidden;
         margin-top: 6px;
     }
@@ -389,7 +421,7 @@
         height: 100%;
         width: 0%;
         border-radius: 999px;
-        background: linear-gradient(90deg, rgba(79,70,229,0.9), rgba(34,197,94,0.75));
+        background: linear-gradient(90deg, var(--accent), #22c55e);
     }
 
     .analyticsBlock {
@@ -402,11 +434,10 @@
             gap: 14px;
         }
 
-    /* RIGHT */
     .rightPanel {
         border-radius: var(--radius);
         border: 1px solid var(--border);
-        background: rgba(255,255,255,0.05);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
         box-shadow: var(--shadow2);
         min-height: 0;
         display: grid;
@@ -423,9 +454,10 @@
 
     .snap {
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.22);
+        border: 1px solid var(--border);
+        background: var(--surface);
         padding: 14px;
+        box-shadow: var(--shadow2);
     }
 
         .snap .t {
@@ -450,10 +482,11 @@
 
     .mapBox {
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.12);
+        border: 1px solid var(--border);
         overflow: hidden;
-        background: rgba(0,0,0,0.22);
+        background: var(--surface);
         min-height: 0;
+        box-shadow: var(--shadow2);
     }
 
     #resultsMap {
@@ -464,17 +497,18 @@
 
     .radiusBox {
         border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.22);
+        border: 1px solid var(--border);
+        background: var(--surface);
         padding: 14px;
         color: var(--text);
+        box-shadow: var(--shadow2);
     }
 
         .radiusBox .line {
             display: flex;
             justify-content: space-between;
             gap: 10px;
-            color: rgba(255,255,255,0.80);
+            color: var(--muted);
             font-weight: 800;
             font-size: 12px;
             margin-top: 6px;
@@ -485,17 +519,16 @@
                 font-weight: 950;
             }
 
-    /* Dark themed Leaflet popups */
     .leaflet-popup-content-wrapper,
     .leaflet-popup-tip {
-        background: rgba(10, 12, 18, 0.95) !important;
-        color: rgba(255,255,255,0.92) !important;
-        border: 1px solid rgba(255,255,255,0.14) !important;
-        box-shadow: 0 18px 60px rgba(0,0,0,0.55) !important;
+        background: #ffffff !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10) !important;
     }
 
     .leaflet-popup-content {
-        color: rgba(255,255,255,0.92) !important;
+        color: var(--text) !important;
         font-weight: 850 !important;
     }
 
@@ -524,30 +557,6 @@
         .overviewRow {
             grid-template-columns: 1fr;
         }
-
-        .results-shell, .results-shell * {
-            color: var(--text);
-        }
-
-        .rTitle .name, .rTitle .sub, .kpi .value, .kpi .label, .kpi .mini, .snap .t, .snap .v, .snap .s, .barLabel, .box h4 {
-            color: var(--text) !important;
-        }
-
-        .chip, .badgeRow, .badgeRow * {
-            color: rgba(255,255,255,0.85) !important;
-        }
-
-        .box ul, .box li {
-            color: rgba(255,255,255,0.82) !important;
-        }
-
-        .tabs button {
-            color: rgba(255,255,255,0.78) !important;
-        }
-
-            .tabs button.active {
-                color: rgba(255,255,255,0.95) !important;
-            }
     }
 </style>
 
@@ -555,7 +564,7 @@
     <div class="viewport">
 
         <!-- TOP BAR -->
-        <section class="topbar">
+        <section class="results-topbar">
             <div class="titleBlock">
                 <h1>Results</h1>
                 <div class="sub">
@@ -567,7 +576,7 @@
                 <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
 
-                <!-- ✅ Compare badge -->
+                <!-- Compare badge -->
                 <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
 
                 <form method="post" asp-action="Clear" style="margin:0;">
@@ -1047,7 +1056,7 @@
                 for (const c of cards) {
                     for (const p of c.pois) {
                         const m = L.marker([p.lat, p.lng]).addTo(markersLayer)
-                            .bindPopup(`${p.name}<br/><span style="font-size:12px; color:rgba(255,255,255,0.80); font-weight:800;">${c.name}</span>`);
+                            .bindPopup(`${p.name}<br/><span style="font-size:12px; color:#475569; font-weight:800;">${c.name}</span>`);
                         bounds.push(m.getLatLng());
                     }
                 }
@@ -1134,7 +1143,6 @@
                     </div>
                 `;
 
-                // ✅ Compare button per place
                 const analyticsHtml = `
                     <div class="analyticsBlock ${analyticsMode ? "on" : ""}">
                         <div class="box">
@@ -1156,7 +1164,7 @@
                                       <li style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
                                         <span>
                                           ${p.name}
-                                          <span style="color:rgba(255,255,255,0.70); font-weight:800;">(${fmt(p.distKm,2)} km)</span>
+                                          <span style="color:#64748b; font-weight:800;">(${fmt(p.distKm,2)} km)</span>
                                         </span>
                                         <button class="btnx" style="padding:6px 10px;" type="button"
                                           data-compare="1"
@@ -1200,7 +1208,6 @@
                 list.appendChild(card);
             }
 
-            //✅Wire compare buttons after rendering
             document.querySelectorAll("button[data-compare='1']").forEach(btn => {
                 btn.addEventListener("click", async () => {
                     const p = {

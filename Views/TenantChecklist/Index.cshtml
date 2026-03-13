@@ -4,23 +4,32 @@
 
 <style>
     :root {
-        --bg: #0b0d12;
-        --surface: rgba(255,255,255,0.06);
-        --surface2: rgba(255,255,255,0.10);
-        --border: rgba(255,255,255,0.12);
-        --text: rgba(255,255,255,0.92);
-        --muted: rgba(255,255,255,0.72);
-        --muted2: rgba(255,255,255,0.58);
+        --bg: #f5f7fb;
+        --bg2: #eef3f9;
+        --surface: #ffffff;
+        --surface-soft: #f8fafc;
+        --surface-tint: #eef2ff;
+        --border: #dbe3ee;
+        --border-strong: #cbd5e1;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
         --accent: #4f46e5;
-        --good: #22c55e;
-        --warn: #f59e0b;
-        --bad: #ef4444;
-        --shadow: 0 18px 60px rgba(0,0,0,0.35);
-        --radius: 18px;
+        --accent-hover: #4338ca;
+        --good: #15803d;
+        --good-soft: #e8f7ee;
+        --warn: #b45309;
+        --warn-soft: #fff7ed;
+        --bad: #b91c1c;
+        --bad-soft: #fef2f2;
+        --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+        --shadow2: 0 10px 24px rgba(15, 23, 42, 0.06);
+        --radius: 20px;
+        --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
     }
 
     body {
-        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+        background: radial-gradient(1000px 500px at 10% -5%, rgba(79,70,229,0.10), transparent 60%), radial-gradient(900px 460px at 100% 0%, rgba(34,197,94,0.08), transparent 58%), linear-gradient(180deg, var(--bg), var(--bg2));
     }
 
     .shell {
@@ -33,8 +42,8 @@
     .hero {
         border: 1px solid var(--border);
         border-radius: var(--radius);
-        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
-        box-shadow: var(--shadow);
+        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.08), transparent 60%), radial-gradient(560px 240px at 92% 18%, rgba(34,197,94,0.07), transparent 55%), linear-gradient(180deg, #ffffff, #f8fbff);
+        box-shadow: var(--shadow2);
         padding: 18px;
         display: grid;
         grid-template-columns: 1.2fr 1fr;
@@ -47,6 +56,7 @@
         font-size: 28px;
         letter-spacing: -0.6px;
         font-weight: 950;
+        color: var(--text);
     }
 
     .sub {
@@ -54,7 +64,7 @@
         color: var(--muted);
         font-weight: 750;
         font-size: 13px;
-        line-height: 1.55;
+        line-height: 1.6;
     }
 
     .actions {
@@ -66,11 +76,11 @@
 
     .btn {
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 14px;
-        font-weight: 950;
+        font-weight: 900;
         cursor: pointer;
         white-space: nowrap;
         text-decoration: none;
@@ -78,16 +88,32 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
+        box-shadow: var(--shadow2);
+        transition: transform .12s ease, background .12s ease, border .12s ease, box-shadow .12s ease;
     }
 
-        .btn.primary {
-            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
-            border-color: rgba(79,70,229,0.55);
+        .btn:hover {
+            transform: translateY(-1px);
+            background: var(--surface-soft);
+            border-color: var(--border-strong);
         }
 
-        .btn:hover {
-            background: rgba(255,255,255,0.10);
+        .btn:focus-visible {
+            outline: none;
+            box-shadow: var(--focus);
         }
+
+        .btn.primary {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            border-color: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 14px 34px rgba(79,70,229,0.20);
+        }
+
+            .btn.primary:hover {
+                background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+                border-color: var(--accent-hover);
+            }
 
     .grid {
         margin-top: 16px;
@@ -97,10 +123,10 @@
     }
 
     .card {
-        border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.20);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: var(--shadow2);
         padding: 16px;
     }
 
@@ -109,13 +135,14 @@
             font-size: 16px;
             font-weight: 950;
             letter-spacing: -0.2px;
+            color: var(--text);
         }
 
     .hint {
         color: var(--muted);
         font-weight: 750;
         font-size: 12px;
-        line-height: 1.55;
+        line-height: 1.6;
         margin-top: -4px;
         margin-bottom: 10px;
     }
@@ -131,27 +158,28 @@
         align-items: flex-start;
         padding: 10px 10px;
         border-radius: 14px;
-        border: 1px solid rgba(255,255,255,0.10);
-        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
     }
 
         .item input {
             margin-top: 3px;
             transform: scale(1.1);
+            accent-color: var(--accent);
         }
 
         .item .t {
             font-weight: 900;
-            color: rgba(255,255,255,0.90);
+            color: var(--text);
             font-size: 13px;
         }
 
         .item .p {
             margin-top: 4px;
-            color: rgba(255,255,255,0.72);
+            color: var(--muted);
             font-weight: 750;
             font-size: 12px;
-            line-height: 1.5;
+            line-height: 1.55;
         }
 
     .pillRow {
@@ -164,37 +192,43 @@
     .pill {
         padding: 7px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.05);
-        color: rgba(255,255,255,0.82);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
         font-weight: 850;
         font-size: 12px;
     }
 
         .pill.good {
-            border-color: rgba(34,197,94,0.35);
+            border-color: #bbf7d0;
+            background: var(--good-soft);
+            color: var(--good);
         }
 
         .pill.warn {
-            border-color: rgba(245,158,11,0.35);
+            border-color: #fed7aa;
+            background: var(--warn-soft);
+            color: var(--warn);
         }
 
         .pill.bad {
-            border-color: rgba(239,68,68,0.35);
+            border-color: #fecaca;
+            background: var(--bad-soft);
+            color: var(--bad);
         }
 
     details {
         margin-top: 12px;
         border-radius: 14px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.18);
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
         padding: 12px;
     }
 
         details summary {
             cursor: pointer;
             font-weight: 950;
-            color: rgba(255,255,255,0.92);
+            color: var(--text);
             list-style: none;
         }
 
@@ -204,20 +238,21 @@
 
         details .content {
             margin-top: 10px;
-            color: rgba(255,255,255,0.78);
+            color: var(--muted);
             font-weight: 750;
             font-size: 12px;
-            line-height: 1.6;
+            line-height: 1.65;
         }
 
     .links a {
-        color: rgba(99,102,241,0.95);
+        color: var(--accent);
         font-weight: 900;
         text-decoration: none;
     }
 
         .links a:hover {
             text-decoration: underline;
+            color: var(--accent-hover);
         }
 
     @@media (max-width: 980px) {
@@ -251,25 +286,16 @@
             color: #000 !important;
         }
 
-        .item, .card {
+        .item, .card, .hero, details {
             background: #fff !important;
             border: 1px solid #ddd !important;
         }
 
-            .item .t, .item .p {
+            .item .t, .item .p, .hint, .sub, .pill, .links a, h1, h2 {
                 color: #000 !important;
             }
 
-        .hint, .sub {
-            color: #111 !important;
-        }
-
-        .pill {
-            color: #000 !important;
-        }
-
         .links a {
-            color: #000 !important;
             text-decoration: underline !important;
         }
     }
@@ -280,7 +306,7 @@
         <div>
             <h1>Tenant Checklist</h1>
             <div class="sub">
-                A real, practical checklist to help you move from “Shortlist results” → “sign the lease” with confidence.
+                A real, practical checklist to help you move from “Shortlist results” to “sign the lease” with confidence.
                 You can print this page and take it with you for viewings.
             </div>
         </div>
@@ -295,14 +321,14 @@
         <!-- LEFT COLUMN -->
         <div class="card">
             <h2>Before you book a viewing</h2>
-            <div class="hint">Goal: avoid scams + filter out bad listings early.</div>
+            <div class="hint">Goal: avoid scams and filter out bad listings early.</div>
 
             <div class="list">
                 <div class="item">
                     <input type="checkbox" />
                     <div>
                         <div class="t">Confirm the address is real</div>
-                        <div class="p">Search the address and check if photos match (be cautious if the same images appear on multiple sites).</div>
+                        <div class="p">Search the address and check if photos match. Be cautious if the same images appear on multiple sites.</div>
                     </div>
                 </div>
 
@@ -318,7 +344,7 @@
                     <input type="checkbox" />
                     <div>
                         <div class="t">Never pay to “hold” a unit before you view</div>
-                        <div class="p">A legit landlord will allow a viewing and provide paperwork before money changes hands.</div>
+                        <div class="p">A legitimate landlord should allow a viewing and provide paperwork before money changes hands.</div>
                     </div>
                 </div>
             </div>
@@ -331,28 +357,28 @@
                             <input type="checkbox" />
                             <div>
                                 <div class="t">Water pressure + hot water</div>
-                                <div class="p">Test sinks/shower. Check for leaks under the sink.</div>
+                                <div class="p">Test sinks and shower. Check for leaks under the sink.</div>
                             </div>
                         </div>
                         <div class="item">
                             <input type="checkbox" />
                             <div>
-                                <div class="t">Windows/locks + cell signal</div>
-                                <div class="p">Open/close windows; confirm doors lock properly; check signal if important.</div>
+                                <div class="t">Windows, locks, and cell signal</div>
+                                <div class="p">Open and close windows, confirm doors lock properly, and check signal if that matters to you.</div>
                             </div>
                         </div>
                         <div class="item">
                             <input type="checkbox" />
                             <div>
                                 <div class="t">Noise level</div>
-                                <div class="p">Hallway noise, traffic, and nearby construction can be deal breakers.</div>
+                                <div class="p">Hallway noise, traffic, and nearby construction can become deal breakers.</div>
                             </div>
                         </div>
                         <div class="item">
                             <input type="checkbox" />
                             <div>
-                                <div class="t">Heating/cooling + ventilation</div>
-                                <div class="p">Ask how heating works and who controls it (unit vs building).</div>
+                                <div class="t">Heating, cooling, and ventilation</div>
+                                <div class="p">Ask how heating works and who controls it: the unit or the building.</div>
                             </div>
                         </div>
                     </div>
@@ -363,9 +389,9 @@
                 <summary>Application package (what to prepare)</summary>
                 <div class="content">
                     <div class="list">
-                        <div class="item"><input type="checkbox" /><div><div class="t">Proof of income</div><div class="p">Pay stubs / offer letter / bank statements (only what’s required).</div></div></div>
-                        <div class="item"><input type="checkbox" /><div><div class="t">References</div><div class="p">Previous landlord + employer references if possible.</div></div></div>
-                        <div class="item"><input type="checkbox" /><div><div class="t">ID (safe sharing)</div><div class="p">Bring ID for viewing; avoid sending unnecessary sensitive docs unless required.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">Proof of income</div><div class="p">Pay stubs, offer letter, or bank statements — only what is actually required.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">References</div><div class="p">Previous landlord and employer references if possible.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">ID (safe sharing)</div><div class="p">Bring ID for viewing. Avoid sending unnecessary sensitive documents unless required.</div></div></div>
                     </div>
                 </div>
             </details>
@@ -374,9 +400,9 @@
                 <summary>Lease signing (don’t skip these)</summary>
                 <div class="content">
                     <div class="list">
-                        <div class="item"><input type="checkbox" /><div><div class="t">Read everything + clarify utilities</div><div class="p">Confirm what’s included: hydro, water, internet, parking, storage.</div></div></div>
-                        <div class="item"><input type="checkbox" /><div><div class="t">Get receipts + keep a copy</div><div class="p">Always keep proof for deposits/first month and a signed copy of the lease.</div></div></div>
-                        <div class="item"><input type="checkbox" /><div><div class="t">Move-in inspection photos</div><div class="p">Record condition on day 1 (photos/video) to avoid disputes later.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">Read everything and clarify utilities</div><div class="p">Confirm what’s included: hydro, water, internet, parking, and storage.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">Get receipts and keep a copy</div><div class="p">Always keep proof for deposits, first month’s rent, and a signed copy of the lease.</div></div></div>
+                        <div class="item"><input type="checkbox" /><div><div class="t">Move-in inspection photos</div><div class="p">Record the condition on day one with photos or video to avoid disputes later.</div></div></div>
                     </div>
                 </div>
             </details>
@@ -400,7 +426,7 @@
                     <input type="checkbox" />
                     <div>
                         <div class="t">They won’t show the unit</div>
-                        <div class="p">Excuses like “I’m out of the country” + asks for deposit → classic scam pattern.</div>
+                        <div class="p">Excuses like “I’m out of the country” plus a request for deposit are a classic scam pattern.</div>
                     </div>
                 </div>
 
@@ -416,18 +442,10 @@
                     <input type="checkbox" />
                     <div>
                         <div class="t">The listing details keep changing</div>
-                        <div class="p">Rent amount, address, or included utilities changes when you ask questions.</div>
+                        <div class="p">Rent amount, address, or included utilities changes when you ask basic questions.</div>
                     </div>
                 </div>
             </div>
-
-            <details>
-                <summary>Quick tips that impress judges</summary>
-                <div class="content">
-                    This page makes your app more “end-to-end”: not only finding a location, but helping users
-                    take action safely. It’s realistic, useful, and easy to demo in 20 seconds.
-                </div>
-            </details>
 
             <details class="links">
                 <summary>Helpful links (Ontario)</summary>
@@ -435,8 +453,8 @@
                     <div>• Landlord and Tenant Board (LTB): <a href="https://tribunalsontario.ca/ltb/" target="_blank" rel="noopener noreferrer">tribunalsontario.ca/ltb</a></div>
                     <div>• Ontario Standard Lease info: <a href="https://www.ontario.ca/page/guide-ontarios-standard-lease" target="_blank" rel="noopener noreferrer">ontario.ca/page/guide-ontarios-standard-lease</a></div>
                     <div>• Tenant rights overview: <a href="https://www.ontario.ca/page/renting-ontario-your-rights" target="_blank" rel="noopener noreferrer">ontario.ca/page/renting-ontario-your-rights</a></div>
-                    <div style="margin-top:8px; color: rgba(255,255,255,0.70);">
-                        Tip: If you want, we can add a “Resources” section per city later (Waterloo, Kitchener, Toronto).
+                    <div style="margin-top:8px; color: var(--muted);">
+                        Tip: You can add a city-specific resources section later for Waterloo, Kitchener, or Toronto.
                     </div>
                 </div>
             </details>

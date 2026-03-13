@@ -5,21 +5,31 @@
 
 <style>
     :root {
-        --bg: #0b0d12;
-        --surface: rgba(255,255,255,0.06);
-        --surface2: rgba(255,255,255,0.10);
-        --border: rgba(255,255,255,0.12);
-        --text: rgba(255,255,255,0.92);
-        --muted: rgba(255,255,255,0.74);
-        --muted2: rgba(255,255,255,0.60);
+        --bg: #f5f7fb;
+        --bg2: #eef3f9;
+        --surface: #ffffff;
+        --surface-soft: #f8fafc;
+        --surface-tint: #eef2ff;
+        --border: #dbe3ee;
+        --border-strong: #cbd5e1;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
         --accent: #4f46e5;
-        --shadow: 0 18px 60px rgba(0,0,0,0.35);
-        --shadow2: 0 10px 30px rgba(0,0,0,0.25);
+        --accent-hover: #4338ca;
+        --accent-soft: #e9e7ff;
+        --good: #15803d;
+        --good-soft: #e8f7ee;
+        --danger: #b91c1c;
+        --danger-soft: #fef2f2;
+        --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+        --shadow2: 0 10px 24px rgba(15, 23, 42, 0.06);
         --radius: 20px;
+        --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
     }
 
     body {
-        background: radial-gradient(900px 380px at 15% 0%, rgba(79,70,229,0.35), transparent 60%), radial-gradient(700px 320px at 90% 30%, rgba(34,197,94,0.20), transparent 55%), linear-gradient(180deg, #07080c, #0b0d12 45%, #0b0d12);
+        background: radial-gradient(1000px 500px at 10% -5%, rgba(79,70,229,0.10), transparent 60%), radial-gradient(900px 460px at 100% 0%, rgba(34,197,94,0.08), transparent 58%), linear-gradient(180deg, var(--bg), var(--bg2));
     }
 
     .shell {
@@ -32,7 +42,7 @@
     .topbar {
         border-radius: var(--radius);
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
         box-shadow: var(--shadow2);
         padding: 18px;
         display: grid;
@@ -47,6 +57,7 @@
         font-size: 28px;
         letter-spacing: -0.6px;
         font-weight: 950;
+        color: var(--text);
     }
 
     .title .sub {
@@ -54,7 +65,7 @@
         color: var(--muted);
         font-size: 13px;
         font-weight: 750;
-        line-height: 1.45;
+        line-height: 1.5;
     }
 
     .saveForm {
@@ -69,75 +80,95 @@
     .inputx {
         width: 100%;
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.22);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 12px;
         font-weight: 850;
         outline: none;
+        box-shadow: var(--shadow2);
     }
 
         .inputx::placeholder {
-            color: rgba(255,255,255,0.50);
+            color: var(--muted2);
             font-weight: 750;
+        }
+
+        .inputx:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
         }
 
     .btnx {
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 14px;
-        font-weight: 950;
+        font-weight: 900;
         cursor: pointer;
-        transition: transform .12s ease, background .12s ease, border .12s ease;
+        transition: transform .12s ease, background .12s ease, border .12s ease, box-shadow .12s ease;
         user-select: none;
         white-space: nowrap;
+        box-shadow: var(--shadow2);
     }
 
         .btnx:hover {
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.10);
-            border-color: rgba(255,255,255,0.22);
+            background: var(--surface-soft);
+            border-color: var(--border-strong);
+        }
+
+        .btnx:focus-visible {
+            outline: none;
+            box-shadow: var(--focus);
         }
 
         .btnx.primary {
-            background: linear-gradient(135deg, rgba(79,70,229,0.95), rgba(79,70,229,0.62));
-            border-color: rgba(79,70,229,0.55);
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            border-color: var(--accent);
+            color: #ffffff;
             box-shadow: 0 14px 34px rgba(79,70,229,0.20);
         }
 
+            .btnx.primary:hover {
+                background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+                border-color: var(--accent-hover);
+            }
+
         .btnx.ghost {
-            background: rgba(255,255,255,0.06);
+            background: var(--surface);
+            color: var(--text);
         }
 
         .btnx.danger {
-            background: rgba(239,68,68,0.10);
-            border-color: rgba(239,68,68,0.25);
+            background: var(--danger-soft);
+            border-color: #fecaca;
+            color: var(--danger);
         }
 
             .btnx.danger:hover {
-                background: rgba(239,68,68,0.18);
-                border-color: rgba(239,68,68,0.35);
+                background: #fee2e2;
+                border-color: #fca5a5;
             }
 
         .btnx.mini {
             padding: 9px 12px;
-            font-weight: 950;
+            font-weight: 900;
         }
 
     .board {
         border-radius: var(--radius);
         border: 1px solid var(--border);
-        background: rgba(255,255,255,0.05);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
         box-shadow: var(--shadow2);
         overflow: hidden;
     }
 
     .boardHead {
         padding: 14px 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.10);
-        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #fafcff, #f6f9ff);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -148,7 +179,7 @@
             color: var(--muted);
             font-weight: 800;
             font-size: 12px;
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
     .list {
@@ -157,9 +188,9 @@
 
     .rowCard {
         border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(0,0,0,0.20);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: var(--shadow2);
         padding: 14px;
         margin: 10px 4px;
         display: grid;
@@ -172,6 +203,7 @@
         font-weight: 950;
         font-size: 15px;
         letter-spacing: -0.2px;
+        color: var(--text);
     }
 
     .meta {
@@ -191,9 +223,9 @@
         gap: 8px;
         padding: 6px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(255,255,255,0.06);
-        color: rgba(255,255,255,0.85);
+        border: 1px solid #d8d4fe;
+        background: var(--surface-tint);
+        color: var(--accent);
         font-weight: 900;
         font-size: 11px;
     }
@@ -215,12 +247,13 @@
     .toast {
         margin: 0 0 14px;
         border-radius: 16px;
-        border: 1px solid rgba(34,197,94,0.25);
-        background: rgba(34,197,94,0.10);
+        border: 1px solid #bbf7d0;
+        background: var(--good-soft);
         padding: 12px 14px;
-        color: rgba(255,255,255,0.92);
+        color: var(--good);
         font-weight: 900;
         display: none;
+        box-shadow: var(--shadow2);
     }
 
         .toast.on {
@@ -263,7 +296,6 @@
             </div>
         </div>
 
-        <!-- Just show the auto-name preview (NO save button here as requested) -->
         <div class="saveForm">
             <input id="autoName" class="inputx" readonly
                    placeholder="Auto-name preview (based on your current Filters)" />
@@ -349,7 +381,6 @@
         }
     }
 
-    // Calls SavedSearchesController.RegenerateShareLink(id) which returns { token: "..." }
     async function regenerateShare(id) {
         try {
             const res = await fetch(`/SavedSearches/RegenerateShareLink?id=${encodeURIComponent(id)}`, {
@@ -362,7 +393,6 @@
                 return;
             }
 
-            // easiest UX: just refresh page (new token shown in generated share link)
             showToast("New share link generated ✅");
             setTimeout(() => location.reload(), 800);
         } catch (e) {
@@ -378,7 +408,6 @@
             const data = await res.json();
             let parts = [];
 
-            // adapt to your payload keys
             const budget = data.budget ?? data.Budget;
             const dist = data.maxDistanceKm ?? data.distanceKm ?? data.MaxDistanceKm;
             const priorities = data.priorities ?? data.Priorities ?? [];

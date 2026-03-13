@@ -8,80 +8,157 @@
     <link rel="stylesheet" href="~/css/site.css" />
 
     <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: rgba(255,255,255,0.92);
+            --surface-strong: #ffffff;
+            --border: #dbe3ee;
+            --border-strong: #cbd5e1;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --accent-soft: #eef2ff;
+            --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+            --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
+        }
+
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            margin: 0;
+            color: var(--text);
+        }
+
         .topbar {
             position: sticky;
             top: 0;
             z-index: 1000;
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 14px rgba(15, 23, 42, 0.04);
+        }
+
+        .topbar-inner {
+            width: 100%;
+            padding: 12px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 18px;
-            background: linear-gradient(180deg, #0b0d12, #0b0d12);
-            border-bottom: 1px solid rgba(255,255,255,0.10);
+            gap: 18px;
+            box-sizing: border-box;
         }
 
         .brand {
-            color: rgba(255,255,255,0.92);
+            color: var(--text);
             font-weight: 950;
-            letter-spacing: -0.3px;
-            font-size: 18px;
+            letter-spacing: -0.4px;
+            font-size: 20px;
+            text-decoration: none;
+            flex: 0 0 auto;
         }
 
-        .nav {
+        .nav-wrap {
+            flex: 1 1 auto;
+            min-width: 0;
             display: flex;
+            justify-content: flex-end;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+        }
+
+            .nav-wrap::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .nav-wrap::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 999px;
+            }
+
+        .nav {
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            min-width: max-content;
+            margin-left: auto;
         }
 
             .nav a {
-                color: rgba(255,255,255,0.88);
+                color: var(--text);
                 text-decoration: none;
-                padding: 8px 10px;
-                border-radius: 10px;
+                padding: 9px 12px;
+                border-radius: 12px;
                 font-weight: 850;
                 display: inline-flex;
                 align-items: center;
+                justify-content: center;
                 gap: 8px;
+                transition: background .12s ease, color .12s ease, transform .12s ease;
+                flex: 0 0 auto;
             }
 
                 .nav a:hover {
-                    background: rgba(255,255,255,0.08);
-                    color: rgba(255,255,255,0.96);
+                    background: var(--accent-soft);
+                    color: var(--accent);
+                    transform: translateY(-1px);
+                }
+
+                .nav a:focus-visible,
+                .nav-btn:focus-visible {
+                    outline: none;
+                    box-shadow: var(--focus);
+                }
+
+                .nav a.active-link {
+                    background: var(--accent-soft);
+                    color: var(--accent);
                 }
 
         .nav-btn {
-            border: 1px solid rgba(255,255,255,0.18);
-            background: rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.92);
-            padding: 8px 12px;
-            border-radius: 10px;
+            border: 1px solid var(--border-strong);
+            background: var(--surface-strong);
+            color: var(--text);
+            padding: 9px 13px;
+            border-radius: 12px;
             font-weight: 900;
             cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: background .12s ease, border .12s ease, transform .12s ease;
+            flex: 0 0 auto;
         }
 
             .nav-btn:hover {
-                background: rgba(255,255,255,0.12);
+                background: #f8fafc;
+                border-color: var(--border-strong);
+                transform: translateY(-1px);
             }
 
         .icon-only {
-            width: 38px;
-            height: 38px;
-            justify-content: center;
-            padding: 0;
-            border: 1px solid rgba(255,255,255,0.14);
-            background: rgba(255,255,255,0.06);
+            width: 40px;
+            height: 40px;
+            padding: 0 !important;
+            border: 1px solid var(--border-strong);
+            background: var(--surface-strong);
             border-radius: 12px;
+            box-shadow: var(--shadow);
         }
 
             .icon-only:hover {
-                background: rgba(255,255,255,0.10);
-                border-color: rgba(255,255,255,0.22);
+                background: var(--accent-soft) !important;
+                border-color: #c7d2fe;
             }
 
             .icon-only svg {
                 width: 18px;
                 height: 18px;
-                fill: rgba(255,255,255,0.90);
+                fill: var(--muted);
             }
 
         .page {
@@ -96,9 +173,11 @@
         .filter-summary {
             padding: 10px 16px;
             font-weight: 800;
-            color: rgba(255,255,255,0.80);
-            background: rgba(0,0,0,0.35);
-            border-bottom: 1px solid rgba(255,255,255,0.10);
+            color: var(--muted);
+            background: rgba(255,255,255,0.55);
+            border-bottom: 1px solid var(--border);
+            border-radius: 0 0 14px 14px;
+            margin-top: 2px;
         }
 
         .summary-item {
@@ -112,57 +191,91 @@
 
         .footer {
             margin-top: 18px;
-            padding: 14px 16px 20px;
-            color: rgba(255,255,255,0.55);
+            padding: 16px 16px 22px;
+            color: var(--muted);
             font-weight: 750;
             font-size: 12px;
-            border-top: 1px solid rgba(255,255,255,0.10);
+            border-top: 1px solid var(--border);
         }
 
             .footer a {
-                color: rgba(255,255,255,0.70);
+                color: var(--text);
                 text-decoration: none;
             }
 
                 .footer a:hover {
-                    color: rgba(255,255,255,0.88);
+                    color: var(--accent);
                     text-decoration: underline;
                 }
+
+        @@media (max-width: 860px) {
+            .topbar-inner {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 12px 16px;
+            }
+
+            .nav-wrap {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .nav {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+        string IsActive(string controller, string action = "Index")
+        => string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase)
+        ? "active-link"
+        : "";
+    }
+
     <header class="topbar">
-        <div class="brand">Shortlist</div>
+        <div class="topbar-inner">
+            <a class="brand" asp-controller="Home" asp-action="Index">Shortlist</a>
 
-        <nav class="nav">
-            <a asp-controller="Home" asp-action="Index">Home</a>
-            <a asp-controller="Filters" asp-action="Index">Filters</a>
-            <a asp-controller="Results" asp-action="Index">Results</a>
+            <div class="nav-wrap">
+                <nav class="nav">
+                    <a class="@IsActive("Home")" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="@IsActive("Filters")" asp-controller="Filters" asp-action="Index">Filters</a>
+                    <a class="@IsActive("Results")" asp-controller="Results" asp-action="Index">Results</a>
+                    <a class="@IsActive("Housing")" asp-controller="Housing" asp-action="Index">Housing Providers</a>
+                    <a class="@IsActive("TenantChecklist")" asp-controller="TenantChecklist" asp-action="Index">Tenant Checklist</a>
+                    <a class="@IsActive("Compare")" asp-controller="Compare" asp-action="Index">Compare</a>
 
-            <a asp-controller="Housing" asp-action="Index">Housing Providers</a>
-            <a asp-controller="TenantChecklist" asp-action="Index">Tenant Checklist</a>
-            <a asp-controller="Compare" asp-action="Index">Compare</a>
+                    <a class="icon-only @IsActive("Settings")" asp-controller="Settings" asp-action="Index" aria-label="Settings" title="Settings">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,13.8,2H10.2a.5.5,0,0,0-.49.42L9.33,5.07a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.86,11.06a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.49.42h3.6a.5.5,0,0,0,.49-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+                        </svg>
+                    </a>
 
-            <!-- Settings icon -->
-            <a asp-controller="Settings" asp-action="Index" class="icon-only" aria-label="Settings" title="Settings">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,13.8,2H10.2a.5.5,0,0,0-.49.42L9.33,5.07a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.86,11.06a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.49.42h3.6a.5.5,0,0,0,.49-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
-                </svg>
-            </a>
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="icon-only @IsActive("SavedSearches")" asp-controller="SavedSearches" asp-action="Index" aria-label="Saved Searches" title="Saved Searches">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M6 3h12a2 2 0 0 1 2 2v16l-8-4-8 4V5a2 2 0 0 1 2-2z" />
+                            </svg>
+                        </a>
 
-            @if (User?.Identity?.IsAuthenticated == true)
-            {
-                <a asp-controller="SavedSearches" asp-action="Index">Saved</a>
-
-                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
-                    <button type="submit" class="nav-btn">Logout</button>
-                </form>
-            }
-            else
-            {
-                <a asp-controller="Account" asp-action="Login">Login</a>
-            }
-        </nav>
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline;">
+                            <button type="submit" class="nav-btn">Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="@IsActive("Account", "Login")" asp-controller="Account" asp-action="Login">Login</a>
+                    }
+                </nav>
+            </div>
+        </div>
     </header>
 
     <div class="page">
@@ -171,6 +284,7 @@
         <main class="content">
             @RenderBody()
         </main>
+
         <footer class="footer">
             © @DateTime.Now.Year Shortlist. All rights reserved.
             <span style="opacity:.6">•</span>
