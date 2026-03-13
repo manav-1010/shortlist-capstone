@@ -4,8 +4,11 @@ using System.Text.Json;
 
 namespace Shortlist.Web.Controllers
 {
+    // collects user preferences.
+    // persists the current filter state in Session so Results can use it
     public class FiltersController : Controller
     {
+        // Filters UI and loads previously saved filter state
         [HttpGet]
         public IActionResult Index()
         {
@@ -32,8 +35,18 @@ namespace Shortlist.Web.Controllers
 
             SaveFilterState(state);
             return RedirectToAction("Index", "Results");
+            if (state.Lat is null || state.Lng is null)
+            {
+                ModelState.AddModelError("", "Please choose a location on the map.");
+                return View(state);
+            }
+
+            // Clamp radius
+            if (state.RadiusKm < 1) state.RadiusKm = 1;
+            if (state.RadiusKm > 25) state.RadiusKm = 25;
         }
 
+        // clears the current filter state from session and redirects back to filters page with defaults
         [HttpPost]
         public IActionResult Reset()
         {
@@ -41,6 +54,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        // ---------- Session persistence helpers -----------
         private FilterState GetFilterState()
         {
             var json = HttpContext.Session.GetString("FilterState");
@@ -48,10 +62,23 @@ namespace Shortlist.Web.Controllers
             return JsonSerializer.Deserialize<FilterState>(json) ?? new FilterState();
         }
 
+        // stores FilterState as JSON in session under the key "FilterState"
         private void SaveFilterState(FilterState state)
         {
             var json = JsonSerializer.Serialize(state);
             HttpContext.Session.SetString("FilterState", json);
+        }
+
+        // API endpoint for Results page to retrieve current filter state as JSON
+        [HttpGet]
+        public IActionResult GetCurrentFilterState()
+        {
+            var json = HttpContext.Session.GetString("FilterState");
+
+            if (string.IsNullOrEmpty(json))
+                return BadRequest();
+
+            return Content(json, "application/json");
         }
     }
 }

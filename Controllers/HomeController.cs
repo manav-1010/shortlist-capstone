@@ -9,6 +9,7 @@ namespace Shortlist.Web.Controllers
     {
         public IActionResult Index() => View();
 
+        // authorize is used so error details are only shown to authenticate users.
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         [Authorize]
         public IActionResult Error()

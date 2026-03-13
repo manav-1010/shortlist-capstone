@@ -9,6 +9,10 @@ using System.Security.Claims;
 
 namespace Shortlist.Web.Controllers
 {
+    // handles authentication for the app:
+    // - Local login/register using Users table
+    // - Google Login via OpenID Connect
+    // - Cookie-based sign-in and session user id stroage
     public class AccountController : Controller
     {
         private readonly AppDbContext _context;
@@ -17,22 +21,26 @@ namespace Shortlist.Web.Controllers
         {
             _context = context;
         }
-
+        // Shows the login page
+        // returnUrl is used to redirect back to the page the user was on after successful login
         [HttpGet]
         public IActionResult Login(string returnUrl = "/")
         {
             if (User.Identity?.IsAuthenticated ?? false)
-            {
                 return RedirectToAction("Index", "Home");
-            }
 
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password, string returnUrl = "/")
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+            email = (email ?? "").Trim();
+            password = password ?? "";
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
 
             if (user == null)
             {
@@ -40,82 +48,56 @@ namespace Shortlist.Web.Controllers
                 return View();
             }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
+            await SignInUserAsync(user);
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = true
-            };
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
-
-            return RedirectToAction("Index", "Home");
+            return LocalRedirect(returnUrl);
         }
-
+        // registration page, if already logged in, redirect to home page
         [HttpGet]
         public IActionResult Register()
         {
             if (User.Identity?.IsAuthenticated ?? false)
-            {
                 return RedirectToAction("Index", "Home");
-            }
 
             return View();
         }
-
+        // creates local account and signs in the user, then redirects to home page, if email already exists or passwords don't match, shows error message
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string password, string confirmPassword)
         {
+            name = (name ?? "").Trim();
+            email = (email ?? "").Trim();
+            password = password ?? "";
+            confirmPassword = confirmPassword ?? "";
+
             if (password != confirmPassword)
             {
                 TempData["ErrorMessage"] = "Passwords do not match.";
                 return View();
             }
-            if (_context.Users.Any(u => u.Email == email))
+
+            if (await _context.Users.AnyAsync(u => u.Email == email))
             {
                 TempData["ErrorMessage"] = "An account with this email already exists.";
                 return View();
             }
 
-            var newUser = new User
+            var newUser = new UserProfile
             {
-                Name = name,
+                Name = string.IsNullOrWhiteSpace(name) ? "User" : name,
                 Email = email,
                 Password = password
             };
 
             _context.Users.Add(newUser);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, newUser.Name),
-                new Claim(ClaimTypes.Email, newUser.Email),
-                new Claim(ClaimTypes.NameIdentifier, newUser.Id.ToString())
-            };
+            await SignInUserAsync(newUser);
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = true
-            };
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
             return RedirectToAction("Index", "Home");
         }
 
+        // starts google sign in using OpenID Connect, after successful login, user is redirected back to the returnUrl or home page
         [HttpGet]
         public IActionResult GoogleLogin(string returnUrl = "/")
         {
@@ -125,18 +107,45 @@ namespace Shortlist.Web.Controllers
             }, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
+        // logs the user out by 
+        // - clearing the session UserId
+        // - removing the auth cookie
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
+            HttpContext.Session.Remove("UserId");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
         }
 
+        // this is called when Google auth fails/cancels or access is denied
         [HttpGet]
         public IActionResult AccessDenied()
         {
             TempData["ErrorMessage"] = "Login was cancelled or access was denied. Please try again.";
             return RedirectToAction("Login");
+        }
+
+        // Creates the user's ClaimsPrincipal and signs them in via cookie authentication.
+        private async Task SignInUserAsync(UserProfile user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+            // issue the auth cookie.
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
+            HttpContext.Session.SetInt32("UserId", user.Id);
         }
     }
 }

@@ -3,190 +3,1225 @@
     Layout = "_Layout";
 }
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin="" />
+
 <style>
-    .results-container {
-        max-width: 1100px;
+    :root {
+        --bg: #f5f7fb;
+        --bg2: #eef3f9;
+        --surface: #ffffff;
+        --surface-soft: #f8fafc;
+        --surface-tint: #eef2ff;
+        --border: #dbe3ee;
+        --border-strong: #cbd5e1;
+        --text: #0f172a;
+        --muted: #475569;
+        --muted2: #64748b;
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+        --accent-soft: #e9e7ff;
+        --good: #15803d;
+        --good-soft: #e8f7ee;
+        --danger: #b91c1c;
+        --danger-soft: #fef2f2;
+        --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+        --shadow2: 0 10px 24px rgba(15, 23, 42, 0.06);
+        --radius: 20px;
+        --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
+    }
+
+    body {
+        background: radial-gradient(1000px 500px at 10% -5%, rgba(79,70,229,0.10), transparent 60%), radial-gradient(900px 460px at 100% 0%, rgba(34,197,94,0.08), transparent 58%), linear-gradient(180deg, var(--bg), var(--bg2));
+    }
+
+    .results-shell {
+        max-width: 1280px;
         margin: 0 auto;
+        padding: 18px 16px 16px;
     }
 
-    .results-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .clear-btn {
-        padding: 8px 14px;
-        border-radius: 8px;
-        border: none;
-        background: #eee;
-        cursor: pointer;
-        font-weight: 500;
-    }
-
-        .clear-btn:hover {
-            background: #ddd;
-        }
-
-    .results-layout {
+    .viewport {
+        height: calc(100vh - 24px);
         display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 28px;
+        grid-template-rows: auto auto 1fr;
+        gap: 14px;
+        min-height: 0;
     }
 
-    .result-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        margin-bottom: 18px;
-        transition: 0.2s ease;
-    }
-
-        .result-card:hover {
-            transform: translateY(-3px);
-        }
-
-    .result-header {
-        display: flex;
-        justify-content: space-between;
+    .results-topbar {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #f8fbff);
+        box-shadow: var(--shadow2);
+        padding: 18px;
+        color: var(--text);
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 14px;
         align-items: center;
     }
 
-    .result-title {
-        font-size: 18px;
-        font-weight: 600;
+    .titleBlock h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: -0.6px;
+        font-weight: 950;
+        color: var(--text);
     }
 
-    .score-badge {
-        background: #111;
-        color: #fff;
-        padding: 6px 14px;
-        border-radius: 999px;
-        font-weight: 600;
+    .titleBlock .sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.5;
     }
 
-    .explain-btn {
-        margin-top: 12px;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: none;
-        background: #f1f1f1;
-        cursor: pointer;
+    .controls {
+        display: grid;
+        grid-template-columns: 1fr auto auto auto;
+        gap: 10px;
+        align-items: center;
+        justify-self: end;
+        width: 100%;
     }
 
-        .explain-btn:hover {
-            background: #e3e3e3;
+    .inputx {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 850;
+        outline: none;
+    }
+
+        .inputx::placeholder {
+            color: var(--muted2);
+            font-weight: 750;
         }
 
-    .explain-panel {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid #eee;
-    }
+        .inputx:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
+        }
 
-    .explain-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .map-placeholder {
-        background: #fff;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        height: fit-content;
-    }
-
-    .map-box {
-        margin-top: 14px;
-        height: 300px;
-        background: #f2f2f2;
-        border-radius: 10px;
-        display: flex;
+    .btnx {
+        border-radius: 12px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: transform .12s ease, background .12s ease, border .12s ease, box-shadow .12s ease;
+        user-select: none;
+        white-space: nowrap;
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        color: #888;
-        font-size: 14px;
+        box-shadow: var(--shadow2);
     }
 
-    .empty-state {
-        background: #fff;
-        padding: 30px;
+        .btnx:hover {
+            transform: translateY(-1px);
+            background: var(--surface-soft);
+            border-color: var(--border-strong);
+        }
+
+        .btnx:focus-visible {
+            outline: none;
+            box-shadow: var(--focus);
+        }
+
+        .btnx.primary {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            border-color: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 14px 34px rgba(79,70,229,0.20);
+        }
+
+            .btnx.primary:hover {
+                background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+                border-color: var(--accent-hover);
+            }
+
+    .tabsRow {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 0;
+    }
+
+    .tabs {
+        display: inline-flex;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: var(--shadow2);
+    }
+
+        .tabs button {
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            padding: 10px 14px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+            .tabs button.active {
+                background: var(--surface-tint);
+                color: var(--accent);
+            }
+
+    .sortRow {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .selectx {
+        border-radius: 12px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text);
+        padding: 10px 12px;
+        font-weight: 900;
+        outline: none;
+        cursor: pointer;
+        min-width: 220px;
+        box-shadow: var(--shadow2);
+    }
+
+        .selectx:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
+        }
+
+    .mainGrid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 14px;
+        min-height: 0;
+    }
+
+    .leftPanel {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: var(--shadow2);
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto 1fr;
+    }
+
+    .kpiRow {
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, #fafcff, #f6f9ff);
+        border-top-left-radius: var(--radius);
+        border-top-right-radius: var(--radius);
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+    }
+
+    .kpi {
         border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        padding: 14px;
+        box-shadow: var(--shadow2);
+    }
+
+        .kpi .label {
+            color: var(--muted2);
+            font-weight: 850;
+            font-size: 11px;
+        }
+
+        .kpi .value {
+            color: var(--text);
+            font-weight: 950;
+            font-size: 18px;
+            margin-top: 4px;
+        }
+
+        .kpi .mini {
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+    .cardsScroll {
+        padding: 16px;
+        overflow: auto;
+        min-height: 0;
+    }
+
+    .loadingBox, .emptyBox {
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        padding: 16px;
+        color: var(--text);
+        margin-bottom: 12px;
+        box-shadow: var(--shadow2);
+    }
+
+        .loadingBox .t, .emptyBox .t {
+            font-weight: 950;
+            font-size: 16px;
+        }
+
+        .loadingBox .p, .emptyBox .p {
+            color: var(--muted);
+            font-weight: 750;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+    .rCard {
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: var(--shadow2);
+        padding: 16px;
+        margin-bottom: 14px;
+    }
+
+    .rHead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .rTitle {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .rTitle .name {
+            font-weight: 950;
+            letter-spacing: -0.2px;
+            font-size: 16px;
+            color: var(--text);
+        }
+
+        .rTitle .sub {
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+        }
+
+    .badgeRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .chip {
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+        color: var(--muted);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+    .score {
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--surface-tint);
+        border: 1px solid #c7d2fe;
+        color: var(--accent);
+        font-weight: 950;
+        min-width: 64px;
         text-align: center;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        font-size: 13px;
+    }
+
+    .overviewRow {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 14px;
+        margin-top: 14px;
+    }
+
+    .box {
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+        padding: 14px;
+    }
+
+        .box h4 {
+            margin: 0 0 10px;
+            font-weight: 950;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .box ul {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+    .bars {
+        display: grid;
+        gap: 10px;
+    }
+
+    .barLine {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .barLabel {
+        color: var(--muted);
+        font-weight: 850;
+        font-size: 12px;
+    }
+
+    .barPct {
+        color: var(--text);
+        font-weight: 950;
+        font-size: 12px;
+    }
+
+    .bar {
+        height: 11px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #eef2f7;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+
+    .fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent), #22c55e);
+    }
+
+    .analyticsBlock {
+        margin-top: 14px;
+        display: none;
+    }
+
+        .analyticsBlock.on {
+            display: grid;
+            gap: 14px;
+        }
+
+    .rightPanel {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: var(--shadow2);
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .snapGrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .snap {
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        padding: 14px;
+        box-shadow: var(--shadow2);
+    }
+
+        .snap .t {
+            color: var(--muted2);
+            font-weight: 850;
+            font-size: 11px;
+        }
+
+        .snap .v {
+            color: var(--text);
+            font-weight: 950;
+            font-size: 18px;
+            margin-top: 4px;
+        }
+
+        .snap .s {
+            color: var(--muted);
+            font-weight: 750;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+    .mapBox {
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        background: var(--surface);
+        min-height: 0;
+        box-shadow: var(--shadow2);
+    }
+
+    #resultsMap {
+        height: 100%;
+        width: 100%;
+        min-height: 0;
+    }
+
+    .radiusBox {
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        padding: 14px;
+        color: var(--text);
+        box-shadow: var(--shadow2);
+    }
+
+        .radiusBox .line {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+            .radiusBox .line strong {
+                color: var(--text);
+                font-weight: 950;
+            }
+
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+        background: #ffffff !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10) !important;
+    }
+
+    .leaflet-popup-content {
+        color: var(--text) !important;
+        font-weight: 850 !important;
+    }
+
+    @@media (max-width: 1040px) {
+        .mainGrid {
+            grid-template-columns: 1fr;
+        }
+
+        .controls {
+            grid-template-columns: 1fr;
+            justify-self: stretch;
+        }
+
+        .viewport {
+            height: auto;
+        }
+
+        .cardsScroll {
+            max-height: 60vh;
+        }
+
+        .kpiRow {
+            grid-template-columns: 1fr;
+        }
+
+        .overviewRow {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
-<div class="results-container">
+<div class="results-shell">
+    <div class="viewport">
 
-    <div class="results-header">
-        <h1>Results</h1>
+        <!-- TOP BAR -->
+        <section class="results-topbar">
+            <div class="titleBlock">
+                <h1>Results</h1>
+                <div class="sub">
+                    Clean overview for decisions + a full analytics view
+                </div>
+            </div>
 
-        <form method="post" asp-action="Clear">
-            <button class="clear-btn" type="submit">Clear All</button>
-        </form>
-    </div>
+            <div class="controls">
+                <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
+                <button id="btnSave" class="btnx primary" type="button">Save Search</button>
 
-    @if (Model.Items == null || Model.Items.Count == 0)
-    {
-        <div class="empty-state">
-            <h3>No results found</h3>
-            <p>Try adjusting your budget or priorities.</p>
+                <!-- Compare badge -->
+                <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
+
+                <form method="post" asp-action="Clear" style="margin:0;">
+                    <button class="btnx" type="submit">Clear All</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Tabs + Sort -->
+        <div class="tabsRow">
+            <div class="tabs" role="tablist" aria-label="Results view">
+                <button id="tabOverview" class="active" type="button">Overview</button>
+                <button id="tabAnalytics" type="button">Analytics</button>
+            </div>
+
+            <div class="sortRow">
+                <select id="sortMode" class="selectx">
+                    <option value="match">Sort: Highest Match</option>
+                    <option value="closest">Sort: Closest First</option>
+                    <option value="balanced">Sort: Most Balanced</option>
+                </select>
+            </div>
         </div>
-    }
-    else
-    {
-        <div class="results-layout">
 
-            <div>
-                @foreach (var item in Model.Items)
-                {
-                    <div class="result-card">
-                        <div class="result-header">
-                            <div class="result-title">@item.Name</div>
-                            <div class="score-badge">@item.Score</div>
+        <!-- MAIN GRID -->
+        <section class="mainGrid">
+
+            <!-- LEFT -->
+            <div class="leftPanel">
+                <div class="kpiRow">
+                    <div class="kpi">
+                        <div class="label">Overall Match</div>
+                        <div id="kpiOverall" class="value">—</div>
+                        <div id="kpiOverallSub" class="mini">Waiting for live data…</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="label">Top Strength</div>
+                        <div id="kpiStrength" class="value">—</div>
+                        <div id="kpiStrengthSub" class="mini">—</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="label">Weakest Area</div>
+                        <div id="kpiWeak" class="value">—</div>
+                        <div id="kpiWeakSub" class="mini">—</div>
+                    </div>
+                </div>
+
+                <div class="cardsScroll">
+                    <div id="loadingState" class="loadingBox" style="display:none;">
+                        <div class="t">Loading live results…</div>
+                        <div class="p">Fetching nearby places in real time (OpenStreetMap).</div>
+                    </div>
+
+                    <div id="emptyState" class="emptyBox" style="display:none;">
+                        <div class="t">No results found</div>
+                        <div class="p">Try increasing radius or choosing a different location.</div>
+                    </div>
+
+                    <div id="resultsList"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="rightPanel">
+
+                <div class="snapGrid">
+                    <div class="snap">
+                        <div class="t">Live Data Snapshot</div>
+                        <div id="snapTotal" class="v">—</div>
+                        <div class="s" id="snapSub">Total nearby places</div>
+                    </div>
+                    <div class="snap">
+                        <div class="t">Confidence</div>
+                        <div id="snapConf" class="v">—</div>
+                        <div class="s" id="snapConfSub">Based on match volume</div>
+                    </div>
+                </div>
+
+                <div class="mapBox">
+                    <div id="resultsMap"></div>
+                </div>
+
+                <div class="radiusBox">
+                    <div style="font-weight:950;">Radius & Location</div>
+                    <div class="line"><span>Search Radius</span><strong id="radRadius">—</strong></div>
+                    <div class="line"><span>Total Area Covered</span><strong id="radArea">—</strong></div>
+                    <div class="line"><span>Coordinates</span><strong id="radCoord">—</strong></div>
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+<script>
+    (function () {
+        // ----------------------------
+        // Inputs from server model
+        // ----------------------------
+        const filters = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Filters));
+        const lat = filters.lat ?? filters.Lat;
+        const lng = filters.lng ?? filters.Lng;
+        const radiusKm = filters.radiusKm ?? filters.RadiusKm ?? 3;
+        const priorities = (filters.priorities ?? filters.Priorities ?? []).map(p => (p || "").toLowerCase());
+
+        // ----------------------------
+        // DOM
+        // ----------------------------
+        const loading = document.getElementById("loadingState");
+        const empty = document.getElementById("emptyState");
+        const list = document.getElementById("resultsList");
+
+        const kpiOverall = document.getElementById("kpiOverall");
+        const kpiOverallSub = document.getElementById("kpiOverallSub");
+        const kpiStrength = document.getElementById("kpiStrength");
+        const kpiStrengthSub = document.getElementById("kpiStrengthSub");
+        const kpiWeak = document.getElementById("kpiWeak");
+        const kpiWeakSub = document.getElementById("kpiWeakSub");
+
+        const sortMode = document.getElementById("sortMode");
+
+        const snapTotal = document.getElementById("snapTotal");
+        const snapConf = document.getElementById("snapConf");
+
+        const radRadius = document.getElementById("radRadius");
+        const radArea = document.getElementById("radArea");
+        const radCoord = document.getElementById("radCoord");
+
+        const tabOverview = document.getElementById("tabOverview");
+        const tabAnalytics = document.getElementById("tabAnalytics");
+        let analyticsMode = false;
+
+        function show(el){ if(el) el.style.display=""; }
+        function hide(el){ if(el) el.style.display="none"; }
+
+        hide(empty);
+        show(loading);
+
+        // ----------------------------
+        // Tabs
+        // ----------------------------
+        function setTab(mode){
+            analyticsMode = mode === "analytics";
+            tabOverview.classList.toggle("active", !analyticsMode);
+            tabAnalytics.classList.toggle("active", analyticsMode);
+            renderCards();
+        }
+        tabOverview.addEventListener("click", () => setTab("overview"));
+        tabAnalytics.addEventListener("click", () => setTab("analytics"));
+
+        // ----------------------------
+        // Map init
+        // ----------------------------
+        const mapLat = lat ?? 43.4516;
+        const mapLng = lng ?? -80.4925;
+
+        const map = L.map("resultsMap").setView([mapLat, mapLng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const markersLayer = L.layerGroup().addTo(map);
+        let radiusCircle = null;
+        let pinMarker = null;
+
+        function setPinAndCircle(lat0, lng0){
+            if (radiusCircle) radiusCircle.remove();
+            if (pinMarker) pinMarker.remove();
+
+            radiusCircle = L.circle([lat0, lng0], { radius: radiusKm * 1000 }).addTo(map);
+            pinMarker = L.marker([lat0, lng0]).addTo(map).bindPopup("Selected location").openPopup();
+            map.setView([lat0, lng0], 13);
+        }
+
+        setTimeout(() => { try { map.invalidateSize(); } catch(e){} }, 200);
+
+        if (!lat || !lng) {
+            hide(loading);
+            show(empty);
+            empty.querySelector(".p").textContent = "Go back to Filters and pick a location on the map.";
+            kpiOverall.textContent = "—";
+            kpiOverallSub.textContent = "No location selected";
+            snapTotal.textContent = "—";
+            snapConf.textContent = "—";
+            return;
+        }
+
+        setPinAndCircle(lat, lng);
+
+        // ----------------------------
+        // Save Search
+        // ----------------------------
+        document.getElementById("btnSave").addEventListener("click", async () => {
+            const name = (document.getElementById("saveName").value || "").trim() || "Saved Search";
+
+            const res = await fetch("/SavedSearches/SaveCurrent", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ name })
+            });
+
+            if (res.status === 401) {
+                alert("You are not logged in. Please login again.");
+                return;
+            }
+
+            if (!res.ok) {
+                const t = await res.text();
+                alert("Save failed: " + t);
+                return;
+            }
+
+            alert("Saved!");
+        });
+
+        // ----------------------------
+        // Compare badge + API calls
+        // ----------------------------
+        async function refreshCompareCount() {
+            try {
+                const r = await fetch("/Compare/Count");
+                if (!r.ok) return;
+                const j = await r.json();
+                const link = document.getElementById("compareLink");
+                if (link) link.textContent = `Compare (${j.count})`;
+            } catch {}
+        }
+
+        async function addToCompare(p) {
+            const payload = {
+                id: p.id,
+                name: p.name,
+                category: p.category,
+                lat: p.lat,
+                lng: p.lng,
+                distKm: p.distKm
+            };
+
+            const res = await fetch("/Compare/Add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const t = await res.text();
+                alert("Compare failed: " + t);
+                return;
+            }
+
+            await refreshCompareCount();
+            alert("Added to Compare!");
+        }
+
+        refreshCompareCount();
+
+        // ----------------------------
+        // Helpers
+        // ----------------------------
+        function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+        function fmt(n, digits=0){ return Number.isFinite(n) ? n.toFixed(digits) : "—"; }
+
+        function haversineKm(aLat, aLng, bLat, bLng){
+            const R = 6371;
+            const dLat = (bLat-aLat) * Math.PI/180;
+            const dLng = (bLng-aLng) * Math.PI/180;
+            const s1 = Math.sin(dLat/2), s2 = Math.sin(dLng/2);
+            const x = s1*s1 + Math.cos(aLat*Math.PI/180)*Math.cos(bLat*Math.PI/180)*s2*s2;
+            return 2*R*Math.asin(Math.sqrt(x));
+        }
+
+        function percentile(arr, p){
+            if (!arr.length) return 0;
+            const s = [...arr].sort((a,b)=>a-b);
+            const idx = (s.length-1)*p;
+            const lo = Math.floor(idx), hi = Math.ceil(idx);
+            if (lo === hi) return s[lo];
+            return s[lo] + (s[hi]-s[lo])*(idx-lo);
+        }
+
+        function confidenceLabel(total){
+            if (total >= 25) return { label:"High", pct: 92 };
+            if (total >= 12) return { label:"Medium", pct: 76 };
+            if (total >= 5)  return { label:"Low", pct: 58 };
+            return { label:"Very Low", pct: 40 };
+        }
+
+        function classify(tags) {
+            if (tags.shop === "supermarket" || tags.shop === "convenience") return "grocery";
+            if (tags.highway === "bus_stop" || tags.amenity === "bus_station" || tags.railway === "station") return "transit";
+            if (tags.leisure === "fitness_centre" || tags.amenity === "gym") return "gym/fitness";
+            if (tags.leisure === "park") return "parks";
+            if (tags.amenity === "parking") return "parking";
+            if (tags.amenity === "laundry" || tags.shop === "laundry") return "laundry";
+            if (tags.amenity === "police" || tags.amenity === "fire_station") return "safety";
+            if (tags.amenity === "library" || tags.amenity === "community_centre") return "quiet";
+            return "other";
+        }
+
+        const priorityToCategory = {
+            "grocery": "grocery",
+            "transit": "transit",
+            "gym/fitness": "gym/fitness",
+            "parks": "parks",
+            "parking": "parking",
+            "laundry": "laundry",
+            "safety": "safety",
+            "quiet": "quiet"
+        };
+
+        const weightModel = { density: 0.50, anchor: 0.30, access: 0.20 };
+
+        function anchorScore(cat, tags){
+            if (cat === "transit" && (tags.railway === "station" || tags.public_transport === "station" || tags.amenity === "bus_station")) return 1;
+            if (cat === "grocery" && (tags.shop === "supermarket")) return 1;
+            if (cat === "parks" && (tags.leisure === "park" && (tags.name || "").length > 0)) return 1;
+            if (cat === "gym/fitness" && (tags.leisure === "fitness_centre" || tags.amenity === "gym")) return 1;
+            if (cat === "parking" && tags.amenity === "parking") return 1;
+            if (cat === "laundry" && (tags.amenity === "laundry" || tags.shop === "laundry")) return 1;
+            if (cat === "safety" && (tags.amenity === "police" || tags.amenity === "fire_station")) return 1;
+            return 0;
+        }
+
+        // ----------------------------
+        // UI state
+        // ----------------------------
+        let cards = [];
+        sortMode.addEventListener("change", () => renderCards());
+
+        // ----------------------------
+        // Fetch live data + compute
+        // ----------------------------
+        (async function run() {
+            try {
+                radRadius.textContent = `${fmt(radiusKm,0)} km`;
+                const areaKm2 = Math.PI * radiusKm * radiusKm;
+                radArea.textContent = `${fmt(areaKm2,1)} km²`;
+                radCoord.textContent = `${fmt(lat,4)}, ${fmt(lng,4)}`;
+
+                const resp = await fetch(`/api/search?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radiusKm=${encodeURIComponent(radiusKm)}`);
+                if (!resp.ok) throw new Error("Search API failed");
+                const data = await resp.json();
+
+                const elements = data.elements || [];
+                const pois = elements
+                    .filter(e => typeof e.lat === "number" && typeof e.lon === "number")
+                    .map(e => {
+                        const tags = e.tags || {};
+                        const name = tags.name || "Unnamed place";
+                        const distKm = haversineKm(lat, lng, e.lat, e.lon);
+
+                        // ✅ stable id for compare
+                        const id = `${e.type}:${e.id}`;
+
+                        return { id, name, lat: e.lat, lng: e.lon, tags, distKm };
+                    })
+                    .filter(p => p.distKm <= radiusKm + 0.0001);
+
+                hide(loading);
+
+                if (!pois.length) {
+                    show(empty);
+                    snapTotal.textContent = "0";
+                    snapConf.textContent = "Very Low";
+                    kpiOverall.textContent = "—";
+                    kpiOverallSub.textContent = "No matches in radius";
+                    return;
+                }
+
+                hide(empty);
+
+                snapTotal.textContent = `${pois.length}`;
+                const conf = confidenceLabel(pois.length);
+                snapConf.textContent = conf.label;
+
+                // group by category
+                const byCategory = new Map();
+                for (const p of pois) {
+                    const cat = classify(p.tags);
+                    if (!byCategory.has(cat)) byCategory.set(cat, []);
+                    byCategory.get(cat).push(p);
+                }
+
+                const selectedCats = priorities.map(p => priorityToCategory[p]).filter(Boolean);
+                const catsToShow = selectedCats.length
+                    ? selectedCats
+                    : ["grocery","transit","parks","gym/fitness","laundry","parking","safety","quiet"];
+
+                function computeCategoryCard(cat){
+                    const items = (byCategory.get(cat) || []);
+                    if (!items.length) return null;
+
+                    const count = items.length;
+                    const topItems = items.slice(0, 8);
+
+                    const densityCap = 12;
+                    const densityPct = clamp((count / densityCap) * 100, 5, 100);
+
+                    const anchors = items.reduce((acc,p)=>acc + anchorScore(cat,p.tags), 0);
+                    const anchorPct = clamp((anchors / 3) * 100, 0, 100);
+
+                    const avgDist = items.reduce((a,p)=>a+p.distKm,0) / count;
+                    const accessPct = clamp(100 - (avgDist / radiusKm) * 100, 0, 100);
+
+                    const score = Math.round(
+                        densityPct * weightModel.density +
+                        anchorPct * weightModel.anchor +
+                        accessPct * weightModel.access
+                    );
+
+                    const catConf = confidenceLabel(count);
+                    const dists = items.map(x=>x.distKm);
+                    const p50 = percentile(dists, 0.50);
+                    const p80 = percentile(dists, 0.80);
+
+                    const strengths = [];
+                    if (densityPct >= 70) strengths.push("High density coverage");
+                    if (anchorPct >= 35) strengths.push("Strong anchor presence");
+                    if (accessPct >= 70) strengths.push("Excellent access (close matches)");
+                    if (!strengths.length) strengths.push("Decent coverage within radius");
+
+                    const weaknesses = [];
+                    if (densityPct < 35) weaknesses.push("Limited options in this radius");
+                    if (anchorPct < 20) weaknesses.push("Few major anchor locations");
+                    if (accessPct < 40) weaknesses.push("Matches are spread out");
+
+                    return {
+                        key: cat,
+                        name: cat.toUpperCase(),
+                        score,
+                        count,
+                        avgDist,
+                        p50,
+                        p80,
+                        conf: catConf,
+                        densityPct: Math.round(densityPct),
+                        anchorPct: Math.round(anchorPct),
+                        accessPct: Math.round(accessPct),
+                        strengths,
+                        weaknesses,
+                        pois: topItems
+                    };
+                }
+
+                cards = [];
+                for (const cat of catsToShow) {
+                    const c = computeCategoryCard(cat);
+                    if (!c) continue;
+                    cards.push(c);
+                }
+
+                const overall = Math.round(cards.reduce((a,c)=>a+c.score,0) / cards.length);
+                const sorted = [...cards].sort((a,b)=>b.score-a.score);
+                const best = sorted[0];
+                const worst = sorted[sorted.length-1];
+
+                kpiOverall.textContent = `${overall} / 100`;
+                kpiOverallSub.textContent = selectedCats.length
+                    ? `Across your priorities (${selectedCats.length})`
+                    : `Across top categories in your radius`;
+
+                kpiStrength.textContent = best ? best.name : "—";
+                kpiStrengthSub.textContent = best ? `${best.count} matches • ${best.conf.label}` : "—";
+
+                kpiWeak.textContent = worst ? worst.name : "—";
+                kpiWeakSub.textContent = worst ? `${worst.count} matches • ${worst.conf.label}` : "—";
+
+                // markers (sample)
+                markersLayer.clearLayers();
+                const bounds = [];
+                for (const c of cards) {
+                    for (const p of c.pois) {
+                        const m = L.marker([p.lat, p.lng]).addTo(markersLayer)
+                            .bindPopup(`${p.name}<br/><span style="font-size:12px; color:#475569; font-weight:800;">${c.name}</span>`);
+                        bounds.push(m.getLatLng());
+                    }
+                }
+                if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+
+                renderCards();
+
+            } catch (err) {
+                hide(loading);
+                show(empty);
+                empty.querySelector(".p").textContent = "Live search failed. Try again or reduce radius.";
+                console.error(err);
+            }
+        })();
+
+        // ----------------------------
+        // Rendering
+        // ----------------------------
+        function renderCards(){
+            if (!cards || !cards.length) return;
+
+            const mode = sortMode.value;
+
+            let sorted = [...cards];
+            if (mode === "match") sorted.sort((a,b)=> b.score - a.score);
+            else if (mode === "closest") sorted.sort((a,b)=> a.avgDist - b.avgDist);
+            else if (mode === "balanced") {
+                const avg = sorted.reduce((a,c)=>a+c.score,0)/sorted.length;
+                sorted.sort((a,b)=> Math.abs(a.score-avg) - Math.abs(b.score-avg));
+            }
+
+            list.innerHTML = "";
+
+            for (const c of sorted) {
+                const card = document.createElement("div");
+                card.className = "rCard";
+
+                const chips = [
+                    `<span class="chip">${c.count} matches</span>`,
+                    `<span class="chip">Median ${fmt(c.p50,2)} km</span>`,
+                    `<span class="chip">P80 ${fmt(c.p80,2)} km</span>`,
+                    `<span class="chip">Confidence: ${c.conf.label}</span>`
+                ];
+
+                const overviewHtml = `
+                    <div class="overviewRow">
+                        <div class="box">
+                            <h4>Why this scores well</h4>
+                            <ul>
+                                <li>${c.strengths[0] ?? "Good live coverage in your radius"}</li>
+                                <li>${c.count} matches within ${radiusKm} km</li>
+                                <li>Median distance ${fmt(c.p50,2)} km (closer is better)</li>
+                            </ul>
                         </div>
 
-                        <button type="button" class="explain-btn">Explain</button>
-
-                        <div class="explain-panel" style="display:none;">
-                            <div class="explain-grid">
+                        <div class="box">
+                            <h4>Score breakdown (visual)</h4>
+                            <div class="bars">
                                 <div>
-                                    <strong>Pros</strong>
-                                    <ul>
-                                        @foreach (var p in item.Pros)
-                                        {
-                                            <li>@p</li>
-                                        }
-                                    </ul>
+                                    <div class="barLine">
+                                        <div class="barLabel">Density / Coverage</div>
+                                        <div class="barPct">${c.densityPct}%</div>
+                                    </div>
+                                    <div class="bar"><div class="fill" style="width:${c.densityPct}%;"></div></div>
                                 </div>
 
                                 <div>
-                                    <strong>Cons</strong>
-                                    <ul>
-                                        @foreach (var c in item.Cons)
-                                        {
-                                            <li>@c</li>
-                                        }
-                                    </ul>
+                                    <div class="barLine">
+                                        <div class="barLabel">Major Anchors</div>
+                                        <div class="barPct">${c.anchorPct}%</div>
+                                    </div>
+                                    <div class="bar"><div class="fill" style="width:${c.anchorPct}%;"></div></div>
+                                </div>
+
+                                <div>
+                                    <div class="barLine">
+                                        <div class="barLabel">Central Access</div>
+                                        <div class="barPct">${c.accessPct}%</div>
+                                    </div>
+                                    <div class="bar"><div class="fill" style="width:${c.accessPct}%;"></div></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                }
-            </div>
+                `;
 
-            <div class="map-placeholder">
-                <strong>Map Preview</strong>
-                <div class="map-box">
-                    Google Maps will appear here (Sprint 2)
-                </div>
-            </div>
+                const analyticsHtml = `
+                    <div class="analyticsBlock ${analyticsMode ? "on" : ""}">
+                        <div class="box">
+                            <h4>Transparent weights</h4>
+                            <ul>
+                                <li>Density weight: ${(0.50*100).toFixed(0)}%</li>
+                                <li>Anchor weight: ${(0.30*100).toFixed(0)}%</li>
+                                <li>Access weight: ${(0.20*100).toFixed(0)}%</li>
+                                <li>Confidence: ${c.conf.label} (${c.conf.pct}%)</li>
+                            </ul>
+                        </div>
 
-        </div>
-    }
-</div>
+                        <div class="box">
+                            <h4>Nearby places (sample)</h4>
+                            <ul>
+                                ${c.pois.slice(0,8).map(p => {
+                                    const safeName = (p.name || "Unnamed place").replace(/'/g, "\\'");
+                                    return `
+                                      <li style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                                        <span>
+                                          ${p.name}
+                                          <span style="color:#64748b; font-weight:800;">(${fmt(p.distKm,2)} km)</span>
+                                        </span>
+                                        <button class="btnx" style="padding:6px 10px;" type="button"
+                                          data-compare="1"
+                                          data-id="${p.id}"
+                                          data-name="${safeName}"
+                                          data-cat="${c.name}"
+                                          data-lat="${p.lat}"
+                                          data-lng="${p.lng}"
+                                          data-dist="${p.distKm}">
+                                          Compare
+                                        </button>
+                                      </li>`;
+                                }).join("")}
+                            </ul>
+                        </div>
+
+                        <div class="box">
+                            <h4>Weaknesses</h4>
+                            <ul>
+                                ${(c.weaknesses.length ? c.weaknesses : ["No major weaknesses detected in this radius."]).map(w => `<li>${w}</li>`).join("")}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div class="rHead">
+                        <div class="rTitle">
+                            <div class="name">${c.name}</div>
+                            <div class="sub">Live matches inside your ${radiusKm} km radius</div>
+                        </div>
+                        <div class="score">${c.score}</div>
+                    </div>
+
+                    <div class="badgeRow">${chips.join("")}</div>
+
+                    ${overviewHtml}
+                    ${analyticsHtml}
+                `;
+
+                list.appendChild(card);
+            }
+
+            document.querySelectorAll("button[data-compare='1']").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const p = {
+                        id: btn.getAttribute("data-id"),
+                        name: btn.getAttribute("data-name"),
+                        category: btn.getAttribute("data-cat"),
+                        lat: Number(btn.getAttribute("data-lat")),
+                        lng: Number(btn.getAttribute("data-lng")),
+                        distKm: Number(btn.getAttribute("data-dist"))
+                    };
+                    await addToCompare(p);
+                });
+            });
+        }
+
+    })();
+</script>

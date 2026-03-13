@@ -9,46 +9,19 @@ namespace Shortlist.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            // Read the most recent filters selected by the user
             var state = GetFilterState();
 
-            // Dummy results for skeleton (Sprint 1)
-            var chosen = state.Priorities ?? new List<string>();
-            var chosenText = chosen.Count > 0 ? string.Join(", ", chosen) : "None";
-
-            var results = new List<ResultItem>
-            {
-                new ResultItem
-                {
-                    Name = "Area A",
-                    Score = 82,
-                    Pros = new() { "Close to campus", $"Matched priorities: {chosenText}" },
-                    Cons = new() { "Higher rent" }
-                },
-                new ResultItem
-                {
-                    Name = "Area B",
-                    Score = 75,
-                    Pros = new() { "Cheaper", $"Matched priorities: {chosenText}" },
-                    Cons = new() { "Farther commute" }
-                }
-            };
-
-            // ✅ Edge case for Testing Assignment:
-            // If Budget is extremely low, show empty results (to test "No results" state).
-            if (state.Budget.HasValue && state.Budget.Value < 100)
-            {
-                results = new List<ResultItem>();
-            }
-
+            // viewmodel contains filters and an initially empty list of results
             var vm = new ResultsViewModel
             {
                 Filters = state,
-                Items = results
+                Items = new List<ResultItem>() // will be filled by JS in real-time
             };
 
             return View(vm);
         }
-
+        // clears the current filter state and reloads the Results page.
         [HttpPost]
         public IActionResult Clear()
         {
@@ -56,6 +29,7 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        // Reads FilterState JSON from Session.
         private FilterState GetFilterState()
         {
             var json = HttpContext.Session.GetString("FilterState");
