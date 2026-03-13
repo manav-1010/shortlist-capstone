@@ -1,261 +1,345 @@
-Shortlist
-Smart Rental Search & Neighborhood Discovery Platform
+# Shortlist – Smart Location Decision Platform
 
-Shortlist is a web-based housing discovery platform designed to help users find ideal rental areas by combining location-based filtering, amenity proximity analysis, and real-time geographic data.
+Shortlist is a web application that helps users evaluate locations based on proximity to essential amenities such as grocery stores, transit stops, parks, gyms, safety services, and more.
+The system combines **live OpenStreetMap data**, **custom scoring logic**, and **user-defined priorities** to help users make smarter location decisions.
+Users can search an area, analyze nearby amenities, compare locations, and save searches for future reference.
 
-Instead of listing individual apartments, the platform helps users identify the best neighborhoods based on personal priorities such as transit access, grocery stores, parks, gyms, and other daily amenities.
+---
 
-The system integrates OpenStreetMap data through the Overpass API, allowing real-time discovery of nearby points of interest and enabling users to evaluate locations based on real-world accessibility.
+# Project Overview
 
-Key Features
-Authentication System
+Shortlist is designed as a **decision support platform** rather than a simple map search tool.
 
-Shortlist supports both traditional and modern authentication methods.
+The application provides:
+• Smart scoring based on proximity and density of amenities  
+• Interactive map visualization  
+• Saved searches with shareable links  
+• Location comparison tools  
+• Personalized search preferences  
 
-Email / Password Authentication
+This project demonstrates real-world development concepts including:
+- ASP.NET MVC architecture
+- Entity Framework Core
+- REST APIs
+- Session state management
+- Map integrations
+- Data-driven scoring algorithms
+- Responsive UI design
 
-Users can create accounts and securely log in using stored credentials.
+---
 
-Google OAuth Authentication
+# Key Features
 
-Users may also authenticate using their Google account through OpenID Connect integration, providing a secure and seamless login experience.
+## Live Location Analysis
+Users can search a location and radius to analyze nearby amenities using OpenStreetMap data.
 
-Authentication uses:
+The system evaluates categories such as:
+- Grocery stores
+- Public transit
+- Parks
+- Fitness facilities
+- Parking
+- Laundry
+- Safety services
+- Quiet spaces
 
-ASP.NET Core Cookie Authentication
+Each category receives a **match score** based on density, proximity, and presence of anchor locations.
 
-Google OpenID Connect
+---
 
-Session-based user tracking
+## Interactive Map
+The application includes an interactive map powered by **Leaflet.js**.
 
-Interactive Map-Based Filtering
+Features include:
+- Live map markers
+- Radius visualization
+- Location pin
+- Popup details
+- Automatic zoom and bounds fitting
 
-The platform includes an interactive map that allows users to define their search area.
+---
 
-Users can:
+## Smart Scoring Algorithm
+Each category is scored using three metrics:
 
-Select a location directly on the map
+| Metric | Weight |
+|------|------|
+| Density (number of places nearby) | 50% |
+| Anchor locations (major facilities) | 30% |
+| Distance accessibility | 20% |
 
-Set a search radius
+The system calculates:
+- Category score
+- Overall match score
+- Strengths and weaknesses
+- Confidence level based on available data
 
-Visualize nearby amenities
+---
 
-Map functionality allows the user to define their geographic area of interest instead of relying on fixed neighborhoods.
+## Compare Locations
+Users can add locations to a **Compare list**.
+The compare feature allows users to evaluate multiple locations side-by-side to determine which area best matches their needs.
 
-Smart Filter System
+---
 
-Users can refine searches using multiple filters:
-
-Budget Filter
-
-Define a preferred rental budget.
-
-Distance Filter
-
-Specify how far amenities should be located from the chosen area.
-
-Priority Amenities
-
-Users can prioritize nearby amenities such as:
-
-Parking
-
-Gym / Fitness
-
-Parks
-
-Grocery Stores
-
-Transit
-
-The platform retrieves these points using OpenStreetMap real-time geographic data.
-
-Real-Time Results Engine
-
-When filters are applied, the platform queries the Overpass API to retrieve nearby amenities.
-
-Results are calculated dynamically and displayed based on:
-
-Distance from the selected location
-
-Category relevance
-
-User priorities
-
-This ensures that results reflect live geographic data rather than static datasets.
-
-Results Visualization
-
-Results are displayed through:
-
-Interactive Map Markers
-
-All discovered amenities are visualized directly on the map.
-
-Category Breakdown
-
-Amenities are grouped by category, allowing users to easily see what is available nearby.
-
-Accessibility Insight
-
-Users can quickly understand how accessible a location is based on available services and facilities.
-
-Saved Searches
-
-Users can save filter configurations for future use.
+## Saved Searches
+Users can save search configurations.
 
 Each saved search stores:
+- Radius
+- Priorities
+- Location coordinates
+- Search name
+- Creation timestamp
 
-Selected location
+Saved searches allow users to:
+- Reload filters instantly
+- Share searches using a unique link
+- Regenerate share tokens
+- Delete searches
 
-Radius
+---
 
-Budget
+## Settings and Preferences
+The Settings page allows users to configure default preferences:
+- Default search radius
+- Default priorities
+- Default location label
 
-Priority amenities
+Additional controls include:
+- Clear session filters
+- Clear comparison list
+- Delete saved searches
+- Logout
 
-Saved searches allow users to quickly reload previously explored configurations and compare different neighborhoods efficiently.
+---
 
-Features
+## Shareable Search Links
+Saved searches generate unique tokens that can be shared.
+Anyone with the link can open the search and see the same filters applied.
 
-Save current search state
+---
 
-Automatically generate search names
+# Technology Stack
 
-Reload filters and results instantly
+## Backend
+- ASP.NET Core MVC
+- Entity Framework Core
+- SQL Server / SQLite (depending on configuration)
+- REST API endpoints
 
-Delete saved searches
+## Frontend
+- Razor Views
+- HTML5
+- CSS3
+- JavaScript
 
-Saved search data is stored in SQLite using Entity Framework Core.
+## Map and Data
+- Leaflet.js
+- OpenStreetMap
+- Overpass API
 
-Session-Based User State
+---
 
-The application uses session storage to temporarily store filter selections and location data.
+# Project Architecture
 
-This enables:
+The project follows the **MVC (Model-View-Controller)** architecture.
 
-Smooth page transitions
-
-Persistent filter states
-
-Fast result reloading
-
-System Architecture
-
-The platform follows a Model-View-Controller (MVC) architecture.
 
 Controllers
-
-Handle application logic and request routing.
-
-Examples:
-
-FiltersController
-
-ResultsController
-
-SavedSearchesController
-
-AccountController
+Handles user requests, business logic, and API calls.
 
 Models
-
-Represent application data structures.
-
-Examples:
-
-UserProfile
-
-FilterState
-
-SavedSearch
-
-ResultItem
+Represents application data such as users, saved searches, and filter states.
 
 Views
+Razor pages that render the user interface.
 
-Razor views responsible for UI rendering.
+Data
+Entity Framework DbContext used for database operations.
 
-Examples:
+Helpers
+Utility classes for session and JSON operations.
 
-Filters page
 
-Results page
+---
 
-Saved searches page
+# Core Components
 
-Login / Registration pages
+## AppDbContext
 
-Database
+Entity Framework database context responsible for managing:
+- Users
+- Saved Searches
+- User Settings
 
-The application uses SQLite as the persistence layer.
+Includes relationships and indexes for performance.
 
-Entity Framework Core manages the database schema and data access.
+---
 
-Stored Data
+## SessionJsonExtensions
 
-Users
-Saved searches
-Session-based filter states
+Helper class that allows storing complex objects in session using JSON serialization.
 
-Technologies Used
-Backend
+Example usage:
+HttpContext.Session.SetJson("FilterState", filterState);
 
-ASP.NET Core MVC
-C#
-Entity Framework Core
-SQLite
+This enables storing filter preferences between pages.
 
-Authentication
+---
 
-ASP.NET Cookie Authentication
-Google OpenID Connect (OAuth 2.0)
+# Database Schema
 
-Frontend
+## Users
 
-Razor Views
-HTML5
-CSS3
-JavaScript
+| Column | Description |
+|------|------|
+| Id | Primary key |
+| Email | User email |
+| Password | Local login password |
 
-Data Sources
+---
 
-OpenStreetMap
-Overpass API
+## SavedSearches
 
-Current Pages
-Home
+| Column | Description |
+|------|------|
+| Id | Primary key |
+| Name | Search name |
+| UserId | Owner |
+| ShareToken | Unique share identifier |
+| CreatedAtUtc | Creation timestamp |
 
-Landing page providing entry into the platform.
+---
 
-Filters
+## UserSettings
 
-Allows users to define location and search preferences.
+| Column | Description |
+|------|------|
+| UserId | Foreign key |
+| DefaultRadiusKm | Default search radius |
+| DefaultPrioritiesCsv | Stored priority categories |
+| DefaultLocationLabel | Optional location label |
 
-Results
+---
 
-Displays discovered amenities and accessibility insights based on applied filters.
+# Application Workflow
 
-Saved Searches
+1. User selects location and radius in Filters page
+2. Results page retrieves nearby places using OpenStreetMap API
+3. Scoring algorithm evaluates each category
+4. Results displayed with map and analytics
+5. User can save the search or compare locations
+6. Settings allow customization of default preferences
 
-Allows users to save, reload, and manage previously defined search configurations.
+---
 
-Login / Register
+# API Endpoints
 
-User authentication pages supporting both manual login and Google OAuth.
+## Search API
+GET /api/search
 
-Project Goals
 
-This project demonstrates:
+Parameters:
+lat
+lng
+radiusKm
 
-Full-stack web development
+Returns nearby amenities within the selected radius.
 
-Secure authentication systems
+---
 
-Real-time geographic data integration
+## Compare API
 
-User-centric search interfaces
+POST /Compare/Add
+GET /Compare/Count
 
-Persistent user data storage
 
-The platform is designed as a practical decision-support tool for people searching for rental-friendly neighborhoods.
+Handles compare list operations.
+
+---
+
+## Saved Searches API
+
+POST /SavedSearches/SaveCurrent
+POST /SavedSearches/Delete
+POST /SavedSearches/RegenerateShareLink
+
+
+Handles saved search management.
+
+---
+
+# UI Design
+
+The interface is designed using a modern card-based layout with:
+- consistent spacing
+- subtle shadows
+- soft color palette
+- responsive layout
+
+The UI emphasizes clarity and usability.
+
+---
+
+# Security Considerations
+
+- Authorization enforced for user-specific actions
+- Anti-forgery tokens used for form submissions
+- Session data used for temporary state management
+- Share tokens generated securely for saved searches
+
+---
+
+# Installation
+
+Clone the repository:
+
+
+git clone https://github.com/yourusername/shortlist.git
+
+Navigate to project directory:
+cd shortlist
+
+Restore dependencies:
+dotnet restore
+
+Run the application:
+dotnet run
+
+
+Open in browser:
+https://localhost:5001
+
+
+---
+
+# Future Improvements
+
+Potential enhancements include:
+
+- advanced location scoring models
+- machine learning recommendations
+- mobile app integration
+- user authentication with OAuth providers
+- additional amenity categories
+- improved comparison visualizations
+
+---
+
+# Learning Outcomes
+
+This project demonstrates skills in:
+
+- ASP.NET MVC development
+- API integration
+- geospatial data handling
+- UI/UX design
+- database modeling
+- full-stack application development
+
+---
+
+# License
+
+This project is intended for educational and portfolio use.
