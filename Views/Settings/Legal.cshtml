@@ -1,5 +1,4 @@
-﻿@model Shortlist.Web.Models.SettingsViewModel
-@{
+﻿@{
     Layout = "_Layout";
     ViewData["Title"] = "Privacy & Legal";
 }
@@ -18,11 +17,6 @@
         --muted2: #64748b;
         --accent: #4f46e5;
         --accent-hover: #4338ca;
-        --accent-soft: #e9e7ff;
-        --good: #15803d;
-        --good-soft: #e8f7ee;
-        --danger: #b91c1c;
-        --danger-soft: #fef2f2;
         --radius: 20px;
         --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
         --shadow2: 0 10px 24px rgba(15, 23, 42, 0.06);
@@ -34,9 +28,9 @@
     }
 
     .wrap {
-        max-width: 1100px;
+        max-width: 900px;
         margin: 0 auto;
-        padding: 18px 16px 24px;
+        padding: 18px 16px 28px;
         color: var(--text);
     }
 
@@ -55,9 +49,9 @@
 
     h1 {
         margin: 0;
-        font-size: 28px;
+        font-size: 26px;
         font-weight: 950;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.4px;
         color: var(--text);
     }
 
@@ -66,28 +60,12 @@
         color: var(--muted);
         font-weight: 750;
         font-size: 13px;
-        line-height: 1.5;
-    }
-
-    .toast {
-        margin: 14px 0;
-        border-radius: 16px;
-        border: 1px solid #bbf7d0;
-        background: var(--good-soft);
-        color: var(--good);
-        padding: 12px 14px;
-        font-weight: 900;
-        box-shadow: var(--shadow2);
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin-top: 14px;
+        line-height: 1.55;
+        max-width: 62ch;
     }
 
     .card {
+        margin-top: 14px;
         border: 1px solid var(--border);
         border-radius: var(--radius);
         background: linear-gradient(180deg, #ffffff, #fbfdff);
@@ -95,45 +73,37 @@
         box-shadow: var(--shadow2);
     }
 
-    .k {
-        color: var(--muted2);
-        font-weight: 850;
-        font-size: 12px;
-    }
-
-    .v {
+    .h {
         font-weight: 950;
-        margin-top: 4px;
+        margin: 0 0 8px;
+        font-size: 14px;
+        letter-spacing: -0.2px;
         color: var(--text);
     }
 
-    .row {
+    .p {
+        margin: 0;
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .list {
+        margin: 10px 0 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .btnRow {
         margin-top: 12px;
-        display: grid;
-        gap: 8px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
     }
-
-    .inputx {
-        border-radius: 12px;
-        border: 1px solid var(--border-strong);
-        background: var(--surface);
-        color: var(--text);
-        padding: 10px 12px;
-        font-weight: 850;
-        outline: none;
-        width: 100%;
-        box-shadow: var(--shadow2);
-    }
-
-        .inputx::placeholder {
-            color: var(--muted2);
-            font-weight: 750;
-        }
-
-        .inputx:focus {
-            border-color: var(--accent);
-            box-shadow: var(--focus);
-        }
 
     .btnx {
         border-radius: 12px;
@@ -176,161 +146,66 @@
                 border-color: var(--accent-hover);
             }
 
-        .btnx.danger {
-            background: var(--danger-soft);
-            border-color: #fecaca;
-            color: var(--danger);
-        }
-
-            .btnx.danger:hover {
-                background: #fee2e2;
-                border-color: #fca5a5;
-            }
-
-    .btnRow {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 12px;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid #d8d4fe;
-        background: var(--surface-tint);
-        font-weight: 850;
-        font-size: 12px;
-        margin-left: 10px;
-        color: var(--accent);
-    }
-
-    .note {
+    .small {
         margin-top: 10px;
-        color: var(--muted);
+        color: var(--muted2);
         font-weight: 750;
-        font-size: 13px;
-        line-height: 1.55;
-    }
-
-    .judge-list {
-        margin: 10px 0 0;
-        padding-left: 18px;
-        color: var(--muted);
-        font-weight: 750;
-        line-height: 1.75;
-        font-size: 13px;
-    }
-
-    @@media (max-width: 900px) {
-        .grid {
-            grid-template-columns: 1fr;
-        }
+        font-size: 12px;
+        line-height: 1.65;
     }
 </style>
 
 <div class="wrap">
     <div class="top">
         <div>
-            <h1>Settings</h1>
-            <div class="sub">Real product controls: preferences, privacy, and data actions.</div>
+            <h1>Privacy & Legal</h1>
+            <div class="sub">
+                Privacy, terms, and credits for the Shortlist app.
+            </div>
         </div>
-        <div class="k">Signed in as <span class="badge">@Model.AuthProvider</span></div>
+
+        <div class="btnRow" style="margin-top:0;">
+            <a class="btnx" asp-controller="Settings" asp-action="Index">Back to Settings</a>
+            <a class="btnx primary" asp-controller="Filters" asp-action="Index">Back to Filters</a>
+        </div>
     </div>
 
-    @if (TempData["Toast"] != null)
-    {
-        <div class="toast">@TempData["Toast"]</div>
-    }
-
-    <div class="grid">
-
-        <div class="card">
-            <div class="k">Account</div>
-            <div class="row">
-                <div class="k">Email</div>
-                <div class="v">@Model.Email</div>
-            </div>
-            <div class="row">
-                <div class="k">Provider</div>
-                <div class="v">@Model.AuthProvider</div>
-            </div>
-            <div class="btnRow">
-                <a class="btnx" asp-controller="SavedSearches" asp-action="Index">Saved Searches</a>
-                <a class="btnx" asp-controller="Compare" asp-action="Index">Compare</a>
-            </div>
+    <div class="card">
+        <div class="h">Privacy Policy</div>
+        <p class="p">
+            Shortlist is an application built for portfolio and judging purposes. It stores only the minimum information required to support features such as saved searches and user preferences.
+        </p>
+        <ul class="list">
+            <li><b>Account data:</b> email and authentication provider.</li>
+            <li><b>Preferences:</b> default radius, priorities, and optional location label.</li>
+            <li><b>Saved searches:</b> stored only for your account so you can reuse them later.</li>
+            <li><b>Location:</b> map pin coordinates are used to run search queries and are not shared publicly.</li>
+        </ul>
+        <div class="small">
+            You can clear temporary session data and delete saved searches from the Settings page.
         </div>
+    </div>
 
-        <div class="card">
-            <div class="k">Search Preferences</div>
+    <div class="card">
+        <div class="h">Terms of Use</div>
+        <p class="p">
+            This application is provided “as-is” for demonstration purposes. Results depend on live map data and may change over time. It should not be used as a substitute for legal, safety, or official housing advice.
+        </p>
+        <ul class="list">
+            <li>Data is shown for convenience only and may be incomplete or outdated.</li>
+            <li>You are responsible for verifying housing and neighborhood details from official sources.</li>
+            <li>Abuse or excessive automated requests may be rate-limited.</li>
+        </ul>
+    </div>
 
-            <form method="post" asp-action="Save">
-                @Html.AntiForgeryToken()
-
-                <div class="row">
-                    <div class="k">Default Radius (km)</div>
-                    <input class="inputx" type="number" name="DefaultRadiusKm" min="1" max="25" value="@Model.DefaultRadiusKm" />
-                </div>
-
-                <div class="row">
-                    <div class="k">Default Priorities (comma-separated, max 3)</div>
-                    <input class="inputx" name="DefaultPriorities" value="@Model.DefaultPriorities" placeholder="grocery, transit, parks" />
-                </div>
-
-                <div class="row">
-                    <div class="k">Default Location Label (optional)</div>
-                    <input class="inputx" name="DefaultLocationLabel" value="@Model.DefaultLocationLabel" placeholder="Waterloo, ON" />
-                </div>
-
-                <div class="btnRow">
-                    <button class="btnx primary" type="submit">Save Settings</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="card">
-            <div class="k">Data & Privacy (Demo actions)</div>
-            <div class="note">These actions help with demos and testing edge cases.</div>
-
-            <div class="btnRow">
-                <form method="post" asp-action="ClearSession" style="margin:0;">
-                    @Html.AntiForgeryToken()
-                    <button class="btnx" type="submit">Clear Session Filters</button>
-                </form>
-
-                <form method="post" asp-action="ClearCompare" style="margin:0;">
-                    @Html.AntiForgeryToken()
-                    <button class="btnx" type="submit">Clear Compare List</button>
-                </form>
-            </div>
-
-            <div class="btnRow" style="margin-top:12px;">
-                <form method="post" asp-action="DeleteAllSaved" style="margin:0;" onsubmit="return confirm('Delete ALL saved searches?');">
-                    @Html.AntiForgeryToken()
-                    <button class="btnx danger" type="submit">Delete All Saved Searches</button>
-                </form>
-
-                <a class="btnx danger" asp-controller="Account" asp-action="Logout" onclick="return confirm('Logout now?');">Logout</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="k">Legal & About</div>
-            <div class="note">
-                Privacy policy, terms, and credits.
-            </div>
-
-            <div class="btnRow">
-                <a class="btnx" asp-controller="Settings" asp-action="Legal">
-                    View Privacy & Legal
-                </a>
-            </div>
-
-            <div class="note" style="margin-top:12px;">
-                Map data © OpenStreetMap contributors. UI built for demo and portfolio use.
-            </div>
-        </div>
-
+    <div class="card">
+        <div class="h">Credits</div>
+        <p class="p">
+            Map tiles and geographic data are powered by OpenStreetMap and displayed using Leaflet.
+        </p>
+        <ul class="list">
+            <li>© OpenStreetMap contributors</li>
+            <li>Leaflet (interactive maps)</li>
+        </ul>
     </div>
 </div>
