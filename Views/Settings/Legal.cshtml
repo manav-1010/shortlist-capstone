@@ -5,53 +5,66 @@
 
 <style>
     :root {
-        --bg: #f5f7fb;
-        --bg2: #eef3f9;
-        --surface: #ffffff;
-        --surface-soft: #f8fafc;
-        --surface-tint: #eef2ff;
-        --border: #dbe3ee;
-        --border-strong: #cbd5e1;
+        --bg: #dbe4f3;
+        --bg2: #d2ddf0;
+        --bg3: #e2e8f6;
+        --surface: rgba(255, 255, 255, 0.78);
+        --surface-strong: rgba(255, 255, 255, 0.88);
+        --surface-soft: rgba(246, 249, 255, 0.72);
+        --surface-tint: rgba(224, 231, 255, 0.86);
+        --border: rgba(100, 116, 139, 0.18);
+        --border-strong: rgba(100, 116, 139, 0.28);
         --text: #0f172a;
         --muted: #475569;
         --muted2: #64748b;
         --accent: #4f46e5;
         --accent-hover: #4338ca;
-        --radius: 20px;
-        --shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
-        --shadow2: 0 10px 24px rgba(15, 23, 42, 0.06);
+        --accent-soft: rgba(79, 70, 229, 0.14);
+        --good: #15803d;
+        --good-soft: rgba(21, 128, 61, 0.12);
+        --warn: #b45309;
+        --warn-soft: rgba(245, 158, 11, 0.12);
+        --radius: 22px;
+        --shadow-xl: 0 24px 70px rgba(15, 23, 42, 0.10);
+        --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.08);
+        --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.06);
         --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
     }
 
     body {
-        background: radial-gradient(1000px 500px at 10% -5%, rgba(79,70,229,0.10), transparent 60%), radial-gradient(900px 460px at 100% 0%, rgba(34,197,94,0.08), transparent 58%), linear-gradient(180deg, var(--bg), var(--bg2));
+        background: radial-gradient(1200px 700px at 0% -10%, rgba(79, 70, 229, 0.28), transparent 55%), radial-gradient(900px 600px at 100% 0%, rgba(37, 99, 235, 0.22), transparent 50%), radial-gradient(800px 500px at 50% 100%, rgba(14, 165, 233, 0.10), transparent 45%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg3) 100%);
     }
 
     .wrap {
-        max-width: 900px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 18px 16px 28px;
+        padding: 20px 16px 32px;
         color: var(--text);
     }
 
-    .top {
+    .hero {
         border: 1px solid var(--border);
-        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.08), transparent 60%), radial-gradient(560px 240px at 92% 18%, rgba(34,197,94,0.07), transparent 55%), linear-gradient(180deg, #ffffff, #f8fbff);
-        border-radius: var(--radius);
-        padding: 18px;
-        box-shadow: var(--shadow2);
+        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.16), transparent 58%), radial-gradient(560px 240px at 92% 18%, rgba(37,99,235,0.10), transparent 54%), linear-gradient(180deg, rgba(245, 248, 255, 0.80), rgba(233, 240, 250, 0.76));
+        border-radius: 26px;
+        padding: 22px;
+        box-shadow: var(--shadow-lg);
         display: flex;
         justify-content: space-between;
-        gap: 12px;
+        gap: 16px;
         flex-wrap: wrap;
         align-items: center;
+        backdrop-filter: blur(14px);
+    }
+
+    .hero-left {
+        max-width: 640px;
     }
 
     h1 {
         margin: 0;
-        font-size: 26px;
+        font-size: 30px;
         font-weight: 950;
-        letter-spacing: -0.4px;
+        letter-spacing: -0.6px;
         color: var(--text);
     }
 
@@ -60,55 +73,47 @@
         color: var(--muted);
         font-weight: 750;
         font-size: 13px;
-        line-height: 1.55;
-        max-width: 62ch;
+        line-height: 1.6;
     }
 
-    .card {
-        margin-top: 14px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        background: linear-gradient(180deg, #ffffff, #fbfdff);
-        padding: 16px;
-        box-shadow: var(--shadow2);
-    }
-
-    .h {
-        font-weight: 950;
-        margin: 0 0 8px;
-        font-size: 14px;
-        letter-spacing: -0.2px;
-        color: var(--text);
-    }
-
-    .p {
-        margin: 0;
-        color: var(--muted);
-        font-weight: 750;
-        font-size: 13px;
-        line-height: 1.7;
-    }
-
-    .list {
-        margin: 10px 0 0;
-        padding-left: 18px;
-        color: var(--muted);
-        font-weight: 750;
-        font-size: 13px;
-        line-height: 1.8;
-    }
-
-    .btnRow {
-        margin-top: 12px;
+    .metaRow {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
+        margin-top: 14px;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        border: 1px solid rgba(79, 70, 229, 0.20);
+        background: var(--surface-tint);
+        color: var(--accent);
+        font-weight: 850;
+        font-size: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+        .pill.good {
+            border-color: rgba(21, 128, 61, 0.18);
+            background: rgba(232, 247, 238, 0.86);
+            color: var(--good);
+        }
+
+    .btnRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
     }
 
     .btnx {
         border-radius: 12px;
         border: 1px solid var(--border-strong);
-        background: var(--surface);
+        background: rgba(248, 250, 255, 0.82);
         color: var(--text);
         padding: 10px 12px;
         font-weight: 900;
@@ -119,14 +124,15 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: var(--shadow2);
+        box-shadow: var(--shadow-md);
         transition: transform .12s ease, background .12s ease, border .12s ease, box-shadow .12s ease;
     }
 
         .btnx:hover {
             transform: translateY(-1px);
-            background: var(--surface-soft);
-            border-color: var(--border-strong);
+            background: rgba(255,255,255,0.92);
+            border-color: rgba(99, 102, 241, 0.24);
+            box-shadow: var(--shadow-lg);
         }
 
         .btnx:focus-visible {
@@ -136,76 +142,375 @@
 
         .btnx.primary {
             background: linear-gradient(135deg, var(--accent), #6366f1);
-            border-color: var(--accent);
+            border-color: transparent;
             color: #ffffff;
             box-shadow: 0 14px 34px rgba(79,70,229,0.20);
         }
 
             .btnx.primary:hover {
                 background: linear-gradient(135deg, var(--accent-hover), var(--accent));
-                border-color: var(--accent-hover);
             }
+
+    .grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 14px;
+    }
+
+    .stack {
+        display: grid;
+        gap: 14px;
+    }
+
+    .card {
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        background: linear-gradient(180deg, rgba(242, 247, 255, 0.80), rgba(232, 239, 250, 0.76));
+        padding: 18px;
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(12px);
+    }
+
+    .sectionTitle {
+        margin: 0 0 10px;
+        font-size: 16px;
+        font-weight: 950;
+        letter-spacing: -0.2px;
+        color: var(--text);
+    }
+
+    .p {
+        margin: 0;
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.75;
+    }
+
+    .list {
+        margin: 10px 0 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.85;
+    }
+
+        .list li + li {
+            margin-top: 4px;
+        }
 
     .small {
         margin-top: 10px;
         color: var(--muted2);
         font-weight: 750;
         font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .toc {
+        display: grid;
+        gap: 10px;
+    }
+
+        .toc a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 850;
+            font-size: 13px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(248, 250, 255, 0.82);
+            box-shadow: var(--shadow-md);
+            transition: transform .12s ease, background .12s ease, border .12s ease;
+        }
+
+            .toc a:hover {
+                transform: translateY(-1px);
+                background: rgba(255,255,255,0.92);
+                border-color: rgba(99, 102, 241, 0.24);
+            }
+
+    .infoBox {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(21, 128, 61, 0.18);
+        background: rgba(232, 247, 238, 0.70);
+        color: var(--good);
+        font-weight: 800;
+        font-size: 12px;
         line-height: 1.65;
+    }
+
+    .warnBox {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(245, 158, 11, 0.18);
+        background: rgba(255, 247, 237, 0.76);
+        color: var(--warn);
+        font-weight: 800;
+        font-size: 12px;
+        line-height: 1.65;
+    }
+
+    .miniGrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .mini {
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: rgba(248, 250, 255, 0.82);
+        padding: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+        .mini .k {
+            color: var(--muted2);
+            font-size: 11px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .mini .v {
+            color: var(--text);
+            margin-top: 4px;
+            font-size: 13px;
+            font-weight: 900;
+            line-height: 1.5;
+        }
+
+    @@media (max-width: 900px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+
+        .miniGrid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <div class="wrap">
-    <div class="top">
-        <div>
+    <div class="hero">
+        <div class="hero-left">
             <h1>Privacy & Legal</h1>
             <div class="sub">
-                Privacy, terms, and credits for the Shortlist app.
+                This page explains how Shortlist handles user information, how the app should be used, and what legal limitations apply. It is written for a demo and portfolio project, but follows the structure users usually expect on a real product legal page.
+            </div>
+
+            <div class="metaRow">
+                <span class="pill">Shortlist App</span>
+                <span class="pill good">Demo / Portfolio Use</span>
+                <span class="pill">Last updated: @DateTime.Now.ToString("MMMM yyyy")</span>
             </div>
         </div>
 
-        <div class="btnRow" style="margin-top:0;">
+        <div class="btnRow">
             <a class="btnx" asp-controller="Settings" asp-action="Index">Back to Settings</a>
             <a class="btnx primary" asp-controller="Filters" asp-action="Index">Back to Filters</a>
         </div>
     </div>
 
-    <div class="card">
-        <div class="h">Privacy Policy</div>
-        <p class="p">
-            Shortlist is an application built for portfolio and judging purposes. It stores only the minimum information required to support features such as saved searches and user preferences.
-        </p>
-        <ul class="list">
-            <li><b>Account data:</b> email and authentication provider.</li>
-            <li><b>Preferences:</b> default radius, priorities, and optional location label.</li>
-            <li><b>Saved searches:</b> stored only for your account so you can reuse them later.</li>
-            <li><b>Location:</b> map pin coordinates are used to run search queries and are not shared publicly.</li>
-        </ul>
-        <div class="small">
-            You can clear temporary session data and delete saved searches from the Settings page.
+    <div class="grid">
+        <div class="stack">
+            <section id="privacy" class="card">
+                <h2 class="sectionTitle">Privacy Policy</h2>
+                <p class="p">
+                    Shortlist is designed to store only the information needed to support core app features such as authentication, saved searches, preferences, and temporary session-based filtering. The goal of the app is to provide a practical neighborhood shortlisting experience while keeping stored data limited and easy for the user to manage.
+                </p>
+
+                <ul class="list">
+                    <li><b>Account information:</b> email address and authentication-related details used to identify the user.</li>
+                    <li><b>User preferences:</b> default radius, default priorities, and optional location label saved for convenience.</li>
+                    <li><b>Saved searches:</b> filter configurations stored so the user can reload and reuse them later.</li>
+                    <li><b>Session data:</b> temporary filter state and compare items stored in session to support active use of the application.</li>
+                    <li><b>Map coordinates:</b> selected coordinates are used only to perform map and search functionality and are not intended for public display beyond the user’s own session or saved items.</li>
+                </ul>
+
+                <div class="infoBox">
+                    Users can clear session data, clear compare items, and delete saved searches directly from the Settings page.
+                </div>
+            </section>
+
+            <section id="use-of-data" class="card">
+                <h2 class="sectionTitle">How Information Is Used</h2>
+                <p class="p">
+                    Information collected by the app is used strictly to operate app features and improve usability within the scope of the project.
+                </p>
+
+                <ul class="list">
+                    <li>To authenticate and recognize the current user.</li>
+                    <li>To save and reload preferences for a smoother experience.</li>
+                    <li>To restore filter state and support saved search functionality.</li>
+                    <li>To generate compare views, share links, and reusable search flows.</li>
+                    <li>To run live location-based search queries against external map data sources.</li>
+                </ul>
+
+                <div class="small">
+                    Shortlist is not intended to sell user data, use personal data for advertising, or build detailed user profiles.
+                </div>
+            </section>
+
+            <section id="retention" class="card">
+                <h2 class="sectionTitle">Data Retention & User Control</h2>
+                <p class="p">
+                    Data is retained only as long as it supports the purpose of the application or until it is removed by the user or project owner.
+                </p>
+
+                <ul class="list">
+                    <li>Session data may expire automatically when the browser session ends or the session times out.</li>
+                    <li>Saved searches remain associated with the user account until deleted.</li>
+                    <li>Preference settings remain stored until updated or removed.</li>
+                    <li>Users may delete their own saved searches and clear active session-related data from Settings.</li>
+                </ul>
+
+                <div class="warnBox">
+                    Because this is a school and portfolio project, enterprise-grade retention, audit, and compliance workflows are not implemented.
+                </div>
+            </section>
+
+            <section id="third-party" class="card">
+                <h2 class="sectionTitle">Third-Party Services</h2>
+                <p class="p">
+                    Shortlist relies on external services to provide map display, location data, and authentication functionality.
+                </p>
+
+                <ul class="list">
+                    <li><b>OpenStreetMap:</b> used for map data and map-related content.</li>
+                    <li><b>Leaflet:</b> used to render interactive maps in the interface.</li>
+                    <li><b>Overpass API:</b> used to retrieve nearby places and real-time point-of-interest data.</li>
+                    <li><b>Google authentication / OpenID Connect:</b> used for sign-in when enabled in the app configuration.</li>
+                </ul>
+
+                <div class="small">
+                    Third-party services may have their own privacy terms, uptime limitations, rate limits, or acceptable use policies.
+                </div>
+            </section>
+
+            <section id="terms" class="card">
+                <h2 class="sectionTitle">Terms of Use</h2>
+                <p class="p">
+                    By using Shortlist, users agree to use the application for lawful, reasonable, and personal demo or evaluation purposes. The application is provided as a portfolio and judging project and should not be treated as an official housing, legal, safety, or government information service.
+                </p>
+
+                <ul class="list">
+                    <li>Results are informational and may be incomplete, delayed, or inaccurate.</li>
+                    <li>Users are responsible for independently verifying housing providers, neighborhoods, pricing, safety, and legal requirements.</li>
+                    <li>The app may change, be limited, or be removed at any time without notice.</li>
+                    <li>Users should not misuse the app through scraping, spam, abusive requests, or attempts to disrupt functionality.</li>
+                </ul>
+            </section>
+
+            <section id="liability" class="card">
+                <h2 class="sectionTitle">Disclaimer & Limitation of Liability</h2>
+                <p class="p">
+                    Shortlist is provided on an “as-is” and “as-available” basis without warranties of any kind. While reasonable effort has been made to create a useful and reliable demo, the app cannot guarantee continuous access, accuracy of third-party map data, or suitability for any specific decision.
+                </p>
+
+                <ul class="list">
+                    <li>No guarantee is made regarding completeness, quality, or accuracy of external data.</li>
+                    <li>No guarantee is made that the service will always be available or error-free.</li>
+                    <li>The project owner is not responsible for losses, disputes, or decisions made based on app output.</li>
+                    <li>The app should not be relied upon for emergency, safety-critical, financial, or legal decisions.</li>
+                </ul>
+            </section>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="h">Terms of Use</div>
-        <p class="p">
-            This application is provided “as-is” for demonstration purposes. Results depend on live map data and may change over time. It should not be used as a substitute for legal, safety, or official housing advice.
-        </p>
-        <ul class="list">
-            <li>Data is shown for convenience only and may be incomplete or outdated.</li>
-            <li>You are responsible for verifying housing and neighborhood details from official sources.</li>
-            <li>Abuse or excessive automated requests may be rate-limited.</li>
-        </ul>
-    </div>
+        <div class="stack">
+            <section class="card">
+                <h2 class="sectionTitle">On This Page</h2>
+                <div class="toc">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#use-of-data">How Information Is Used</a>
+                    <a href="#retention">Data Retention & User Control</a>
+                    <a href="#third-party">Third-Party Services</a>
+                    <a href="#terms">Terms of Use</a>
+                    <a href="#liability">Disclaimer & Liability</a>
+                    <a href="#ip">Intellectual Property</a>
+                    <a href="#changes">Policy Changes</a>
+                    <a href="#credits">Credits</a>
+                </div>
+            </section>
 
-    <div class="card">
-        <div class="h">Credits</div>
-        <p class="p">
-            Map tiles and geographic data are powered by OpenStreetMap and displayed using Leaflet.
-        </p>
-        <ul class="list">
-            <li>© OpenStreetMap contributors</li>
-            <li>Leaflet (interactive maps)</li>
-        </ul>
+            <section id="ip" class="card">
+                <h2 class="sectionTitle">Intellectual Property</h2>
+                <p class="p">
+                    The Shortlist project interface, code structure, and project presentation materials belong to the project creator except where third-party libraries, map data, or trademarks are used under their own terms.
+                </p>
+
+                <ul class="list">
+                    <li>Open-source libraries remain subject to their original licenses.</li>
+                    <li>Map data and map content remain subject to OpenStreetMap contributor terms.</li>
+                    <li>Users may not copy or redistribute the project as their own work without permission.</li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2 class="sectionTitle">Cookies, Sessions & Local State</h2>
+                <p class="p">
+                    The app may rely on cookies or server-managed session mechanisms to keep the user logged in and preserve temporary choices such as filters and compare items during active use.
+                </p>
+
+                <ul class="list">
+                    <li>Authentication and session management may require cookies to function correctly.</li>
+                    <li>Temporary state may be cleared if the session expires or the browser is closed.</li>
+                    <li>No advertising or behavioral tracking cookies are intended as part of this project.</li>
+                </ul>
+            </section>
+
+            <section id="changes" class="card">
+                <h2 class="sectionTitle">Changes to This Page</h2>
+                <p class="p">
+                    This Privacy & Legal page may be updated as the project evolves, new features are added, or app behavior changes. Continued use of the app after updates means the user accepts the revised terms to the extent permitted for this project context.
+                </p>
+
+                <div class="miniGrid">
+                    <div class="mini">
+                        <div class="k">Project type</div>
+                        <div class="v">Student / portfolio application</div>
+                    </div>
+                    <div class="mini">
+                        <div class="k">Primary purpose</div>
+                        <div class="v">Neighborhood shortlisting demo</div>
+                    </div>
+                    <div class="mini">
+                        <div class="k">External map source</div>
+                        <div class="v">OpenStreetMap + Overpass API</div>
+                    </div>
+                    <div class="mini">
+                        <div class="k">User control</div>
+                        <div class="v">Settings page data actions</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="credits" class="card">
+                <h2 class="sectionTitle">Credits</h2>
+                <p class="p">
+                    Shortlist uses open tools and map services to provide an interactive experience.
+                </p>
+
+                <ul class="list">
+                    <li>© OpenStreetMap contributors</li>
+                    <li>Leaflet for interactive mapping</li>
+                    <li>Overpass API for nearby place data</li>
+                    <li>ASP.NET Core MVC for application structure</li>
+                    <li>Entity Framework Core for persistence and data access</li>
+                </ul>
+
+                <div class="small">
+                    This page is written for a realistic product-style experience within a classroom and portfolio context, not as a substitute for formal legal advice.
+                </div>
+            </section>
+        </div>
     </div>
 </div>

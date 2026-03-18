@@ -9,18 +9,62 @@
 
     <style>
         :root {
-            --bg: #f5f7fb;
-            --surface: rgba(255,255,255,0.92);
-            --surface-strong: #ffffff;
-            --border: #dbe3ee;
-            --border-strong: #cbd5e1;
+            --bg: #dbe4f3;
+            --bg2: #d2ddf0;
+            --bg3: #e2e8f6;
+            --surface: rgba(255, 255, 255, 0.78);
+            --surface-strong: rgba(255, 255, 255, 0.88);
+            --surface-soft: rgba(246, 249, 255, 0.72);
+            --surface-tint: rgba(224, 231, 255, 0.86);
+            --border: rgba(100, 116, 139, 0.18);
+            --border-strong: rgba(100, 116, 139, 0.28);
             --text: #0f172a;
-            --muted: #64748b;
+            --muted: #475569;
+            --muted2: #64748b;
             --accent: #4f46e5;
             --accent-hover: #4338ca;
-            --accent-soft: #eef2ff;
-            --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+            --accent-soft: rgba(79, 70, 229, 0.14);
+            --good: #15803d;
+            --good-soft: rgba(21, 128, 61, 0.12);
+            --warn: #b45309;
+            --warn-soft: rgba(245, 158, 11, 0.14);
+            --bad: #b91c1c;
+            --bad-soft: rgba(220, 38, 38, 0.12);
+            --shadow-xl: 0 24px 70px rgba(15, 23, 42, 0.10);
+            --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.08);
+            --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.06);
+            --radius: 22px;
             --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
+            --page-bg: radial-gradient(1200px 700px at 0% -10%, rgba(79, 70, 229, 0.28), transparent 55%), radial-gradient(900px 600px at 100% 0%, rgba(37, 99, 235, 0.22), transparent 50%), radial-gradient(800px 500px at 50% 100%, rgba(14, 165, 233, 0.10), transparent 45%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg3) 100%);
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0f172a;
+            --bg2: #111827;
+            --bg3: #172033;
+            --surface: rgba(15, 23, 42, 0.78);
+            --surface-strong: rgba(15, 23, 42, 0.90);
+            --surface-soft: rgba(30, 41, 59, 0.78);
+            --surface-tint: rgba(49, 46, 129, 0.34);
+            --border: rgba(148, 163, 184, 0.18);
+            --border-strong: rgba(148, 163, 184, 0.28);
+            --text: #e5eefc;
+            --muted: #cbd5e1;
+            --muted2: #94a3b8;
+            --accent: #818cf8;
+            --accent-hover: #6366f1;
+            --accent-soft: rgba(99, 102, 241, 0.18);
+            --good: #4ade80;
+            --good-soft: rgba(34, 197, 94, 0.16);
+            --warn: #fbbf24;
+            --warn-soft: rgba(245, 158, 11, 0.16);
+            --bad: #f87171;
+            --bad-soft: rgba(239, 68, 68, 0.16);
+            --shadow-xl: 0 24px 70px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.28);
+            --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.22);
+            --focus: 0 0 0 3px rgba(129, 140, 248, 0.22);
+            --page-bg: radial-gradient(1200px 700px at 0% -10%, rgba(99, 102, 241, 0.20), transparent 55%), radial-gradient(900px 600px at 100% 0%, rgba(59, 130, 246, 0.14), transparent 50%), radial-gradient(800px 500px at 50% 100%, rgba(6, 182, 212, 0.08), transparent 45%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg3) 100%);
         }
 
         html {
@@ -30,13 +74,19 @@
         body {
             margin: 0;
             color: var(--text);
+            background: var(--page-bg);
+            transition: background .25s ease, color .25s ease;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
 
         .topbar {
             position: sticky;
             top: 0;
             z-index: 1000;
-            background: rgba(255,255,255,0.88);
+            background: var(--surface-strong);
             backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--border);
             box-shadow: 0 2px 14px rgba(15, 23, 42, 0.04);
@@ -49,7 +99,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 18px;
-            box-sizing: border-box;
         }
 
         .brand {
@@ -76,7 +125,7 @@
             }
 
             .nav-wrap::-webkit-scrollbar-thumb {
-                background: #cbd5e1;
+                background: var(--border-strong);
                 border-radius: 999px;
             }
 
@@ -110,32 +159,35 @@
                     transform: translateY(-1px);
                 }
 
-                .nav a:focus-visible,
-                .nav-btn:focus-visible {
-                    outline: none;
-                    box-shadow: var(--focus);
-                }
-
                 .nav a.active-link {
                     background: var(--accent-soft);
                     color: var(--accent);
                 }
 
-        .nav-btn {
+                .nav a:focus-visible,
+                .nav-btn:focus-visible,
+                .theme-toggle:focus-visible {
+                    outline: none;
+                    box-shadow: var(--focus);
+                }
+
+        .nav-btn,
+        .theme-toggle {
             border: 1px solid var(--border-strong);
-            background: var(--surface-strong);
+            background: var(--surface);
             color: var(--text);
             padding: 9px 13px;
             border-radius: 12px;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-md);
             transition: background .12s ease, border .12s ease, transform .12s ease;
             flex: 0 0 auto;
         }
 
-            .nav-btn:hover {
-                background: #f8fafc;
+            .nav-btn:hover,
+            .theme-toggle:hover {
+                background: var(--surface-soft);
                 border-color: var(--border-strong);
                 transform: translateY(-1px);
             }
@@ -145,14 +197,14 @@
             height: 40px;
             padding: 0 !important;
             border: 1px solid var(--border-strong);
-            background: var(--surface-strong);
+            background: var(--surface);
             border-radius: 12px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-md);
         }
 
             .icon-only:hover {
                 background: var(--accent-soft) !important;
-                border-color: #c7d2fe;
+                border-color: rgba(99, 102, 241, 0.25);
             }
 
             .icon-only svg {
@@ -174,10 +226,12 @@
             padding: 10px 16px;
             font-weight: 800;
             color: var(--muted);
-            background: rgba(255,255,255,0.55);
-            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 0;
             border-radius: 0 0 14px 14px;
             margin-top: 2px;
+            box-shadow: var(--shadow-md);
         }
 
         .summary-item {
@@ -257,6 +311,10 @@
                         </svg>
                     </a>
 
+                    <button id="themeToggle" type="button" class="theme-toggle" aria-label="Toggle light and dark theme">
+                        🌙 Dark
+                    </button>
+
                     @if (User?.Identity?.IsAuthenticated == true)
                     {
                         <a class="icon-only @IsActive("SavedSearches")" asp-controller="SavedSearches" asp-action="Index" aria-label="Saved Searches" title="Saved Searches">
@@ -291,6 +349,38 @@
             Map data © OpenStreetMap contributors.
         </footer>
     </div>
+
+    <script>
+        (function () {
+            const root = document.documentElement;
+            const btn = document.getElementById("themeToggle");
+            const storageKey = "shortlist-theme";
+
+            function applyTheme(theme) {
+                if (theme === "dark") {
+                    root.setAttribute("data-theme", "dark");
+                    if (btn) btn.textContent = "☀️ Light";
+                } else {
+                    root.removeAttribute("data-theme");
+                    if (btn) btn.textContent = "🌙 Dark";
+                }
+            }
+
+            const savedTheme = localStorage.getItem(storageKey);
+            if (savedTheme === "dark") {
+                applyTheme("dark");
+            } else {
+                applyTheme("light");
+            }
+
+            btn?.addEventListener("click", function () {
+                const isDark = root.getAttribute("data-theme") === "dark";
+                const nextTheme = isDark ? "light" : "dark";
+                localStorage.setItem(storageKey, nextTheme);
+                applyTheme(nextTheme);
+            });
+        })();
+    </script>
 
     <script src="~/js/site.js"></script>
     @RenderSection("Scripts", required: false)
