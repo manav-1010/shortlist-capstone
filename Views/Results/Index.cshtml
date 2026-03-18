@@ -8,38 +8,6 @@
       crossorigin="" />
 
 <style>
-    :root {
-        --bg: #dbe4f3;
-        --bg2: #d2ddf0;
-        --bg3: #e2e8f6;
-        --surface: rgba(255, 255, 255, 0.78);
-        --surface-strong: rgba(255, 255, 255, 0.88);
-        --surface-soft: rgba(246, 249, 255, 0.72);
-        --surface-deep: rgba(232, 239, 250, 0.88);
-        --surface-tint: rgba(224, 231, 255, 0.86);
-        --border: rgba(100, 116, 139, 0.18);
-        --border-strong: rgba(100, 116, 139, 0.28);
-        --text: #0f172a;
-        --muted: #475569;
-        --muted2: #64748b;
-        --accent: #4f46e5;
-        --accent-hover: #4338ca;
-        --accent-soft: rgba(79, 70, 229, 0.14);
-        --good: #15803d;
-        --good-soft: rgba(21, 128, 61, 0.12);
-        --danger: #b91c1c;
-        --danger-soft: rgba(185, 28, 28, 0.10);
-        --shadow-xl: 0 24px 70px rgba(15, 23, 42, 0.10);
-        --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.08);
-        --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.06);
-        --radius: 20px;
-        --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
-    }
-
-    body {
-        background: radial-gradient(1200px 700px at 0% -10%, rgba(79, 70, 229, 0.28), transparent 55%), radial-gradient(900px 600px at 100% 0%, rgba(37, 99, 235, 0.22), transparent 50%), radial-gradient(800px 500px at 50% 100%, rgba(14, 165, 233, 0.10), transparent 45%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg3) 100%);
-    }
-
     .results-shell {
         max-width: 1280px;
         margin: 0 auto;
@@ -57,7 +25,7 @@
     .results-topbar {
         border-radius: 24px;
         border: 1px solid var(--border);
-        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.16), transparent 58%), radial-gradient(560px 240px at 92% 18%, rgba(37,99,235,0.10), transparent 54%), linear-gradient(180deg, rgba(245, 248, 255, 0.80), rgba(233, 240, 250, 0.76));
+        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.16), transparent 58%), radial-gradient(560px 240px at 92% 18%, rgba(37,99,235,0.10), transparent 54%), linear-gradient(180deg, var(--surface-strong), var(--surface));
         box-shadow: var(--shadow-lg);
         padding: 18px;
         color: var(--text);
@@ -97,7 +65,7 @@
         width: 100%;
         border-radius: 12px;
         border: 1px solid var(--border-strong);
-        background: rgba(248, 250, 255, 0.82);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 12px;
         font-weight: 850;
@@ -118,7 +86,7 @@
     .btnx {
         border-radius: 12px;
         border: 1px solid var(--border-strong);
-        background: rgba(248, 250, 255, 0.82);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 12px;
         font-weight: 900;
@@ -135,7 +103,7 @@
 
         .btnx:hover {
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.92);
+            background: var(--surface-soft);
             border-color: rgba(99, 102, 241, 0.24);
             box-shadow: var(--shadow-lg);
         }
@@ -167,7 +135,7 @@
     .tabs {
         display: inline-flex;
         border: 1px solid var(--border);
-        background: rgba(244, 248, 255, 0.76);
+        background: var(--surface);
         border-radius: 999px;
         overflow: hidden;
         box-shadow: var(--shadow-md);
@@ -198,7 +166,7 @@
     .selectx {
         border-radius: 12px;
         border: 1px solid var(--border-strong);
-        background: rgba(248, 250, 255, 0.82);
+        background: var(--surface);
         color: var(--text);
         padding: 10px 12px;
         font-weight: 900;
@@ -223,7 +191,7 @@
     .leftPanel {
         border-radius: 24px;
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(242, 247, 255, 0.78), rgba(232, 239, 250, 0.74));
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         box-shadow: var(--shadow-lg);
         min-height: 0;
         display: grid;
@@ -234,7 +202,7 @@
     .kpiRow {
         padding: 16px;
         border-bottom: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(245, 248, 255, 0.72), rgba(235, 241, 250, 0.66));
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface));
         border-top-left-radius: 24px;
         border-top-right-radius: 24px;
         display: grid;
@@ -245,7 +213,7 @@
     .kpi {
         border-radius: 16px;
         border: 1px solid var(--border);
-        background: rgba(248, 250, 255, 0.80);
+        background: var(--surface);
         padding: 14px;
         box-shadow: var(--shadow-md);
     }
@@ -279,7 +247,7 @@
     .loadingBox, .emptyBox {
         border-radius: 16px;
         border: 1px solid var(--border);
-        background: rgba(248, 250, 255, 0.80);
+        background: var(--surface);
         padding: 16px;
         color: var(--text);
         margin-bottom: 12px;
@@ -301,7 +269,7 @@
     .rCard {
         border-radius: 20px;
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(242, 247, 255, 0.80), rgba(232, 239, 250, 0.76));
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         box-shadow: var(--shadow-md);
         padding: 16px;
         margin-bottom: 14px;
@@ -345,7 +313,7 @@
         padding: 7px 10px;
         border-radius: 999px;
         border: 1px solid var(--border);
-        background: rgba(248, 250, 255, 0.84);
+        background: var(--surface);
         color: var(--muted);
         font-weight: 850;
         font-size: 12px;
@@ -374,7 +342,7 @@
     .box {
         border-radius: 16px;
         border: 1px solid var(--border);
-        background: rgba(248, 250, 255, 0.78);
+        background: var(--surface);
         padding: 14px;
         box-shadow: var(--shadow-md);
     }
@@ -448,7 +416,7 @@
     .rightPanel {
         border-radius: 24px;
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(242, 247, 255, 0.78), rgba(232, 239, 250, 0.74));
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         box-shadow: var(--shadow-lg);
         min-height: 0;
         display: grid;
@@ -467,7 +435,7 @@
     .snap {
         border-radius: 16px;
         border: 1px solid var(--border);
-        background: rgba(248, 250, 255, 0.80);
+        background: var(--surface);
         padding: 14px;
         box-shadow: var(--shadow-md);
     }
@@ -496,7 +464,7 @@
         border-radius: 16px;
         border: 1px solid var(--border);
         overflow: hidden;
-        background: rgba(248, 250, 255, 0.80);
+        background: var(--surface);
         min-height: 0;
         box-shadow: var(--shadow-md);
     }
@@ -510,7 +478,7 @@
     .radiusBox {
         border-radius: 16px;
         border: 1px solid var(--border);
-        background: rgba(248, 250, 255, 0.80);
+        background: var(--surface);
         padding: 14px;
         color: var(--text);
         box-shadow: var(--shadow-md);
@@ -533,7 +501,7 @@
 
     .leaflet-popup-content-wrapper,
     .leaflet-popup-tip {
-        background: rgba(248, 250, 255, 0.96) !important;
+        background: var(--surface-strong) !important;
         color: var(--text) !important;
         border: 1px solid var(--border) !important;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10) !important;

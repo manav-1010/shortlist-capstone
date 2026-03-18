@@ -5,37 +5,6 @@
 }
 
 <style>
-    :root {
-        --bg: #dbe4f3;
-        --bg2: #d2ddf0;
-        --bg3: #e2e8f6;
-        --surface: rgba(255, 255, 255, 0.78);
-        --surface-strong: rgba(255, 255, 255, 0.88);
-        --surface-soft: rgba(246, 249, 255, 0.72);
-        --surface-deep: rgba(232, 239, 250, 0.88);
-        --surface-tint: rgba(224, 231, 255, 0.86);
-        --border: rgba(100, 116, 139, 0.18);
-        --border-strong: rgba(100, 116, 139, 0.28);
-        --text: #0f172a;
-        --muted: #475569;
-        --muted2: #64748b;
-        --accent: #4f46e5;
-        --accent-hover: #4338ca;
-        --accent-soft: rgba(79, 70, 229, 0.14);
-        --info: #2563eb;
-        --info-soft: rgba(37, 99, 235, 0.12);
-        --success: #15803d;
-        --success-soft: rgba(21, 128, 61, 0.12);
-        --shadow-xl: 0 24px 70px rgba(15, 23, 42, 0.10);
-        --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.08);
-        --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.06);
-        --focus: 0 0 0 3px rgba(79, 70, 229, 0.18);
-    }
-
-    body {
-        background: radial-gradient(1200px 700px at 0% -10%, rgba(79, 70, 229, 0.28), transparent 55%), radial-gradient(900px 600px at 100% 0%, rgba(37, 99, 235, 0.22), transparent 50%), radial-gradient(800px 500px at 50% 100%, rgba(14, 165, 233, 0.10), transparent 45%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg3) 100%);
-    }
-
     .shell {
         max-width: 1200px;
         margin: 0 auto;
@@ -46,7 +15,7 @@
     .hero {
         border: 1px solid var(--border);
         border-radius: 24px;
-        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.16), transparent 58%), radial-gradient(560px 240px at 92% 18%, rgba(37,99,235,0.10), transparent 54%), linear-gradient(180deg, rgba(245, 248, 255, 0.80), rgba(233, 240, 250, 0.76));
+        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.16), transparent 58%), radial-gradient(560px 240px at 92% 18%, rgba(37,99,235,0.10), transparent 54%), linear-gradient(180deg, var(--surface-strong), var(--surface));
         box-shadow: var(--shadow-lg);
         padding: 20px;
         display: grid;
@@ -84,7 +53,7 @@
         width: min(420px, 100%);
         border-radius: 12px;
         border: 1px solid var(--border-strong);
-        background: rgba(248, 250, 255, 0.82);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 12px;
         font-weight: 850;
@@ -105,7 +74,7 @@
     .btn {
         border-radius: 12px;
         border: 1px solid var(--border-strong);
-        background: rgba(248, 250, 255, 0.82);
+        background: var(--surface);
         color: var(--text);
         padding: 11px 14px;
         font-weight: 900;
@@ -121,7 +90,7 @@
 
         .btn:hover {
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.92);
+            background: var(--surface-soft);
             border-color: rgba(99, 102, 241, 0.24);
             box-shadow: var(--shadow-lg);
         }
@@ -152,7 +121,7 @@
     .card {
         border-radius: 22px;
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(242, 247, 255, 0.78), rgba(232, 239, 250, 0.74));
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         box-shadow: var(--shadow-md);
         padding: 16px;
         display: flex;
@@ -215,7 +184,7 @@
         gap: 8px;
         border-radius: 12px;
         border: 1px solid var(--border-strong);
-        background: rgba(248, 250, 255, 0.82);
+        background: var(--surface);
         color: var(--text);
         padding: 10px 12px;
         font-weight: 900;
@@ -226,7 +195,7 @@
 
         .linkBtn:hover {
             transform: translateY(-1px);
-            background: rgba(255,255,255,0.92);
+            background: var(--surface-soft);
             border-color: rgba(99, 102, 241, 0.24);
             box-shadow: var(--shadow-lg);
         }
@@ -240,7 +209,7 @@
         margin-top: 16px;
         border-radius: 20px;
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(242, 247, 255, 0.78), rgba(232, 239, 250, 0.74));
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         padding: 16px;
         color: var(--muted);
         font-weight: 800;
