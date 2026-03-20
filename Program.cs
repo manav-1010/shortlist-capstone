@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Shortlist.Web.Data;
+using Shortlist.Web.Services;
+using Shortlist.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,13 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.Configure<RapidApiRealEstateOptions>(
+    builder.Configuration.GetSection("RapidApiRealEstate"));
+
+builder.Services.AddHttpClient<IRentalListingsService, RapidApiRentalListingsService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 // AUTH: Cookies + OpenIdConnect (Google)
 builder.Services.AddAuthentication(options =>
 {
