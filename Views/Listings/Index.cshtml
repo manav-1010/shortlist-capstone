@@ -1,0 +1,487 @@
+﻿@model Shortlist.Web.Models.RentalListingsPageViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Rental Listings";
+}
+
+<style>
+    .listings-shell {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 18px 16px 28px;
+        color: var(--text);
+    }
+
+    .listings-hero {
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.16), transparent 58%), radial-gradient(560px 240px at 92% 18%, rgba(37,99,235,0.10), transparent 54%), linear-gradient(180deg, var(--surface-strong), var(--surface));
+        box-shadow: var(--shadow-lg);
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 16px;
+        align-items: center;
+        backdrop-filter: blur(14px);
+    }
+
+    .hero-title h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 950;
+        letter-spacing: -0.7px;
+        color: var(--text);
+    }
+
+    .hero-title p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.65;
+        max-width: 62ch;
+    }
+
+    .hero-pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+    }
+
+    .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        border: 1px solid rgba(79, 70, 229, 0.20);
+        background: var(--surface-tint);
+        color: var(--accent);
+        font-weight: 850;
+        font-size: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .search-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
+        box-shadow: var(--shadow-md);
+        padding: 16px;
+    }
+
+    .search-grid {
+        display: grid;
+        grid-template-columns: 1.3fr .8fr .6fr .6fr .8fr;
+        gap: 10px;
+    }
+
+    .field {
+        display: grid;
+        gap: 6px;
+    }
+
+        .field label {
+            font-weight: 850;
+            font-size: 12px;
+            color: var(--muted2);
+        }
+
+    .inputx, .selectx {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text);
+        padding: 11px 12px;
+        font-weight: 850;
+        outline: none;
+        box-shadow: var(--shadow-md);
+    }
+
+        .inputx:focus, .selectx:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
+        }
+
+    .btn-row {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btnx {
+        border-radius: 12px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text);
+        padding: 11px 14px;
+        font-weight: 900;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-md);
+        transition: transform .12s ease, background .12s ease, border .12s ease, box-shadow .12s ease;
+    }
+
+        .btnx:hover {
+            transform: translateY(-1px);
+            background: var(--surface-soft);
+            border-color: rgba(99, 102, 241, 0.24);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btnx.primary {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            border-color: transparent;
+            color: #fff;
+        }
+
+    .status-bar {
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .status-chip {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 850;
+        box-shadow: var(--shadow-md);
+    }
+
+        .status-chip.error {
+            color: #b91c1c;
+            background: rgba(254, 242, 242, 0.9);
+            border-color: rgba(185, 28, 28, 0.16);
+        }
+
+    .listing-grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .listing-card {
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        min-height: 240px;
+        backdrop-filter: blur(12px);
+    }
+
+    .listing-media {
+        position: relative;
+        background: rgba(226, 232, 240, 0.7);
+    }
+
+        .listing-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .listing-body {
+        padding: 16px;
+        display: grid;
+        gap: 12px;
+    }
+
+    .listing-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+    }
+
+    .listing-name {
+        font-size: 20px;
+        font-weight: 950;
+        letter-spacing: -0.4px;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .listing-address {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+        line-height: 1.6;
+    }
+
+    .price-pill {
+        border-radius: 999px;
+        padding: 10px 14px;
+        background: var(--surface-tint);
+        border: 1px solid rgba(79,70,229,.18);
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 950;
+        white-space: nowrap;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .meta-box {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--surface);
+        padding: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+        .meta-box .k {
+            font-size: 11px;
+            font-weight: 850;
+            color: var(--muted2);
+            text-transform: uppercase;
+            letter-spacing: .25px;
+        }
+
+        .meta-box .v {
+            margin-top: 5px;
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+    .listing-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: auto;
+    }
+
+    .thumb-row {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+    }
+
+        .thumb-row img {
+            width: 72px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+    .empty-box {
+        margin-top: 16px;
+        border: 1px dashed var(--border-strong);
+        border-radius: 24px;
+        padding: 24px;
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
+        color: var(--muted);
+        font-weight: 800;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+    }
+
+    @@media (max-width: 1080px) {
+        .listings-hero {
+            grid-template-columns: 1fr;
+        }
+
+        .search-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .listing-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 780px) {
+        .listing-card {
+            grid-template-columns: 1fr;
+        }
+
+        .listing-media {
+            min-height: 220px;
+        }
+
+        .meta-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .search-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="listings-shell">
+    <section class="listings-hero">
+        <div class="hero-title">
+            <h1>Rental Listings</h1>
+            <p>
+                Browse real rental-style listings inside your app. Search by city or custom query, review photos,
+                compare price and beds quickly, and open the original detail page only when needed.
+            </p>
+
+            <div class="hero-pills">
+                <span class="hero-pill">RapidAPI-powered</span>
+                <span class="hero-pill">Photos + details</span>
+                <span class="hero-pill">Portfolio-ready UX</span>
+            </div>
+        </div>
+
+        <form method="get" class="search-card">
+            <div class="search-grid">
+                <div class="field">
+                    <label>Search</label>
+                    <input class="inputx" name="query" value="@Model.Search.Query" placeholder="Kitchener apartments, Waterloo rentals..." />
+                </div>
+
+                <div class="field">
+                    <label>City</label>
+                    <input class="inputx" name="city" value="@Model.Search.City" />
+                </div>
+
+                <div class="field">
+                    <label>Province</label>
+                    <input class="inputx" name="provinceOrState" value="@Model.Search.ProvinceOrState" />
+                </div>
+
+                <div class="field">
+                    <label>Min Beds</label>
+                    <input class="inputx" type="number" name="minBeds" value="@Model.Search.MinBeds" min="0" />
+                </div>
+
+                <div class="field">
+                    <label>Max Price</label>
+                    <input class="inputx" type="number" name="maxPrice" value="@(Model.Search.MaxPrice == 0 ? "" : Model.Search.MaxPrice)" min="0" />
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btnx primary" type="submit">Search Listings</button>
+                <a class="btnx" asp-controller="Results" asp-action="Index">Back to Results</a>
+                <a class="btnx" asp-controller="Housing" asp-action="Index">Housing Providers</a>
+            </div>
+        </form>
+    </section>
+
+    <div class="status-bar">
+        @if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+        {
+            <span class="status-chip">@Model.StatusMessage</span>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <span class="status-chip error">@Model.ErrorMessage</span>
+        }
+    </div>
+
+    @if (!Model.HasResults)
+    {
+        <div class="empty-box">
+            Search for a city or area to load rental listings.
+        </div>
+    }
+    else
+    {
+        <section class="listing-grid">
+            @foreach (var listing in Model.Listings)
+            {
+                <article class="listing-card">
+                    <div class="listing-media">
+                        <img src="@listing.PrimaryImageUrl" alt="@listing.Title" loading="lazy" />
+                    </div>
+
+                    <div class="listing-body">
+                        <div class="listing-top">
+                            <div>
+                                <h2 class="listing-name">@listing.Title</h2>
+                                <div class="listing-address">
+                                    @listing.AddressLine
+                                    @if (!string.IsNullOrWhiteSpace(listing.City))
+                                    {
+                                        <text>, @listing.City</text>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(listing.ProvinceOrState))
+                                    {
+                                        <text>, @listing.ProvinceOrState</text>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(listing.PostalCode))
+                                    {
+                                        <text> @listing.PostalCode</text>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="price-pill">
+                                @(listing.Price.HasValue ? $"{listing.Currency} {listing.Price.Value:N0}" : "Price unavailable")
+                            </div>
+                        </div>
+
+                        <div class="meta-grid">
+                            <div class="meta-box">
+                                <div class="k">Beds</div>
+                                <div class="v">@(listing.Bedrooms?.ToString() ?? "—")</div>
+                            </div>
+
+                            <div class="meta-box">
+                                <div class="k">Baths</div>
+                                <div class="v">@(listing.Bathrooms?.ToString("0.#") ?? "—")</div>
+                            </div>
+
+                            <div class="meta-box">
+                                <div class="k">Type</div>
+                                <div class="v">@listing.PropertyType</div>
+                            </div>
+
+                            <div class="meta-box">
+                                <div class="k">Area</div>
+                                <div class="v">@(listing.LivingArea.HasValue ? $"{listing.LivingArea} {listing.LivingAreaUnit}" : "—")</div>
+                            </div>
+                        </div>
+
+                        @if (listing.ImageUrls.Count > 1)
+                        {
+                            <div class="thumb-row">
+                                @foreach (var img in listing.ImageUrls.Skip(1).Take(5))
+                                {
+                                    <img src="@img" alt="@listing.Title photo" loading="lazy" />
+                                }
+                            </div>
+                        }
+
+                        <div class="listing-actions">
+                            @if (!string.IsNullOrWhiteSpace(listing.DetailUrl))
+                            {
+                                <a class="btnx primary" href="@listing.DetailUrl" target="_blank" rel="noopener noreferrer">Open Original Listing ↗</a>
+                            }
+
+                            <a class="btnx" asp-controller="Results" asp-action="Index">Back to Results</a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </section>
+    }
+</div>
