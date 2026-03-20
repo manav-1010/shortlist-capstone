@@ -18,7 +18,6 @@ namespace Shortlist.Web.Models
 
         [MaxLength(80)]
         public string? Category { get; set; }
-
         public double? Lat { get; set; }
         public double? Lng { get; set; }
 

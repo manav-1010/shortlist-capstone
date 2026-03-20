@@ -17,167 +17,213 @@ namespace Shortlist.Web.Controllers
             _db = db;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Save([FromBody] SaveNoteRequest req)
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            if (!ModelState.IsValid)
-                return BadRequest("Invalid note request.");
+            var userId = await EnsureUserIdAsync();
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var notes = await _db.AreaNotes
+                .Where(n => n.UserId == userId.Value)
+                .OrderByDescending(n => n.UpdatedAtUtc)
+                .ToListAsync();
+
+            return View(notes);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get(string placeId)
+        {
+            if (string.IsNullOrWhiteSpace(placeId))
+            {
+                return BadRequest("PlaceId is required.");
+            }
 
             var userId = await EnsureUserIdAsync();
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
 
-            var cleanStatus = NormalizeStatus(req.Status);
-            var cleanText = string.IsNullOrWhiteSpace(req.NoteText) ? null : req.NoteText.Trim();
-            var cleanTitle = string.IsNullOrWhiteSpace(req.Title) ? null : req.Title.Trim();
+            var note = await _db.AreaNotes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(n => n.UserId == userId.Value && n.PlaceId == placeId);
 
-            var existing = await _db.UserNotes.FirstOrDefaultAsync(x =>
-                x.UserId == userId.Value &&
-                x.TargetType == req.TargetType &&
-                x.TargetId == req.TargetId);
+            if (note == null)
+            {
+                return Json(new
+                {
+                    exists = false,
+                    placeId,
+                    noteText = "",
+                    placeName = "",
+                    category = ""
+                });
+            }
+
+            return Json(new
+            {
+                exists = true,
+                id = note.Id,
+                placeId = note.PlaceId,
+                placeName = note.PlaceName,
+                category = note.Category,
+                lat = note.Lat,
+                lng = note.Lng,
+                noteText = note.NoteText,
+                createdAtUtc = note.CreatedAtUtc,
+                updatedAtUtc = note.UpdatedAtUtc
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Save(NoteUpsertViewModel vm)
+        {
+            var userId = await EnsureUserIdAsync();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (string.IsNullOrWhiteSpace(vm.PlaceId))
+            {
+                return BadRequest("PlaceId is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(vm.PlaceName))
+            {
+                return BadRequest("PlaceName is required.");
+            }
+
+            var noteText = (vm.NoteText ?? string.Empty).Trim();
+
+            if (noteText.Length > 2000)
+            {
+                return BadRequest("Note must be 2000 characters or less.");
+            }
+
+            var existing = await _db.AreaNotes
+                .FirstOrDefaultAsync(n => n.UserId == userId.Value && n.PlaceId == vm.PlaceId);
 
             if (existing == null)
             {
-                existing = new UserNote
+                var newNote = new AreaNote
                 {
                     UserId = userId.Value,
-                    TargetType = req.TargetType.Trim(),
-                    TargetId = req.TargetId.Trim(),
+                    PlaceId = vm.PlaceId.Trim(),
+                    PlaceName = vm.PlaceName.Trim(),
+                    Category = string.IsNullOrWhiteSpace(vm.Category) ? null : vm.Category.Trim(),
+                    Lat = vm.Lat,
+                    Lng = vm.Lng,
+                    NoteText = noteText
                 };
-                _db.UserNotes.Add(existing);
+
+                _db.AreaNotes.Add(newNote);
+                await _db.SaveChangesAsync();
+
+                return Json(new
+                {
+                    ok = true,
+                    message = "Note saved.",
+                    id = newNote.Id
+                });
             }
 
-            existing.Title = cleanTitle;
-            existing.Status = cleanStatus;
-            existing.NoteText = cleanText;
-            existing.UpdatedAtUtc = DateTime.UtcNow;
+            existing.PlaceName = vm.PlaceName.Trim();
+            existing.Category = string.IsNullOrWhiteSpace(vm.Category) ? null : vm.Category.Trim();
+            existing.Lat = vm.Lat;
+            existing.Lng = vm.Lng;
+            existing.NoteText = noteText;
 
             await _db.SaveChangesAsync();
 
             return Json(new
             {
                 ok = true,
-                existing.Id,
-                existing.Status,
-                existing.NoteText,
-                updatedAtUtc = existing.UpdatedAtUtc
+                message = "Note updated.",
+                id = existing.Id
             });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get(string targetType, string targetId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
             var userId = await EnsureUserIdAsync();
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
 
-            var note = await _db.UserNotes
-                .Where(x => x.UserId == userId.Value && x.TargetType == targetType && x.TargetId == targetId)
-                .Select(x => new NoteCardDto
-                {
-                    TargetType = x.TargetType,
-                    TargetId = x.TargetId,
-                    Title = x.Title,
-                    Status = x.Status,
-                    NoteText = x.NoteText,
-                    UpdatedAtUtc = x.UpdatedAtUtc
-                })
-                .FirstOrDefaultAsync();
+            var note = await _db.AreaNotes
+                .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId.Value);
 
-            return Json(note);
-        }
+            if (note == null)
+            {
+                return NotFound("Note not found.");
+            }
 
-        [HttpGet]
-        public async Task<IActionResult> Bulk(string targetType, [FromQuery] string[] ids)
-        {
-            var userId = await EnsureUserIdAsync();
-            if (userId == null) return Unauthorized();
+            _db.AreaNotes.Remove(note);
+            await _db.SaveChangesAsync();
 
-            ids ??= Array.Empty<string>();
-
-            var notes = await _db.UserNotes
-                .Where(x => x.UserId == userId.Value && x.TargetType == targetType && ids.Contains(x.TargetId))
-                .Select(x => new NoteCardDto
-                {
-                    TargetType = x.TargetType,
-                    TargetId = x.TargetId,
-                    Title = x.Title,
-                    Status = x.Status,
-                    NoteText = x.NoteText,
-                    UpdatedAtUtc = x.UpdatedAtUtc
-                })
-                .ToListAsync();
-
-            return Json(notes);
+            TempData["Toast"] = "Note deleted.";
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] SaveNoteRequest req)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteByPlaceId(string placeId)
         {
+            if (string.IsNullOrWhiteSpace(placeId))
+            {
+                return BadRequest("PlaceId is required.");
+            }
+
             var userId = await EnsureUserIdAsync();
-            if (userId == null) return Unauthorized();
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
 
-            var existing = await _db.UserNotes.FirstOrDefaultAsync(x =>
-                x.UserId == userId.Value &&
-                x.TargetType == req.TargetType &&
-                x.TargetId == req.TargetId);
+            var note = await _db.AreaNotes
+                .FirstOrDefaultAsync(n => n.UserId == userId.Value && n.PlaceId == placeId);
 
-            if (existing == null)
-                return Json(new { ok = true });
+            if (note == null)
+            {
+                return NotFound("Note not found.");
+            }
 
-            _db.UserNotes.Remove(existing);
+            _db.AreaNotes.Remove(note);
             await _db.SaveChangesAsync();
 
-            return Json(new { ok = true });
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Recent(int count = 5)
-        {
-            var userId = await EnsureUserIdAsync();
-            if (userId == null) return Unauthorized();
-
-            count = Math.Clamp(count, 1, 12);
-
-            var notes = await _db.UserNotes
-                .Where(x => x.UserId == userId.Value)
-                .OrderByDescending(x => x.UpdatedAtUtc)
-                .Take(count)
-                .Select(x => new NoteCardDto
-                {
-                    TargetType = x.TargetType,
-                    TargetId = x.TargetId,
-                    Title = x.Title,
-                    Status = x.Status,
-                    NoteText = x.NoteText,
-                    UpdatedAtUtc = x.UpdatedAtUtc
-                })
-                .ToListAsync();
-
-            return Json(notes);
-        }
-
-        private static string NormalizeStatus(string? status)
-        {
-            var s = (status ?? "").Trim();
-
-            return s switch
+            return Json(new
             {
-                "Interested" => "Interested",
-                "Not for me" => "Not for me",
-                _ => "Maybe"
-            };
+                ok = true,
+                message = "Note deleted."
+            });
         }
 
         private async Task<int?> EnsureUserIdAsync()
         {
             var userIdFromSession = HttpContext.Session.GetInt32("UserId");
-            if (userIdFromSession.HasValue) return userIdFromSession.Value;
+            if (userIdFromSession.HasValue)
+            {
+                return userIdFromSession.Value;
+            }
 
             var email =
                 User.FindFirstValue(ClaimTypes.Email) ??
                 User.FindFirstValue("email") ??
                 User.Identity?.Name;
 
-            if (string.IsNullOrWhiteSpace(email)) return null;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
 
             email = email.Trim().ToLowerInvariant();
 
