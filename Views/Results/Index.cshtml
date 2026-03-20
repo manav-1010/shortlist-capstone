@@ -1,6 +1,7 @@
 ﻿@model Shortlist.Web.Models.ResultsViewModel
 @{
     Layout = "_Layout";
+    ViewData["HeaderFilters"] = Model.Filters;
 }
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -123,6 +124,18 @@
             .btnx.primary:hover {
                 background: linear-gradient(135deg, var(--accent-hover), var(--accent));
             }
+
+        .btnx.secondary {
+            background: var(--surface-tint);
+            color: var(--accent);
+            border-color: rgba(79, 70, 229, 0.18);
+        }
+
+        .btnx.note-btn.has-note {
+            background: rgba(232, 247, 238, 0.92);
+            color: #15803d;
+            border-color: rgba(21, 128, 61, 0.16);
+        }
 
     .tabsRow {
         display: flex;
@@ -413,6 +426,14 @@
             gap: 14px;
         }
 
+    .result-actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
     .rightPanel {
         border-radius: 24px;
         border: 1px solid var(--border);
@@ -512,6 +533,143 @@
         font-weight: 850 !important;
     }
 
+    /* Notes modal */
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.48);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        padding: 18px;
+    }
+
+        .modal-backdrop.on {
+            display: flex;
+        }
+
+    .note-modal {
+        width: min(720px, 100%);
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
+        box-shadow: var(--shadow-lg);
+        backdrop-filter: blur(18px);
+        overflow: hidden;
+    }
+
+    .note-head {
+        padding: 18px 18px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .note-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 950;
+        color: var(--text);
+        letter-spacing: -0.3px;
+    }
+
+    .note-sub {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.5;
+    }
+
+    .note-body {
+        padding: 16px 18px 18px;
+        display: grid;
+        gap: 12px;
+    }
+
+    .note-meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .note-box {
+        border: 1px solid var(--border);
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
+        .note-box .label {
+            color: var(--muted2);
+            font-size: 11px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .note-box .value {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 900;
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+    .note-textarea {
+        width: 100%;
+        min-height: 170px;
+        resize: vertical;
+        border-radius: 16px;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text);
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 750;
+        line-height: 1.6;
+        outline: none;
+        box-shadow: var(--shadow-md);
+    }
+
+        .note-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
+        }
+
+    .note-help {
+        color: var(--muted2);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .note-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .note-left-actions,
+    .note-right-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tiny-note {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 800;
+        line-height: 1.5;
+    }
+
     @@media (max-width: 1040px) {
         .mainGrid {
             grid-template-columns: 1fr;
@@ -537,13 +695,18 @@
         .overviewRow {
             grid-template-columns: 1fr;
         }
+
+        .note-meta {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <div class="results-shell">
+    @Html.AntiForgeryToken()
+
     <div class="viewport">
 
-        <!-- TOP BAR -->
         <section class="results-topbar">
             <div class="titleBlock">
                 <h1>Results</h1>
@@ -555,8 +718,6 @@
             <div class="controls">
                 <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
-
-                <!-- Compare badge -->
                 <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
 
                 <form method="post" asp-action="Clear" style="margin:0;">
@@ -565,7 +726,6 @@
             </div>
         </section>
 
-        <!-- Tabs + Sort -->
         <div class="tabsRow">
             <div class="tabs" role="tablist" aria-label="Results view">
                 <button id="tabOverview" class="active" type="button">Overview</button>
@@ -581,10 +741,7 @@
             </div>
         </div>
 
-        <!-- MAIN GRID -->
         <section class="mainGrid">
-
-            <!-- LEFT -->
             <div class="leftPanel">
                 <div class="kpiRow">
                     <div class="kpi">
@@ -619,9 +776,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT -->
             <div class="rightPanel">
-
                 <div class="snapGrid">
                     <div class="snap">
                         <div class="t">Live Data Snapshot</div>
@@ -645,10 +800,53 @@
                     <div class="line"><span>Total Area Covered</span><strong id="radArea">—</strong></div>
                     <div class="line"><span>Coordinates</span><strong id="radCoord">—</strong></div>
                 </div>
+            </div>
+        </section>
+    </div>
+</div>
 
+<!-- Notes Modal -->
+<div id="noteModalBackdrop" class="modal-backdrop">
+    <div class="note-modal">
+        <div class="note-head">
+            <div>
+                <h2 class="note-title">Area Notes</h2>
+                <div id="noteModalSub" class="note-sub">Add your personal notes for this place.</div>
+            </div>
+            <button type="button" class="btnx" onclick="closeNoteModal()">Close</button>
+        </div>
+
+        <div class="note-body">
+            <div class="note-meta">
+                <div class="note-box">
+                    <div class="label">Place</div>
+                    <div id="notePlaceName" class="value">—</div>
+                </div>
+                <div class="note-box">
+                    <div class="label">Category</div>
+                    <div id="noteCategory" class="value">—</div>
+                </div>
             </div>
 
-        </section>
+            <textarea id="noteText" class="note-textarea" placeholder="Write anything useful here... rent vibe, quietness, safety feeling, nearby quality, transit impression, personal pros/cons, etc."></textarea>
+
+            <div class="note-help">
+                Private note for your account. Max 2000 characters.
+            </div>
+
+            <div class="note-actions">
+                <div class="note-left-actions">
+                    <button id="btnDeleteNote" type="button" class="btnx danger" style="display:none;">Delete Note</button>
+                </div>
+
+                <div class="note-right-actions">
+                    <button type="button" class="btnx" onclick="closeNoteModal()">Cancel</button>
+                    <button id="btnSaveNote" type="button" class="btnx primary">Save Note</button>
+                </div>
+            </div>
+
+            <div id="noteStatus" class="tiny-note"></div>
+        </div>
     </div>
 </div>
 
@@ -658,18 +856,14 @@
 
 <script>
     (function () {
-        // ----------------------------
-        // Inputs from server model
-        // ----------------------------
+        const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value || "";
+
         const filters = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Filters));
         const lat = filters.lat ?? filters.Lat;
         const lng = filters.lng ?? filters.Lng;
         const radiusKm = filters.radiusKm ?? filters.RadiusKm ?? 3;
         const priorities = (filters.priorities ?? filters.Priorities ?? []).map(p => (p || "").toLowerCase());
 
-        // ----------------------------
-        // DOM
-        // ----------------------------
         const loading = document.getElementById("loadingState");
         const empty = document.getElementById("emptyState");
         const list = document.getElementById("resultsList");
@@ -694,27 +888,44 @@
         const tabAnalytics = document.getElementById("tabAnalytics");
         let analyticsMode = false;
 
+        // Notes modal elements
+        const noteBackdrop = document.getElementById("noteModalBackdrop");
+        const notePlaceName = document.getElementById("notePlaceName");
+        const noteCategory = document.getElementById("noteCategory");
+        const noteModalSub = document.getElementById("noteModalSub");
+        const noteText = document.getElementById("noteText");
+        const noteStatus = document.getElementById("noteStatus");
+        const btnSaveNote = document.getElementById("btnSaveNote");
+        const btnDeleteNote = document.getElementById("btnDeleteNote");
+
+        let activeNote = {
+            placeId: "",
+            placeName: "",
+            category: "",
+            lat: null,
+            lng: null,
+            exists: false
+        };
+
+        let cards = [];
+        let noteExistsMap = new Map();
+
         function show(el){ if(el) el.style.display=""; }
         function hide(el){ if(el) el.style.display="none"; }
 
         hide(empty);
         show(loading);
 
-        // ----------------------------
-        // Tabs
-        // ----------------------------
         function setTab(mode){
             analyticsMode = mode === "analytics";
             tabOverview.classList.toggle("active", !analyticsMode);
             tabAnalytics.classList.toggle("active", analyticsMode);
             renderCards();
         }
+
         tabOverview.addEventListener("click", () => setTab("overview"));
         tabAnalytics.addEventListener("click", () => setTab("analytics"));
 
-        // ----------------------------
-        // Map init
-        // ----------------------------
         const mapLat = lat ?? 43.4516;
         const mapLng = lng ?? -80.4925;
 
@@ -752,9 +963,6 @@
 
         setPinAndCircle(lat, lng);
 
-        // ----------------------------
-        // Save Search
-        // ----------------------------
         document.getElementById("btnSave").addEventListener("click", async () => {
             const name = (document.getElementById("saveName").value || "").trim() || "Saved Search";
 
@@ -778,9 +986,6 @@
             alert("Saved!");
         });
 
-        // ----------------------------
-        // Compare badge + API calls
-        // ----------------------------
         async function refreshCompareCount() {
             try {
                 const r = await fetch("/Compare/Count");
@@ -819,9 +1024,6 @@
 
         refreshCompareCount();
 
-        // ----------------------------
-        // Helpers
-        // ----------------------------
         function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
         function fmt(n, digits=0){ return Number.isFinite(n) ? n.toFixed(digits) : "—"; }
 
@@ -886,15 +1088,163 @@
             return 0;
         }
 
-        // ----------------------------
-        // UI state
-        // ----------------------------
-        let cards = [];
+        async function checkNotesForPlaces(placeIds) {
+            noteExistsMap = new Map();
+
+            const checks = placeIds.map(async (id) => {
+                try {
+                    const res = await fetch(`/Notes/Get?placeId=${encodeURIComponent(id)}`);
+                    if (!res.ok) {
+                        noteExistsMap.set(id, false);
+                        return;
+                    }
+                    const data = await res.json();
+                    noteExistsMap.set(id, !!data.exists);
+                } catch {
+                    noteExistsMap.set(id, false);
+                }
+            });
+
+            await Promise.all(checks);
+        }
+
+        function openNoteModal(placeId, placeName, category, latValue, lngValue) {
+            activeNote = {
+                placeId,
+                placeName,
+                category,
+                lat: latValue,
+                lng: lngValue,
+                exists: false
+            };
+
+            notePlaceName.textContent = placeName || "Unnamed place";
+            noteCategory.textContent = category || "—";
+            noteModalSub.textContent = "Loading existing note...";
+            noteText.value = "";
+            noteStatus.textContent = "";
+            btnDeleteNote.style.display = "none";
+            noteBackdrop.classList.add("on");
+
+            loadNote(placeId);
+        }
+
+        function closeNoteModal() {
+            noteBackdrop.classList.remove("on");
+        }
+
+        noteBackdrop?.addEventListener("click", (e) => {
+            if (e.target === noteBackdrop) closeNoteModal();
+        });
+
+        async function loadNote(placeId) {
+            try {
+                const res = await fetch(`/Notes/Get?placeId=${encodeURIComponent(placeId)}`);
+                if (!res.ok) {
+                    noteModalSub.textContent = "Could not load existing note.";
+                    return;
+                }
+
+                const data = await res.json();
+                if (data.exists) {
+                    activeNote.exists = true;
+                    noteText.value = data.noteText || "";
+                    btnDeleteNote.style.display = "inline-flex";
+                    noteModalSub.textContent = "Existing note loaded. You can update it.";
+                } else {
+                    activeNote.exists = false;
+                    noteText.value = "";
+                    btnDeleteNote.style.display = "none";
+                    noteModalSub.textContent = "No note saved yet. Add one below.";
+                }
+            } catch {
+                noteModalSub.textContent = "Could not load existing note.";
+            }
+        }
+
+        btnSaveNote?.addEventListener("click", async () => {
+            noteStatus.textContent = "";
+
+            const text = (noteText.value || "").trim();
+            if (text.length > 2000) {
+                noteStatus.textContent = "Note must be 2000 characters or less.";
+                return;
+            }
+
+            const formData = new URLSearchParams();
+            formData.append("PlaceId", activeNote.placeId);
+            formData.append("PlaceName", activeNote.placeName);
+            formData.append("Category", activeNote.category || "");
+            formData.append("Lat", activeNote.lat ?? "");
+            formData.append("Lng", activeNote.lng ?? "");
+            formData.append("NoteText", text);
+
+            try {
+                const res = await fetch("/Notes/Save", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "RequestVerificationToken": antiForgeryToken
+                    },
+                    body: formData.toString()
+                });
+
+                if (!res.ok) {
+                    const msg = await res.text();
+                    noteStatus.textContent = `Save failed: ${msg}`;
+                    return;
+                }
+
+                const data = await res.json();
+                noteStatus.textContent = data.message || "Note saved.";
+                activeNote.exists = true;
+                btnDeleteNote.style.display = "inline-flex";
+                noteModalSub.textContent = "Note saved successfully.";
+                noteExistsMap.set(activeNote.placeId, true);
+                renderCards();
+            } catch {
+                noteStatus.textContent = "Save failed.";
+            }
+        });
+
+        btnDeleteNote?.addEventListener("click", async () => {
+            if (!activeNote.placeId) return;
+            if (!confirm("Delete this note?")) return;
+
+            const formData = new URLSearchParams();
+            formData.append("placeId", activeNote.placeId);
+
+            try {
+                const res = await fetch("/Notes/DeleteByPlaceId", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "RequestVerificationToken": antiForgeryToken
+                    },
+                    body: formData.toString()
+                });
+
+                if (!res.ok) {
+                    const msg = await res.text();
+                    noteStatus.textContent = `Delete failed: ${msg}`;
+                    return;
+                }
+
+                const data = await res.json();
+                noteText.value = "";
+                noteStatus.textContent = data.message || "Note deleted.";
+                btnDeleteNote.style.display = "none";
+                activeNote.exists = false;
+                noteModalSub.textContent = "No note saved yet. Add one below.";
+                noteExistsMap.set(activeNote.placeId, false);
+                renderCards();
+            } catch {
+                noteStatus.textContent = "Delete failed.";
+            }
+        });
+
         sortMode.addEventListener("change", () => renderCards());
 
-        // ----------------------------
-        // Fetch live data + compute
-        // ----------------------------
         (async function run() {
             try {
                 radRadius.textContent = `${fmt(radiusKm,0)} km`;
@@ -913,8 +1263,6 @@
                         const tags = e.tags || {};
                         const name = tags.name || "Unnamed place";
                         const distKm = haversineKm(lat, lng, e.lat, e.lon);
-
-                        // ✅ stable id for compare
                         const id = `${e.type}:${e.id}`;
 
                         return { id, name, lat: e.lat, lng: e.lon, tags, distKm };
@@ -938,7 +1286,6 @@
                 const conf = confidenceLabel(pois.length);
                 snapConf.textContent = conf.label;
 
-                // group by category
                 const byCategory = new Map();
                 for (const p of pois) {
                     const cat = classify(p.tags);
@@ -1014,6 +1361,9 @@
                     cards.push(c);
                 }
 
+                const allPlaceIds = cards.flatMap(c => c.pois.map(p => p.id));
+                await checkNotesForPlaces(allPlaceIds);
+
                 const overall = Math.round(cards.reduce((a,c)=>a+c.score,0) / cards.length);
                 const sorted = [...cards].sort((a,b)=>b.score-a.score);
                 const best = sorted[0];
@@ -1030,7 +1380,6 @@
                 kpiWeak.textContent = worst ? worst.name : "—";
                 kpiWeakSub.textContent = worst ? `${worst.count} matches • ${worst.conf.label}` : "—";
 
-                // markers (sample)
                 markersLayer.clearLayers();
                 const bounds = [];
                 for (const c of cards) {
@@ -1052,9 +1401,6 @@
             }
         })();
 
-        // ----------------------------
-        // Rendering
-        // ----------------------------
         function renderCards(){
             if (!cards || !cards.length) return;
 
@@ -1140,22 +1486,38 @@
                             <ul>
                                 ${c.pois.slice(0,8).map(p => {
                                     const safeName = (p.name || "Unnamed place").replace(/'/g, "\\'");
+                                    const hasNote = noteExistsMap.get(p.id) === true;
+                                    const noteLabel = hasNote ? "View Note" : "Add Note";
+                                    const noteClass = hasNote ? "btnx note-btn has-note" : "btnx note-btn";
+
                                     return `
-                                      <li style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                                      <li style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
                                         <span>
                                           ${p.name}
                                           <span style="color:#64748b; font-weight:800;">(${fmt(p.distKm,2)} km)</span>
                                         </span>
-                                        <button class="btnx" style="padding:6px 10px;" type="button"
-                                          data-compare="1"
-                                          data-id="${p.id}"
-                                          data-name="${safeName}"
-                                          data-cat="${c.name}"
-                                          data-lat="${p.lat}"
-                                          data-lng="${p.lng}"
-                                          data-dist="${p.distKm}">
-                                          Compare
-                                        </button>
+                                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                            <button class="${noteClass}" style="padding:6px 10px;" type="button"
+                                              data-note="1"
+                                              data-id="${p.id}"
+                                              data-name="${safeName}"
+                                              data-cat="${c.name}"
+                                              data-lat="${p.lat}"
+                                              data-lng="${p.lng}">
+                                              ${noteLabel}
+                                            </button>
+
+                                            <button class="btnx" style="padding:6px 10px;" type="button"
+                                              data-compare="1"
+                                              data-id="${p.id}"
+                                              data-name="${safeName}"
+                                              data-cat="${c.name}"
+                                              data-lat="${p.lat}"
+                                              data-lng="${p.lng}"
+                                              data-dist="${p.distKm}">
+                                              Compare
+                                            </button>
+                                        </div>
                                       </li>`;
                                 }).join("")}
                             </ul>
@@ -1201,7 +1563,18 @@
                     await addToCompare(p);
                 });
             });
-        }
 
+            document.querySelectorAll("button[data-note='1']").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    openNoteModal(
+                        btn.getAttribute("data-id"),
+                        btn.getAttribute("data-name"),
+                        btn.getAttribute("data-cat"),
+                        Number(btn.getAttribute("data-lat")),
+                        Number(btn.getAttribute("data-lng"))
+                    );
+                });
+            });
+        }
     })();
 </script>

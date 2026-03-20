@@ -3,27 +3,32 @@
 @using Shortlist.Web.Models
 
 @{
-    // Show summary only on pages where it adds value
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var show = controller == "Filters" || controller == "Results" || controller == "SavedSearches";
 
-    // 1) Try "FilterState" JSON first
     FilterState? state = null;
-    var json = Context.Session.GetString("FilterState");
 
-    if (!string.IsNullOrWhiteSpace(json))
+    if (ViewData["HeaderFilters"] is FilterState vdFilters)
     {
-        try
+        state = vdFilters;
+    }
+    else
+    {
+        var json = Context.Session.GetString("FilterState");
+
+        if (!string.IsNullOrWhiteSpace(json))
         {
-            state = JsonSerializer.Deserialize<FilterState>(json);
-        }
-        catch
-        {
-            state = null;
+            try
+            {
+                state = JsonSerializer.Deserialize<FilterState>(json);
+            }
+            catch
+            {
+                state = null;
+            }
         }
     }
 
-    // 2) Fallback to separate session keys
     int? budget = null;
     if (state?.Budget.HasValue == true)
     {
@@ -44,6 +49,12 @@
         distance = Context.Session.GetInt32("Distance");
     }
 
+    int? radius = null;
+    if (state != null && state.RadiusKm > 0)
+    {
+        radius = state.RadiusKm;
+    }
+
     string? priorities = null;
     if (state?.Priorities != null && state.Priorities.Count > 0)
     {
@@ -54,7 +65,21 @@
         priorities = Context.Session.GetString("Priorities");
     }
 
-    var hasAny = budget.HasValue || distance.HasValue || !string.IsNullOrWhiteSpace(priorities);
+    string? locationLabel = null;
+    if (!string.IsNullOrWhiteSpace(state?.LocationLabel))
+    {
+        locationLabel = state.LocationLabel;
+    }
+
+    bool hasCoords = state?.Lat.HasValue == true && state?.Lng.HasValue == true;
+
+    var hasAny =
+        budget.HasValue ||
+        distance.HasValue ||
+        radius.HasValue ||
+        !string.IsNullOrWhiteSpace(priorities) ||
+        !string.IsNullOrWhiteSpace(locationLabel) ||
+        hasCoords;
 }
 
 @if (show && hasAny)
@@ -67,8 +92,26 @@
         <span class="summary-separator">|</span>
 
         <span class="summary-item">
-            Distance: @(distance.HasValue ? $"{distance} km or less" : "Any")
+            Max Distance: @(distance.HasValue ? $"{distance} km or less" : "Any")
         </span>
+
+        @if (radius.HasValue)
+        {
+            <span class="summary-separator">|</span>
+
+            <span class="summary-item">
+                Radius: @radius km
+            </span>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(locationLabel))
+        {
+            <span class="summary-separator">|</span>
+
+            <span class="summary-item">
+                Location: @locationLabel
+            </span>
+        }
 
         @if (!string.IsNullOrWhiteSpace(priorities))
         {
@@ -76,6 +119,15 @@
 
             <span class="summary-item">
                 Priorities: @priorities
+            </span>
+        }
+
+        @if (hasCoords)
+        {
+            <span class="summary-separator">|</span>
+
+            <span class="summary-item">
+                Pin: @state!.Lat!.Value.ToString("0.0000"), @state.Lng!.Value.ToString("0.0000")
             </span>
         }
     </div>

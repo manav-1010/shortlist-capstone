@@ -1,6 +1,7 @@
 ﻿@model Shortlist.Web.Models.FilterState
 @{
     Layout = "_Layout";
+    ViewData["HeaderFilters"] = Model;
 
     var allPriorities = new List<string>
     {
