@@ -82,6 +82,17 @@
                 background: linear-gradient(135deg, var(--accent-hover), var(--accent));
             }
 
+        .btnx.danger {
+            background: rgba(254, 242, 242, 0.88);
+            border-color: rgba(185, 28, 28, 0.18);
+            color: #b91c1c;
+        }
+
+            .btnx.danger:hover {
+                background: rgba(254, 226, 226, 0.95);
+                border-color: rgba(185, 28, 28, 0.26);
+            }
+
     .grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -153,6 +164,25 @@
         backdrop-filter: blur(12px);
     }
 
+    .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 2000;
+        padding: 11px 14px;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.92);
+        color: #ffffff;
+        font-weight: 850;
+        font-size: 13px;
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.20);
+        display: none;
+    }
+
+        .toast.show {
+            display: block;
+        }
+
     .leaflet-popup-content-wrapper,
     .leaflet-popup-tip {
         background: var(--surface-strong) !important;
@@ -215,7 +245,7 @@
                     </div>
 
                     <div style="margin-top:14px;">
-                        <button class="btnx" type="button" onclick="removeItem('@it.Id')">Remove</button>
+                        <button class="btnx danger" type="button" onclick="removeItem('@it.Id')">Remove</button>
                     </div>
                 </div>
             }
@@ -227,46 +257,92 @@
     }
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
 <script>
-    const items = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Items));
+    const items = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Items ?? new List<Shortlist.Web.Models.CompareItem>()));
+
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 1800);
+    }
 
     document.getElementById("btnClear")?.addEventListener("click", async () => {
-        await fetch("/Compare/Clear", { method: "POST" });
-        location.reload();
+        const ok = confirm("Clear all compare items?");
+        if (!ok) return;
+
+        try {
+            const res = await fetch("/Compare/Clear", {
+                method: "POST"
+            });
+
+            if (!res.ok) {
+                alert("Could not clear compare list.");
+                return;
+            }
+
+            showToast("Compare list cleared");
+            setTimeout(() => location.reload(), 500);
+        } catch (e) {
+            alert("Something went wrong while clearing compare.");
+        }
     });
 
     async function removeItem(id) {
-        await fetch("/Compare/Remove", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(id)
-        });
-        location.reload();
+        const ok = confirm("Remove this item from compare?");
+        if (!ok) return;
+
+        try {
+            const res = await fetch("/Compare/Remove", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(id)
+            });
+
+            if (!res.ok) {
+                const txt = await res.text();
+                alert("Could not remove item." + (txt ? "\n" + txt : ""));
+                return;
+            }
+
+            showToast("Item removed");
+            setTimeout(() => location.reload(), 500);
+        } catch (e) {
+            alert("Something went wrong while removing item.");
+        }
     }
 
     if (items && items.length) {
         const map = L.map("compareMap");
+
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
         const bounds = [];
+
         items.forEach((x) => {
-            const m = L.marker([x.lat, x.lng]).addTo(map).bindPopup(
+            const marker = L.marker([x.lat, x.lng]).addTo(map).bindPopup(
                 `<b>${x.name}</b><br/>${x.category}<br/>${Number(x.distKm).toFixed(2)} km`
             );
-            bounds.push(m.getLatLng());
+
+            bounds.push(marker.getLatLng());
         });
 
         if (bounds.length) {
             map.fitBounds(bounds, { padding: [30, 30] });
+        } else {
+            map.setView([43.4516, -80.4925], 12);
         }
 
         setTimeout(() => {
-            try { map.invalidateSize(); } catch (e) {}
-        }, 200);
+            try { map.invalidateSize(); } catch (e) { }
+        }, 250);
     }
 </script>
