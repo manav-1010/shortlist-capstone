@@ -203,17 +203,20 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
     }
 
         .listing-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
     .no-photo {
         color: var(--muted2);
         font-weight: 850;
+        font-size: 15px;
     }
 
     .listing-body {
@@ -228,6 +231,7 @@
         font-size: 24px;
         font-weight: 950;
         color: var(--text);
+        line-height: 1.1;
     }
 
     .listing-title {
@@ -264,6 +268,16 @@
     .listing-actions {
         margin-top: auto;
         padding-top: 8px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .listing-link-muted {
+        color: var(--muted2);
+        font-size: 13px;
+        font-weight: 800;
     }
 
     @@media (max-width: 1100px) {
@@ -301,8 +315,7 @@
 
             <div class="hero-pills">
                 <span class="hero-pill">RapidAPI-powered</span>
-                <span class="hero-pill">Photos + details</span>
-                <span class="hero-pill">Portfolio-ready UX</span>
+                <span class="hero-pill">Listing details</span>
             </div>
         </div>
 
@@ -366,10 +379,54 @@
         listingError.textContent = "";
     }
 
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function formatPrice(item) {
+        if (item.price == null) return "Price unavailable";
+
+        try {
+            return new Intl.NumberFormat("en-CA", {
+                style: "currency",
+                currency: item.currency || "CAD",
+                maximumFractionDigits: 0
+            }).format(item.price);
+        } catch {
+            return `$${item.price}`;
+        }
+    }
+
+    function getPrimaryImage(item) {
+        if (item.primaryImageUrl && item.primaryImageUrl.trim() !== "") {
+            return item.primaryImageUrl.trim();
+        }
+
+        if (item.imageUrls && Array.isArray(item.imageUrls) && item.imageUrls.length > 0) {
+            const first = item.imageUrls.find(x => x && String(x).trim() !== "");
+            if (first) return String(first).trim();
+        }
+
+        return "";
+    }
+
+    function getDetailUrl(item) {
+        if (item.detailUrl && item.detailUrl.trim() !== "") {
+            return item.detailUrl.trim();
+        }
+
+        return "";
+    }
+
     function renderListings(items) {
         listingGrid.innerHTML = "";
 
-        if (!Array.isArray(items) || items.length === 0) {
+        if (!items || !items.length) {
             listingStatus.textContent = "No listings found for this search.";
             return;
         }
@@ -377,15 +434,25 @@
         listingStatus.textContent = `${items.length} listing(s) found.`;
 
         items.forEach(item => {
-            const image = item.image || "";
-            const price = item.price || "Price not listed";
-            const beds = item.beds ?? "—";
-            const baths = item.baths ?? "—";
-            const address = item.address || "Address unavailable";
-            const city = item.city || "";
-            const province = item.province || "";
-            const link = item.detailUrl || "";
-            const type = item.propertyType || "Rental";
+            const image = getPrimaryImage(item);
+            const price = formatPrice(item);
+            const title = item.title || "Rental listing";
+
+            const address = [
+                item.addressLine,
+                item.city,
+                item.provinceOrState
+            ].filter(Boolean).join(", ");
+
+            const beds = item.bedrooms ?? "—";
+            const baths = item.bathrooms ?? "—";
+            const area = item.livingArea ? `${item.livingArea} sqft` : "Area n/a";
+            const link = getDetailUrl(item);
+
+            const safeTitle = escapeHtml(title);
+            const safeAddress = escapeHtml(address || "Address unavailable");
+            const safePropertyType = escapeHtml(item.propertyType || "Rental");
+            const safeStatus = escapeHtml(item.status || "Available");
 
             const card = document.createElement("div");
             card.className = "listing-card";
@@ -393,30 +460,29 @@
             card.innerHTML = `
                 <div class="listing-photo">
                     ${image
-                        ? `<img src="${image}" alt="Listing photo" loading="lazy">`
-                        : `<div class="no-photo">No image available</div>`}
+                        ? `<img src="${escapeHtml(image)}" alt="Listing photo" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;no-photo&quot;>No image</div>';" />`
+                        : `<div class="no-photo">No image</div>`}
                 </div>
 
                 <div class="listing-body">
-                    <div class="listing-price">${price}</div>
-
-                    <div class="listing-title">${address}</div>
-
-                    <div class="listing-sub">
-                        ${city}${city && province ? ", " : ""}${province}
-                    </div>
+                    <div class="listing-price">${escapeHtml(price)}</div>
+                    <div class="listing-title">${safeTitle}</div>
+                    <div class="listing-sub">${safeAddress}</div>
 
                     <div class="chips">
-                        <span class="chip">${type}</span>
-                        <span class="chip">Beds: ${beds}</span>
-                        <span class="chip">Baths: ${baths}</span>
+                        <span class="chip">Beds: ${escapeHtml(beds)}</span>
+                        <span class="chip">Baths: ${escapeHtml(baths)}</span>
+                        <span class="chip">${escapeHtml(area)}</span>
+                    </div>
+
+                    <div class="listing-sub">
+                        ${safePropertyType} • ${safeStatus}
                     </div>
 
                     <div class="listing-actions">
                         ${link
-                            ? `<a class="btnx" href="${link}" target="_blank" rel="noopener noreferrer">Open Detail ↗</a>`
-                            : `<span class="listing-sub">No detail link available</span>`
-                        }
+                            ? `<a class="btnx" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">Open Detail ↗</a>`
+                            : `<span class="listing-link-muted">No detail link available</span>`}
                     </div>
                 </div>
             `;
@@ -436,7 +502,12 @@
         const beds = document.getElementById("beds").value.trim();
         const maxPrice = document.getElementById("maxPrice").value.trim();
 
-        const url = `/Listings/Search?query=${encodeURIComponent(query)}&city=${encodeURIComponent(city)}&province=${encodeURIComponent(province)}&beds=${encodeURIComponent(beds)}&maxPrice=${encodeURIComponent(maxPrice)}`;
+        const url =
+            `/Listings/Search?query=${encodeURIComponent(query)}` +
+            `&city=${encodeURIComponent(city)}` +
+            `&province=${encodeURIComponent(province)}` +
+            `&beds=${encodeURIComponent(beds)}` +
+            `&maxPrice=${encodeURIComponent(maxPrice)}`;
 
         try {
             const res = await fetch(url);
