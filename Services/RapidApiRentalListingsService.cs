@@ -26,9 +26,10 @@ namespace Shortlist.Web.Services
             RentalListingsSearchViewModel search,
             CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(_options.ApiKey))
+            if (string.IsNullOrWhiteSpace(_options.ApiKey) ||
+                _options.ApiKey.Contains("PASTE_YOUR_RAPIDAPI_KEY_HERE", StringComparison.OrdinalIgnoreCase))
             {
-                throw new InvalidOperationException("RapidAPI key is missing. Configure RapidApiRealEstate:ApiKey.");
+                throw new InvalidOperationException("RapidAPI configuration is missing. Check appsettings.Development.json.");
             }
 
             if (string.IsNullOrWhiteSpace(_options.BaseUrl) || string.IsNullOrWhiteSpace(_options.SearchPath))
@@ -36,52 +37,75 @@ namespace Shortlist.Web.Services
                 throw new InvalidOperationException("RapidAPI real-estate configuration is incomplete.");
             }
 
-            var location = !string.IsNullOrWhiteSpace(search.Query)
-                ? search.Query.Trim()
-                : $"{search.City}, {search.ProvinceOrState}, {_options.DefaultCountry}".Trim(' ', ',');
+            var location = BuildLocation(search);
+            if (string.IsNullOrWhiteSpace(location))
+            {
+                throw new InvalidOperationException("Please provide a search query or city.");
+            }
 
+            // START WITH MINIMAL PARAMS ONLY
             var query = new Dictionary<string, string?>
             {
                 ["location"] = location,
-                ["page"] = search.Page.ToString(CultureInfo.InvariantCulture),
-                ["status_type"] = "ForRent",
-                ["sort_by"] = search.Sort,
-                ["home_type"] = "Apartments,Houses,Townhomes,Condos",
-                ["rentMax"] = search.MaxPrice > 0 ? search.MaxPrice.ToString(CultureInfo.InvariantCulture) : null,
-                ["bedsMin"] = search.MinBeds > 0 ? search.MinBeds.ToString(CultureInfo.InvariantCulture) : null
+                ["page"] = search.Page <= 0 ? "1" : search.Page.ToString(CultureInfo.InvariantCulture)
             };
 
-            var url = QueryHelpers.AddQueryString($"{_options.BaseUrl.TrimEnd('/')}{_options.SearchPath}", query!);
+            var url = QueryHelpers.AddQueryString(
+                $"{_options.BaseUrl.TrimEnd('/')}{_options.SearchPath}",
+                query!);
 
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
             request.Headers.TryAddWithoutValidation("X-RapidAPI-Key", _options.ApiKey);
             request.Headers.TryAddWithoutValidation("X-RapidAPI-Host", _options.Host);
 
+            _logger.LogInformation("RapidAPI request URL: {Url}", url);
+
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
 
+            _logger.LogInformation("RapidAPI response status: {StatusCode}", (int)response.StatusCode);
+            _logger.LogInformation("RapidAPI response body: {Body}", json);
+
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError("RapidAPI rental search failed. Status: {Status}. Body: {Body}", response.StatusCode, json);
-                throw new InvalidOperationException($"RapidAPI request failed: {(int)response.StatusCode} {response.ReasonPhrase}");
+                throw new InvalidOperationException(
+                    $"RapidAPI request failed: {(int)response.StatusCode} {response.ReasonPhrase}. Body: {json}");
             }
 
             using var doc = JsonDocument.Parse(json);
             return ParseListings(doc.RootElement);
         }
 
+        private string BuildLocation(RentalListingsSearchViewModel search)
+        {
+            if (!string.IsNullOrWhiteSpace(search.Query))
+            {
+                return search.Query.Trim();
+            }
+
+            var city = search.City?.Trim();
+            var province = search.ProvinceOrState?.Trim();
+            var country = _options.DefaultCountry?.Trim();
+
+            var parts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(city)) parts.Add(city);
+            if (!string.IsNullOrWhiteSpace(province)) parts.Add(province);
+            if (!string.IsNullOrWhiteSpace(country)) parts.Add(country);
+
+            return string.Join(", ", parts);
+        }
+
         private List<RentalListingCard> ParseListings(JsonElement root)
         {
             var results = new List<RentalListingCard>();
 
-            // Try common containers used by Zillow-style / real-estate APIs
             JsonElement listingsArray = default;
             var found =
                 TryGetArray(root, "properties", out listingsArray) ||
                 TryGetArray(root, "results", out listingsArray) ||
                 TryGetNestedArray(root, "data", "properties", out listingsArray) ||
                 TryGetNestedArray(root, "data", "results", out listingsArray) ||
-                TryGetNestedArray(root, "props", "properties", out listingsArray);
+                TryGetNestedArray(root, "data", "home_search", "results", out listingsArray);
 
             if (!found || listingsArray.ValueKind != JsonValueKind.Array)
             {
@@ -154,7 +178,7 @@ namespace Shortlist.Web.Services
                 };
 
                 card.ImageUrls = ExtractImages(item);
-                card.PrimaryImageUrl = card.ImageUrls.FirstOrDefault() ?? "/images/listing-placeholder.jpg";
+                card.PrimaryImageUrl = card.ImageUrls.FirstOrDefault() ?? "";
 
                 results.Add(card);
             }
@@ -268,6 +292,23 @@ namespace Shortlist.Web.Services
             return false;
         }
 
+        private static bool TryGetNestedArray(JsonElement root, string parent, string child1, string child2, out JsonElement array)
+        {
+            array = default;
+            if (root.TryGetProperty(parent, out var p)
+                && p.ValueKind == JsonValueKind.Object
+                && p.TryGetProperty(child1, out var c1)
+                && c1.ValueKind == JsonValueKind.Object
+                && c1.TryGetProperty(child2, out var c2)
+                && c2.ValueKind == JsonValueKind.Array)
+            {
+                array = c2;
+                return true;
+            }
+
+            return false;
+        }
+
         private static string? GetNestedString(JsonElement root, string parent, string child)
         {
             if (root.TryGetProperty(parent, out var p)
@@ -298,7 +339,7 @@ namespace Shortlist.Web.Services
         private static decimal? GetDecimal(JsonElement root, string name)
         {
             if (!root.TryGetProperty(name, out var p))
-                return null;
+                return n
 
             if (p.ValueKind == JsonValueKind.Number && p.TryGetDecimal(out var d))
                 return d;

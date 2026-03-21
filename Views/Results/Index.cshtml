@@ -55,7 +55,7 @@
 
     .controls {
         display: grid;
-        grid-template-columns: 1fr auto auto auto;
+        grid-template-columns: 1fr auto auto auto auto;
         gap: 10px;
         align-items: center;
         justify-self: end;
@@ -79,7 +79,9 @@
             font-weight: 750;
         }
 
-        .inputx:focus {
+        .inputx:focus,
+        textarea.inputx:focus,
+        .selectx:focus {
             border-color: var(--accent);
             box-shadow: var(--focus);
         }
@@ -137,6 +139,12 @@
             border-color: rgba(21, 128, 61, 0.16);
         }
 
+        .btnx.danger {
+            background: rgba(254, 242, 242, 0.92);
+            color: #b91c1c;
+            border-color: rgba(185, 28, 28, 0.16);
+        }
+
     .tabsRow {
         display: flex;
         gap: 10px;
@@ -188,11 +196,6 @@
         min-width: 220px;
         box-shadow: var(--shadow-md);
     }
-
-        .selectx:focus {
-            border-color: var(--accent);
-            box-shadow: var(--focus);
-        }
 
     .mainGrid {
         display: grid;
@@ -426,14 +429,6 @@
             gap: 14px;
         }
 
-    .result-actions {
-        margin-top: 12px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
     .rightPanel {
         border-radius: 24px;
         border: 1px solid var(--border);
@@ -533,141 +528,65 @@
         font-weight: 850 !important;
     }
 
-    /* Notes modal */
-    .modal-backdrop {
+    .note-modal {
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.48);
-        display: none;
+        background: rgba(15, 23, 42, 0.45);
+        display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 3000;
-        padding: 18px;
+        padding: 16px;
+        z-index: 2000;
     }
 
-        .modal-backdrop.on {
-            display: flex;
+        .note-modal.hidden {
+            display: none;
         }
 
-    .note-modal {
-        width: min(720px, 100%);
-        border-radius: 24px;
+    .note-modal-card {
+        width: 100%;
+        max-width: 560px;
+        border-radius: 20px;
         border: 1px solid var(--border);
         background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         box-shadow: var(--shadow-lg);
-        backdrop-filter: blur(18px);
-        overflow: hidden;
+        padding: 18px;
     }
 
-    .note-head {
-        padding: 18px 18px 12px;
-        border-bottom: 1px solid var(--border);
+    .note-modal-head {
         display: flex;
+        align-items: center;
         justify-content: space-between;
         gap: 12px;
-        align-items: flex-start;
     }
 
-    .note-title {
-        margin: 0;
-        font-size: 20px;
-        font-weight: 950;
-        color: var(--text);
-        letter-spacing: -0.3px;
-    }
+        .note-modal-head h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 950;
+            color: var(--text);
+        }
 
-    .note-sub {
+    .note-modal-sub {
         margin-top: 6px;
         color: var(--muted);
         font-size: 12px;
-        font-weight: 800;
-        line-height: 1.5;
-    }
-
-    .note-body {
-        padding: 16px 18px 18px;
-        display: grid;
-        gap: 12px;
-    }
-
-    .note-meta {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .note-box {
-        border: 1px solid var(--border);
-        background: var(--surface);
-        border-radius: 16px;
-        padding: 12px;
-        box-shadow: var(--shadow-md);
-    }
-
-        .note-box .label {
-            color: var(--muted2);
-            font-size: 11px;
-            font-weight: 850;
-            text-transform: uppercase;
-            letter-spacing: .3px;
-        }
-
-        .note-box .value {
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 900;
-            margin-top: 4px;
-            line-height: 1.5;
-        }
-
-    .note-textarea {
-        width: 100%;
-        min-height: 170px;
-        resize: vertical;
-        border-radius: 16px;
-        border: 1px solid var(--border-strong);
-        background: var(--surface);
-        color: var(--text);
-        padding: 14px;
-        font-size: 14px;
         font-weight: 750;
         line-height: 1.6;
-        outline: none;
-        box-shadow: var(--shadow-md);
     }
 
-        .note-textarea:focus {
-            border-color: var(--accent);
-            box-shadow: var(--focus);
-        }
-
-    .note-help {
-        color: var(--muted2);
+    .note-status {
+        margin-top: 10px;
         font-size: 12px;
         font-weight: 800;
+        color: var(--muted);
     }
 
     .note-actions {
         display: flex;
-        justify-content: space-between;
         gap: 10px;
         flex-wrap: wrap;
-        align-items: center;
-    }
-
-    .note-left-actions,
-    .note-right-actions {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .tiny-note {
-        margin-top: 10px;
-        font-size: 12px;
-        color: var(--muted);
-        font-weight: 800;
-        line-height: 1.5;
+        margin-top: 14px;
     }
 
     @@media (max-width: 1040px) {
@@ -695,10 +614,6 @@
         .overviewRow {
             grid-template-columns: 1fr;
         }
-
-        .note-meta {
-            grid-template-columns: 1fr;
-        }
     }
 </style>
 
@@ -706,7 +621,6 @@
     @Html.AntiForgeryToken()
 
     <div class="viewport">
-
         <section class="results-topbar">
             <div class="titleBlock">
                 <h1>Results</h1>
@@ -719,6 +633,7 @@
                 <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
                 <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
+                <a id="listingsLink" class="btnx" href="/Listings">Listings</a>
 
                 <form method="post" asp-action="Clear" style="margin:0;">
                     <button class="btnx" type="submit">Clear All</button>
@@ -805,48 +720,35 @@
     </div>
 </div>
 
-<!-- Notes Modal -->
-<div id="noteModalBackdrop" class="modal-backdrop">
-    <div class="note-modal">
-        <div class="note-head">
-            <div>
-                <h2 class="note-title">Area Notes</h2>
-                <div id="noteModalSub" class="note-sub">Add your personal notes for this place.</div>
-            </div>
-            <button type="button" class="btnx" onclick="closeNoteModal()">Close</button>
+<div id="noteModal" class="note-modal hidden">
+    <div class="note-modal-card">
+        <div class="note-modal-head">
+            <h3 id="noteModalTitle">Add Note</h3>
+            <button id="btnCloseNoteModal" type="button" class="btnx">Close</button>
         </div>
 
-        <div class="note-body">
-            <div class="note-meta">
-                <div class="note-box">
-                    <div class="label">Place</div>
-                    <div id="notePlaceName" class="value">—</div>
-                </div>
-                <div class="note-box">
-                    <div class="label">Category</div>
-                    <div id="noteCategory" class="value">—</div>
-                </div>
+        <div id="noteModalSub" class="note-modal-sub">Add your thoughts for this place.</div>
+
+        <form id="noteForm">
+            <input type="hidden" id="notePlaceId" name="PlaceId" />
+            <input type="hidden" id="notePlaceName" name="PlaceName" />
+            <input type="hidden" id="noteCategory" name="Category" />
+            <input type="hidden" id="noteLat" name="Lat" />
+            <input type="hidden" id="noteLng" name="Lng" />
+
+            <div style="margin-top:12px;">
+                <label for="noteText" class="k">Your note</label>
+                <textarea id="noteText" name="NoteText" class="inputx" rows="5" placeholder="Write your thoughts about this place..."></textarea>
             </div>
 
-            <textarea id="noteText" class="note-textarea" placeholder="Write anything useful here... rent vibe, quietness, safety feeling, nearby quality, transit impression, personal pros/cons, etc."></textarea>
-
-            <div class="note-help">
-                Private note for your account. Max 2000 characters.
-            </div>
+            <div id="noteStatus" class="note-status"></div>
 
             <div class="note-actions">
-                <div class="note-left-actions">
-                    <button id="btnDeleteNote" type="button" class="btnx danger" style="display:none;">Delete Note</button>
-                </div>
-
-                <div class="note-right-actions">
-                    <button type="button" class="btnx" onclick="closeNoteModal()">Cancel</button>
-                    <button id="btnSaveNote" type="button" class="btnx primary">Save Note</button>
-                </div>
+                <button id="btnSaveNote" type="submit" class="btnx primary">Save Note</button>
+                <button id="btnDeleteNote" type="button" class="btnx danger" style="display:none;">Delete Note</button>
+                <button id="btnCancelNote" type="button" class="btnx">Cancel</button>
             </div>
-
-            <div id="noteStatus" class="tiny-note"></div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -876,10 +778,8 @@
         const kpiWeakSub = document.getElementById("kpiWeakSub");
 
         const sortMode = document.getElementById("sortMode");
-
         const snapTotal = document.getElementById("snapTotal");
         const snapConf = document.getElementById("snapConf");
-
         const radRadius = document.getElementById("radRadius");
         const radArea = document.getElementById("radArea");
         const radCoord = document.getElementById("radCoord");
@@ -888,15 +788,21 @@
         const tabAnalytics = document.getElementById("tabAnalytics");
         let analyticsMode = false;
 
-        // Notes modal elements
-        const noteBackdrop = document.getElementById("noteModalBackdrop");
-        const notePlaceName = document.getElementById("notePlaceName");
-        const noteCategory = document.getElementById("noteCategory");
-        const noteModalSub = document.getElementById("noteModalSub");
-        const noteText = document.getElementById("noteText");
-        const noteStatus = document.getElementById("noteStatus");
-        const btnSaveNote = document.getElementById("btnSaveNote");
+        const noteModal = document.getElementById("noteModal");
+        const noteForm = document.getElementById("noteForm");
+        const btnCloseNoteModal = document.getElementById("btnCloseNoteModal");
+        const btnCancelNote = document.getElementById("btnCancelNote");
         const btnDeleteNote = document.getElementById("btnDeleteNote");
+        const noteModalTitle = document.getElementById("noteModalTitle");
+        const noteModalSub = document.getElementById("noteModalSub");
+        const noteStatus = document.getElementById("noteStatus");
+
+        const notePlaceIdInput = document.getElementById("notePlaceId");
+        const notePlaceNameInput = document.getElementById("notePlaceName");
+        const noteCategoryInput = document.getElementById("noteCategory");
+        const noteLatInput = document.getElementById("noteLat");
+        const noteLngInput = document.getElementById("noteLng");
+        const noteText = document.getElementById("noteText");
 
         let activeNote = {
             placeId: "",
@@ -910,60 +816,195 @@
         let cards = [];
         let noteExistsMap = new Map();
 
-        function show(el){ if(el) el.style.display=""; }
-        function hide(el){ if(el) el.style.display="none"; }
+        function show(el) { if (el) el.style.display = ""; }
+        function hide(el) { if (el) el.style.display = "none"; }
 
         hide(empty);
         show(loading);
 
-        function setTab(mode){
+        function setTab(mode) {
             analyticsMode = mode === "analytics";
             tabOverview.classList.toggle("active", !analyticsMode);
             tabAnalytics.classList.toggle("active", analyticsMode);
             renderCards();
         }
 
-        tabOverview.addEventListener("click", () => setTab("overview"));
-        tabAnalytics.addEventListener("click", () => setTab("analytics"));
+        tabOverview?.addEventListener("click", () => setTab("overview"));
+        tabAnalytics?.addEventListener("click", () => setTab("analytics"));
 
-        const mapLat = lat ?? 43.4516;
-        const mapLng = lng ?? -80.4925;
-
-        const map = L.map("resultsMap").setView([mapLat, mapLng], 13);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        const markersLayer = L.layerGroup().addTo(map);
-        let radiusCircle = null;
-        let pinMarker = null;
-
-        function setPinAndCircle(lat0, lng0){
-            if (radiusCircle) radiusCircle.remove();
-            if (pinMarker) pinMarker.remove();
-
-            radiusCircle = L.circle([lat0, lng0], { radius: radiusKm * 1000 }).addTo(map);
-            pinMarker = L.marker([lat0, lng0]).addTo(map).bindPopup("Selected location").openPopup();
-            map.setView([lat0, lng0], 13);
+        function closeNoteModal() {
+            if (!noteModal) return;
+            noteModal.classList.add("hidden");
+            noteStatus.textContent = "";
         }
 
-        setTimeout(() => { try { map.invalidateSize(); } catch(e){} }, 200);
-
-        if (!lat || !lng) {
-            hide(loading);
-            show(empty);
-            empty.querySelector(".p").textContent = "Go back to Filters and pick a location on the map.";
-            kpiOverall.textContent = "—";
-            kpiOverallSub.textContent = "No location selected";
-            snapTotal.textContent = "—";
-            snapConf.textContent = "—";
-            return;
+        function resetNoteModalFields() {
+            notePlaceIdInput.value = "";
+            notePlaceNameInput.value = "";
+            noteCategoryInput.value = "";
+            noteLatInput.value = "";
+            noteLngInput.value = "";
+            noteText.value = "";
+            noteStatus.textContent = "";
+            noteModalTitle.textContent = "Add Note";
+            noteModalSub.textContent = "Add your thoughts for this place.";
+            btnDeleteNote.style.display = "none";
         }
 
-        setPinAndCircle(lat, lng);
+        btnCloseNoteModal?.addEventListener("click", closeNoteModal);
+        btnCancelNote?.addEventListener("click", closeNoteModal);
 
-        document.getElementById("btnSave").addEventListener("click", async () => {
+        noteModal?.addEventListener("click", function (e) {
+            if (e.target === noteModal) {
+                closeNoteModal();
+            }
+        });
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && noteModal && !noteModal.classList.contains("hidden")) {
+                closeNoteModal();
+            }
+        });
+
+        async function openNoteModal(placeId, placeName, category, latValue, lngValue) {
+            activeNote = {
+                placeId: placeId || "",
+                placeName: placeName || "",
+                category: category || "",
+                lat: latValue,
+                lng: lngValue,
+                exists: false
+            };
+
+            resetNoteModalFields();
+
+            notePlaceIdInput.value = activeNote.placeId;
+            notePlaceNameInput.value = activeNote.placeName;
+            noteCategoryInput.value = activeNote.category;
+            noteLatInput.value = Number.isFinite(activeNote.lat) ? String(activeNote.lat) : "";
+            noteLngInput.value = Number.isFinite(activeNote.lng) ? String(activeNote.lng) : "";
+
+            noteModalTitle.textContent = activeNote.placeName || "Add Note";
+            noteModalSub.textContent = "Loading existing note...";
+            noteModal.classList.remove("hidden");
+
+            try {
+                const res = await fetch(`/Notes/Get?placeId=${encodeURIComponent(activeNote.placeId)}`);
+                if (!res.ok) {
+                    noteModalSub.textContent = "Could not load existing note.";
+                    setTimeout(() => noteText.focus(), 50);
+                    return;
+                }
+
+                const data = await res.json();
+
+                if (data.exists) {
+                    activeNote.exists = true;
+                    noteText.value = data.noteText || "";
+                    btnDeleteNote.style.display = "inline-flex";
+                    noteModalSub.textContent = "Existing note loaded. You can update it.";
+                } else {
+                    activeNote.exists = false;
+                    btnDeleteNote.style.display = "none";
+                    noteModalSub.textContent = "No note saved yet. Add one below.";
+                }
+
+                setTimeout(() => noteText.focus(), 50);
+            } catch {
+                noteModalSub.textContent = "Could not load existing note.";
+                setTimeout(() => noteText.focus(), 50);
+            }
+        }
+
+        noteForm?.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            noteStatus.textContent = "";
+
+            const text = (noteText.value || "").trim();
+
+            if (!activeNote.placeId || !activeNote.placeName) {
+                noteStatus.textContent = "Place information is missing.";
+                return;
+            }
+
+            if (text.length > 2000) {
+                noteStatus.textContent = "Note must be 2000 characters or less.";
+                return;
+            }
+
+            const formData = new URLSearchParams();
+            formData.append("PlaceId", activeNote.placeId);
+            formData.append("PlaceName", activeNote.placeName);
+            formData.append("Category", activeNote.category || "");
+            formData.append("Lat", activeNote.lat != null ? String(activeNote.lat) : "");
+            formData.append("Lng", activeNote.lng != null ? String(activeNote.lng) : "");
+            formData.append("NoteText", text);
+
+            try {
+                const res = await fetch("/Notes/Save", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "RequestVerificationToken": antiForgeryToken
+                    },
+                    body: formData.toString()
+                });
+
+                if (!res.ok) {
+                    const msg = await res.text();
+                    noteStatus.textContent = `Save failed: ${msg}`;
+                    return;
+                }
+
+                const data = await res.json();
+                noteStatus.textContent = data.message || "Note saved.";
+                activeNote.exists = true;
+                btnDeleteNote.style.display = "inline-flex";
+                noteModalSub.textContent = "Note saved successfully.";
+                noteExistsMap.set(activeNote.placeId, true);
+                renderCards();
+            } catch {
+                noteStatus.textContent = "Save failed.";
+            }
+        });
+
+        btnDeleteNote?.addEventListener("click", async function () {
+            if (!activeNote.placeId) return;
+            if (!confirm("Delete this note?")) return;
+
+            const formData = new URLSearchParams();
+            formData.append("placeId", activeNote.placeId);
+
+            try {
+                const res = await fetch("/Notes/DeleteByPlaceId", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "RequestVerificationToken": antiForgeryToken
+                    },
+                    body: formData.toString()
+                });
+
+                if (!res.ok) {
+                    const msg = await res.text();
+                    noteStatus.textContent = `Delete failed: ${msg}`;
+                    return;
+                }
+
+                const data = await res.json();
+                noteText.value = "";
+                noteStatus.textContent = data.message || "Note deleted.";
+                btnDeleteNote.style.display = "none";
+                activeNote.exists = false;
+                noteModalSub.textContent = "No note saved yet. Add one below.";
+                noteExistsMap.set(activeNote.placeId, false);
+                renderCards();
+            } catch {
+                noteStatus.textContent = "Delete failed.";
+            }
+        });
+
+        document.getElementById("btnSave")?.addEventListener("click", async () => {
             const name = (document.getElementById("saveName").value || "").trim() || "Saved Search";
 
             const res = await fetch("/SavedSearches/SaveCurrent", {
@@ -993,7 +1034,7 @@
                 const j = await r.json();
                 const link = document.getElementById("compareLink");
                 if (link) link.textContent = `Compare (${j.count})`;
-            } catch {}
+            } catch { }
         }
 
         async function addToCompare(p) {
@@ -1024,32 +1065,32 @@
 
         refreshCompareCount();
 
-        function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
-        function fmt(n, digits=0){ return Number.isFinite(n) ? n.toFixed(digits) : "—"; }
+        function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+        function fmt(n, digits = 0) { return Number.isFinite(n) ? n.toFixed(digits) : "—"; }
 
-        function haversineKm(aLat, aLng, bLat, bLng){
+        function haversineKm(aLat, aLng, bLat, bLng) {
             const R = 6371;
-            const dLat = (bLat-aLat) * Math.PI/180;
-            const dLng = (bLng-aLng) * Math.PI/180;
-            const s1 = Math.sin(dLat/2), s2 = Math.sin(dLng/2);
-            const x = s1*s1 + Math.cos(aLat*Math.PI/180)*Math.cos(bLat*Math.PI/180)*s2*s2;
-            return 2*R*Math.asin(Math.sqrt(x));
+            const dLat = (bLat - aLat) * Math.PI / 180;
+            const dLng = (bLng - aLng) * Math.PI / 180;
+            const s1 = Math.sin(dLat / 2), s2 = Math.sin(dLng / 2);
+            const x = s1 * s1 + Math.cos(aLat * Math.PI / 180) * Math.cos(bLat * Math.PI / 180) * s2 * s2;
+            return 2 * R * Math.asin(Math.sqrt(x));
         }
 
-        function percentile(arr, p){
+        function percentile(arr, p) {
             if (!arr.length) return 0;
-            const s = [...arr].sort((a,b)=>a-b);
-            const idx = (s.length-1)*p;
+            const s = [...arr].sort((a, b) => a - b);
+            const idx = (s.length - 1) * p;
             const lo = Math.floor(idx), hi = Math.ceil(idx);
             if (lo === hi) return s[lo];
-            return s[lo] + (s[hi]-s[lo])*(idx-lo);
+            return s[lo] + (s[hi] - s[lo]) * (idx - lo);
         }
 
-        function confidenceLabel(total){
-            if (total >= 25) return { label:"High", pct: 92 };
-            if (total >= 12) return { label:"Medium", pct: 76 };
-            if (total >= 5)  return { label:"Low", pct: 58 };
-            return { label:"Very Low", pct: 40 };
+        function confidenceLabel(total) {
+            if (total >= 25) return { label: "High", pct: 92 };
+            if (total >= 12) return { label: "Medium", pct: 76 };
+            if (total >= 5) return { label: "Low", pct: 58 };
+            return { label: "Very Low", pct: 40 };
         }
 
         function classify(tags) {
@@ -1077,10 +1118,10 @@
 
         const weightModel = { density: 0.50, anchor: 0.30, access: 0.20 };
 
-        function anchorScore(cat, tags){
+        function anchorScore(cat, tags) {
             if (cat === "transit" && (tags.railway === "station" || tags.public_transport === "station" || tags.amenity === "bus_station")) return 1;
-            if (cat === "grocery" && (tags.shop === "supermarket")) return 1;
-            if (cat === "parks" && (tags.leisure === "park" && (tags.name || "").length > 0)) return 1;
+            if (cat === "grocery" && tags.shop === "supermarket") return 1;
+            if (cat === "parks" && tags.leisure === "park" && (tags.name || "").length > 0) return 1;
             if (cat === "gym/fitness" && (tags.leisure === "fitness_centre" || tags.amenity === "gym")) return 1;
             if (cat === "parking" && tags.amenity === "parking") return 1;
             if (cat === "laundry" && (tags.amenity === "laundry" || tags.shop === "laundry")) return 1;
@@ -1108,149 +1149,50 @@
             await Promise.all(checks);
         }
 
-        function openNoteModal(placeId, placeName, category, latValue, lngValue) {
-            activeNote = {
-                placeId,
-                placeName,
-                category,
-                lat: latValue,
-                lng: lngValue,
-                exists: false
-            };
+        const mapLat = lat ?? 43.4516;
+        const mapLng = lng ?? -80.4925;
 
-            notePlaceName.textContent = placeName || "Unnamed place";
-            noteCategory.textContent = category || "—";
-            noteModalSub.textContent = "Loading existing note...";
-            noteText.value = "";
-            noteStatus.textContent = "";
-            btnDeleteNote.style.display = "none";
-            noteBackdrop.classList.add("on");
+        const map = L.map("resultsMap").setView([mapLat, mapLng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-            loadNote(placeId);
+        const markersLayer = L.layerGroup().addTo(map);
+        let radiusCircle = null;
+        let pinMarker = null;
+
+        function setPinAndCircle(lat0, lng0) {
+            if (radiusCircle) radiusCircle.remove();
+            if (pinMarker) pinMarker.remove();
+
+            radiusCircle = L.circle([lat0, lng0], { radius: radiusKm * 1000 }).addTo(map);
+            pinMarker = L.marker([lat0, lng0]).addTo(map).bindPopup("Selected location").openPopup();
+            map.setView([lat0, lng0], 13);
         }
 
-        function closeNoteModal() {
-            noteBackdrop.classList.remove("on");
+        setTimeout(() => { try { map.invalidateSize(); } catch (e) {} }, 200);
+
+        if (!lat || !lng) {
+            hide(loading);
+            show(empty);
+            empty.querySelector(".p").textContent = "Go back to Filters and pick a location on the map.";
+            kpiOverall.textContent = "—";
+            kpiOverallSub.textContent = "No location selected";
+            snapTotal.textContent = "—";
+            snapConf.textContent = "—";
+            return;
         }
 
-        noteBackdrop?.addEventListener("click", (e) => {
-            if (e.target === noteBackdrop) closeNoteModal();
-        });
-
-        async function loadNote(placeId) {
-            try {
-                const res = await fetch(`/Notes/Get?placeId=${encodeURIComponent(placeId)}`);
-                if (!res.ok) {
-                    noteModalSub.textContent = "Could not load existing note.";
-                    return;
-                }
-
-                const data = await res.json();
-                if (data.exists) {
-                    activeNote.exists = true;
-                    noteText.value = data.noteText || "";
-                    btnDeleteNote.style.display = "inline-flex";
-                    noteModalSub.textContent = "Existing note loaded. You can update it.";
-                } else {
-                    activeNote.exists = false;
-                    noteText.value = "";
-                    btnDeleteNote.style.display = "none";
-                    noteModalSub.textContent = "No note saved yet. Add one below.";
-                }
-            } catch {
-                noteModalSub.textContent = "Could not load existing note.";
-            }
-        }
-
-        btnSaveNote?.addEventListener("click", async () => {
-            noteStatus.textContent = "";
-
-            const text = (noteText.value || "").trim();
-            if (text.length > 2000) {
-                noteStatus.textContent = "Note must be 2000 characters or less.";
-                return;
-            }
-
-            const formData = new URLSearchParams();
-            formData.append("PlaceId", activeNote.placeId);
-            formData.append("PlaceName", activeNote.placeName);
-            formData.append("Category", activeNote.category || "");
-            formData.append("Lat", activeNote.lat ?? "");
-            formData.append("Lng", activeNote.lng ?? "");
-            formData.append("NoteText", text);
-
-            try {
-                const res = await fetch("/Notes/Save", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "RequestVerificationToken": antiForgeryToken
-                    },
-                    body: formData.toString()
-                });
-
-                if (!res.ok) {
-                    const msg = await res.text();
-                    noteStatus.textContent = `Save failed: ${msg}`;
-                    return;
-                }
-
-                const data = await res.json();
-                noteStatus.textContent = data.message || "Note saved.";
-                activeNote.exists = true;
-                btnDeleteNote.style.display = "inline-flex";
-                noteModalSub.textContent = "Note saved successfully.";
-                noteExistsMap.set(activeNote.placeId, true);
-                renderCards();
-            } catch {
-                noteStatus.textContent = "Save failed.";
-            }
-        });
-
-        btnDeleteNote?.addEventListener("click", async () => {
-            if (!activeNote.placeId) return;
-            if (!confirm("Delete this note?")) return;
-
-            const formData = new URLSearchParams();
-            formData.append("placeId", activeNote.placeId);
-
-            try {
-                const res = await fetch("/Notes/DeleteByPlaceId", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "RequestVerificationToken": antiForgeryToken
-                    },
-                    body: formData.toString()
-                });
-
-                if (!res.ok) {
-                    const msg = await res.text();
-                    noteStatus.textContent = `Delete failed: ${msg}`;
-                    return;
-                }
-
-                const data = await res.json();
-                noteText.value = "";
-                noteStatus.textContent = data.message || "Note deleted.";
-                btnDeleteNote.style.display = "none";
-                activeNote.exists = false;
-                noteModalSub.textContent = "No note saved yet. Add one below.";
-                noteExistsMap.set(activeNote.placeId, false);
-                renderCards();
-            } catch {
-                noteStatus.textContent = "Delete failed.";
-            }
-        });
-
-        sortMode.addEventListener("change", () => renderCards());
+        setPinAndCircle(lat, lng);
+        sortMode?.addEventListener("change", () => renderCards());
 
         (async function run() {
             try {
-                radRadius.textContent = `${fmt(radiusKm,0)} km`;
+                radRadius.textContent = `${fmt(radiusKm, 0)} km`;
                 const areaKm2 = Math.PI * radiusKm * radiusKm;
-                radArea.textContent = `${fmt(areaKm2,1)} km²`;
-                radCoord.textContent = `${fmt(lat,4)}, ${fmt(lng,4)}`;
+                radArea.textContent = `${fmt(areaKm2, 1)} km²`;
+                radCoord.textContent = `${fmt(lat, 4)}, ${fmt(lng, 4)}`;
 
                 const resp = await fetch(`/api/search?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&radiusKm=${encodeURIComponent(radiusKm)}`);
                 if (!resp.ok) throw new Error("Search API failed");
@@ -1296,22 +1238,19 @@
                 const selectedCats = priorities.map(p => priorityToCategory[p]).filter(Boolean);
                 const catsToShow = selectedCats.length
                     ? selectedCats
-                    : ["grocery","transit","parks","gym/fitness","laundry","parking","safety","quiet"];
+                    : ["grocery", "transit", "parks", "gym/fitness", "laundry", "parking", "safety", "quiet"];
 
-                function computeCategoryCard(cat){
-                    const items = (byCategory.get(cat) || []);
+                function computeCategoryCard(cat) {
+                    const items = byCategory.get(cat) || [];
                     if (!items.length) return null;
 
                     const count = items.length;
                     const topItems = items.slice(0, 8);
-
                     const densityCap = 12;
                     const densityPct = clamp((count / densityCap) * 100, 5, 100);
-
-                    const anchors = items.reduce((acc,p)=>acc + anchorScore(cat,p.tags), 0);
+                    const anchors = items.reduce((acc, p) => acc + anchorScore(cat, p.tags), 0);
                     const anchorPct = clamp((anchors / 3) * 100, 0, 100);
-
-                    const avgDist = items.reduce((a,p)=>a+p.distKm,0) / count;
+                    const avgDist = items.reduce((a, p) => a + p.distKm, 0) / count;
                     const accessPct = clamp(100 - (avgDist / radiusKm) * 100, 0, 100);
 
                     const score = Math.round(
@@ -1321,7 +1260,7 @@
                     );
 
                     const catConf = confidenceLabel(count);
-                    const dists = items.map(x=>x.distKm);
+                    const dists = items.map(x => x.distKm);
                     const p50 = percentile(dists, 0.50);
                     const p80 = percentile(dists, 0.80);
 
@@ -1357,17 +1296,16 @@
                 cards = [];
                 for (const cat of catsToShow) {
                     const c = computeCategoryCard(cat);
-                    if (!c) continue;
-                    cards.push(c);
+                    if (c) cards.push(c);
                 }
 
                 const allPlaceIds = cards.flatMap(c => c.pois.map(p => p.id));
                 await checkNotesForPlaces(allPlaceIds);
 
-                const overall = Math.round(cards.reduce((a,c)=>a+c.score,0) / cards.length);
-                const sorted = [...cards].sort((a,b)=>b.score-a.score);
+                const overall = Math.round(cards.reduce((a, c) => a + c.score, 0) / cards.length);
+                const sorted = [...cards].sort((a, b) => b.score - a.score);
                 const best = sorted[0];
-                const worst = sorted[sorted.length-1];
+                const worst = sorted[sorted.length - 1];
 
                 kpiOverall.textContent = `${overall} / 100`;
                 kpiOverallSub.textContent = selectedCats.length
@@ -1389,7 +1327,10 @@
                         bounds.push(m.getLatLng());
                     }
                 }
-                if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+
+                if (bounds.length) {
+                    map.fitBounds(bounds, { padding: [30, 30] });
+                }
 
                 renderCards();
 
@@ -1401,17 +1342,17 @@
             }
         })();
 
-        function renderCards(){
+        function renderCards() {
             if (!cards || !cards.length) return;
 
+            let sorted = [...cards];
             const mode = sortMode.value;
 
-            let sorted = [...cards];
-            if (mode === "match") sorted.sort((a,b)=> b.score - a.score);
-            else if (mode === "closest") sorted.sort((a,b)=> a.avgDist - b.avgDist);
+            if (mode === "match") sorted.sort((a, b) => b.score - a.score);
+            else if (mode === "closest") sorted.sort((a, b) => a.avgDist - b.avgDist);
             else if (mode === "balanced") {
-                const avg = sorted.reduce((a,c)=>a+c.score,0)/sorted.length;
-                sorted.sort((a,b)=> Math.abs(a.score-avg) - Math.abs(b.score-avg));
+                const avg = sorted.reduce((a, c) => a + c.score, 0) / sorted.length;
+                sorted.sort((a, b) => Math.abs(a.score - avg) - Math.abs(b.score - avg));
             }
 
             list.innerHTML = "";
@@ -1422,8 +1363,8 @@
 
                 const chips = [
                     `<span class="chip">${c.count} matches</span>`,
-                    `<span class="chip">Median ${fmt(c.p50,2)} km</span>`,
-                    `<span class="chip">P80 ${fmt(c.p80,2)} km</span>`,
+                    `<span class="chip">Median ${fmt(c.p50, 2)} km</span>`,
+                    `<span class="chip">P80 ${fmt(c.p80, 2)} km</span>`,
                     `<span class="chip">Confidence: ${c.conf.label}</span>`
                 ];
 
@@ -1434,7 +1375,7 @@
                             <ul>
                                 <li>${c.strengths[0] ?? "Good live coverage in your radius"}</li>
                                 <li>${c.count} matches within ${radiusKm} km</li>
-                                <li>Median distance ${fmt(c.p50,2)} km (closer is better)</li>
+                                <li>Median distance ${fmt(c.p50, 2)} km (closer is better)</li>
                             </ul>
                         </div>
 
@@ -1474,9 +1415,9 @@
                         <div class="box">
                             <h4>Transparent weights</h4>
                             <ul>
-                                <li>Density weight: ${(0.50*100).toFixed(0)}%</li>
-                                <li>Anchor weight: ${(0.30*100).toFixed(0)}%</li>
-                                <li>Access weight: ${(0.20*100).toFixed(0)}%</li>
+                                <li>Density weight: ${(0.50 * 100).toFixed(0)}%</li>
+                                <li>Anchor weight: ${(0.30 * 100).toFixed(0)}%</li>
+                                <li>Access weight: ${(0.20 * 100).toFixed(0)}%</li>
                                 <li>Confidence: ${c.conf.label} (${c.conf.pct}%)</li>
                             </ul>
                         </div>
@@ -1484,8 +1425,14 @@
                         <div class="box">
                             <h4>Nearby places (sample)</h4>
                             <ul>
-                                ${c.pois.slice(0,8).map(p => {
-                                    const safeName = (p.name || "Unnamed place").replace(/'/g, "\\'");
+                                ${c.pois.slice(0, 8).map(p => {
+                                    const safeName = (p.name || "Unnamed place")
+                                        .replace(/&/g, "&amp;")
+                                        .replace(/"/g, "&quot;")
+                                        .replace(/'/g, "&#39;")
+                                        .replace(/</g, "&lt;")
+                                        .replace(/>/g, "&gt;");
+
                                     const hasNote = noteExistsMap.get(p.id) === true;
                                     const noteLabel = hasNote ? "View Note" : "Add Note";
                                     const noteClass = hasNote ? "btnx note-btn has-note" : "btnx note-btn";
@@ -1493,8 +1440,8 @@
                                     return `
                                       <li style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
                                         <span>
-                                          ${p.name}
-                                          <span style="color:#64748b; font-weight:800;">(${fmt(p.distKm,2)} km)</span>
+                                          ${safeName}
+                                          <span style="color:#64748b; font-weight:800;">(${fmt(p.distKm, 2)} km)</span>
                                         </span>
                                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                                             <button class="${noteClass}" style="padding:6px 10px;" type="button"

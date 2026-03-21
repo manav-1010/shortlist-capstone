@@ -4,6 +4,8 @@ namespace Shortlist.Web.Services
 {
     public interface IRentalListingsService
     {
-        Task<List<RentalListingCard>> SearchRentalsAsync(RentalListingsSearchViewModel search, CancellationToken cancellationToken = default);
+        Task<List<RentalListingCard>> SearchRentalsAsync(
+            RentalListingsSearchViewModel search,
+            CancellationToken cancellationToken = default);
     }
 }
