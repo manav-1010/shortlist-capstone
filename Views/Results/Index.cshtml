@@ -1005,7 +1005,13 @@
         });
 
         document.getElementById("btnSave")?.addEventListener("click", async () => {
-            const name = (document.getElementById("saveName").value || "").trim() || "Saved Search";
+            const saveNameInput = document.getElementById("saveName");
+            const name = (SaveNameInput.value || "").trim();
+             if (!name) {
+        alert("Please enter a custom name for this search.");
+        saveNameInput.focus();
+        return;
+    }
 
             const res = await fetch("/SavedSearches/SaveCurrent", {
                 method: "POST",
