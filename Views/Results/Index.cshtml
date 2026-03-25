@@ -63,20 +63,22 @@
     }
 
     .inputx {
-        width: 100%;
+        width: 300px; /* 🔥 was 100% → now fixed bigger width */
+        height: 48px; /* 🔥 increase height */
         border-radius: 12px;
         border: 1px solid var(--border-strong);
         background: var(--surface);
         color: var(--text);
-        padding: 11px 12px;
+        padding: 12px 14px; /* 🔥 more spacing */
+        font-size: 15px; /* 🔥 bigger text */
         font-weight: 850;
         outline: none;
         box-shadow: var(--shadow-md);
     }
 
         .inputx::placeholder {
-            color: var(--muted2);
-            font-weight: 750;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
         }
 
         .inputx:focus,
@@ -630,7 +632,7 @@
             </div>
 
             <div class="controls">
-                <input id="saveName" class="inputx" placeholder="Name (e.g., KW groceries 3km)" />
+                <input id="saveName" class="inputx saveInputBig" placeholder="Enter search name..." />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
                 <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
                 <a id="listingsLink" class="btnx" href="/Listings">Listings</a>
@@ -1004,34 +1006,29 @@
             }
         });
 
-        document.getElementById("btnSave")?.addEventListener("click", async () => {
-            const saveNameInput = document.getElementById("saveName");
-            const name = (SaveNameInput.value || "").trim();
-             if (!name) {
-        alert("Please enter a custom name for this search.");
-        saveNameInput.focus();
-        return;
-    }
+            document.getElementById("btnSave")?.addEventListener("click", async () => {
+        const saveNameInput = document.getElementById("saveName");
+        const name = (saveNameInput.value || "").trim() || "Saved Search";
 
-            const res = await fetch("/SavedSearches/SaveCurrent", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ name })
-            });
-
-            if (res.status === 401) {
-                alert("You are not logged in. Please login again.");
-                return;
-            }
-
-            if (!res.ok) {
-                const t = await res.text();
-                alert("Save failed: " + t);
-                return;
-            }
-
-            alert("Saved!");
+        const res = await fetch("/SavedSearches/SaveCurrent", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ name })
         });
+
+        if (res.status === 401) {
+            alert("You are not logged in. Please login again.");
+            return;
+        }
+
+        if (!res.ok) {
+            const t = await res.text();
+            alert("Save failed: " + t);
+            return;
+        }
+
+        alert("Saved!");
+    });
 
         async function refreshCompareCount() {
             try {
