@@ -1164,17 +1164,48 @@
             alert("Added to Compare!");
         }
 
-        function updatePremiumCard(bestCard) {
-            if (!isPremium || !bestCard) return;
+            async function updatePremiumCard(bestCard) {
+        if (!isPremium || !bestCard) return;
 
-            const nameEl = document.querySelector(".premium-ai-name");
-            const reasonEl = document.querySelector(".premium-ai-reason");
+        const nameEl = document.querySelector(".premium-ai-name");
+        const reasonEl = document.querySelector(".premium-ai-reason");
 
-            if (!nameEl || !reasonEl) return;
+        if (!nameEl || !reasonEl) return;
 
-            nameEl.textContent = `${bestCard.name} • ${bestCard.score}/100`;
-            reasonEl.textContent = `${bestCard.name} is currently your strongest overall match because it has solid live coverage, strong score performance, and good alignment with your selected priorities.`;
+        nameEl.textContent = `${bestCard.name} • ${bestCard.score}/100`;
+        reasonEl.textContent = "Generating AI recommendation...";
+
+        try {
+            const res = await fetch("/Results/GenerateBestAreaExplanation", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    areaName: bestCard.name,
+                    score: bestCard.score,
+                    priorities: priorities,
+                    matchCount: bestCard.count,
+                    avgDistanceKm: bestCard.avgDist
+                })
+            });
+
+            if (!res.ok) {
+                const t = await res.text();
+                reasonEl.textContent = "AI recommendation could not be generated right now.";
+                console.error(t);
+                return;
+            }
+
+            const data = await res.json();
+
+            nameEl.textContent = `${data.areaName} • ${data.score}/100`;
+            reasonEl.textContent = data.summary;
+        } catch (err) {
+            reasonEl.textContent = "AI recommendation could not be generated right now.";
+            console.error(err);
         }
+    }
 
         refreshCompareCount();
 
@@ -1432,7 +1463,7 @@
                 kpiWeakSub.textContent = worst ? `${worst.count} matches • ${worst.conf.label}` : "—";
 
                 if (best) {
-                    updatePremiumCard(best);
+                   await updatePremiumCard(best);
                 }
 
                 markersLayer.clearLayers();
