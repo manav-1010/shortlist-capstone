@@ -1,0 +1,289 @@
+﻿@{
+    ViewData["Title"] = "Shortlist Premium";
+    var isPremium = ViewBag.IsPremium == true;
+    var premiumPlan = ViewBag.PremiumPlan as string ?? "";
+    var premiumEndDate = ViewBag.PremiumEndDate as string ?? "";
+}
+
+<style>
+    .premium-shell {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+    }
+
+    .premium-hero {
+        border-radius: 26px;
+        padding: 28px;
+        border: 1px solid rgba(245, 158, 11, 0.24);
+        background: linear-gradient(135deg, rgba(251,191,36,0.18), rgba(255,255,255,0.72));
+        box-shadow: var(--shadow-lg);
+    }
+
+    .premium-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(251,191,36,0.18);
+        color: #92400e;
+        font-weight: 900;
+        margin-bottom: 12px;
+    }
+
+    .premium-hero h1 {
+        margin: 0;
+        font-size: 34px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .premium-hero p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.7;
+        max-width: 760px;
+        font-weight: 700;
+    }
+
+    .trial-banner {
+        margin-top: 16px;
+        border-radius: 18px;
+        padding: 16px 18px;
+        background: rgba(79, 70, 229, 0.10);
+        border: 1px solid rgba(79, 70, 229, 0.16);
+        color: var(--text);
+        font-weight: 850;
+    }
+
+    .pricing-grid {
+        margin-top: 22px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    .plan-card {
+        position: relative;
+        border-radius: 22px;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+        box-shadow: var(--shadow-lg);
+        padding: 22px;
+    }
+
+        .plan-card.featured {
+            border: 1px solid rgba(245, 158, 11, 0.42);
+            box-shadow: 0 20px 44px rgba(245, 158, 11, 0.14);
+        }
+
+    .plan-tag {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: linear-gradient(135deg, #f59e0b, #facc15);
+        color: #2b1b00;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    .plan-card h3 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 950;
+    }
+
+    .plan-price {
+        margin-top: 10px;
+        font-size: 32px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+        .plan-price span {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+    .plan-trial {
+        margin-top: 8px;
+        color: #15803d;
+        font-weight: 900;
+    }
+
+    .plan-card ul {
+        margin: 16px 0 0;
+        padding-left: 20px;
+        color: var(--muted);
+        line-height: 1.8;
+        font-weight: 750;
+    }
+
+    .btn-premium {
+        margin-top: 18px;
+        display: inline-flex;
+        width: 100%;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-weight: 950;
+        color: white;
+        background: linear-gradient(135deg, var(--accent), #6366f1);
+        box-shadow: var(--shadow-md);
+    }
+
+    .status-card {
+        margin-top: 22px;
+        border-radius: 20px;
+        padding: 18px;
+        border: 1px solid rgba(21, 128, 61, 0.18);
+        background: rgba(232, 247, 238, 0.90);
+        color: #166534;
+        font-weight: 850;
+    }
+
+    .feature-table {
+        margin-top: 24px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+        .feature-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .feature-table th,
+        .feature-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .feature-table th {
+            background: var(--surface-soft);
+            font-weight: 950;
+        }
+
+    @@media (max-width: 980px) {
+        .pricing-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="premium-shell">
+    <section class="premium-hero">
+        <div class="premium-badge">👑 Premium</div>
+        <h1>Upgrade to Shortlist Premium</h1>
+        <p>
+            Unlock AI-powered housing guidance with a more professional decision experience.
+            Start with a 1-month free trial, then continue on the plan that fits you best.
+        </p>
+    </section>
+
+    <div class="trial-banner">
+        Start with <strong>1 month free</strong>. No commitment during the trial period. Cancel anytime before renewal.
+    </div>
+
+    @if (isPremium)
+    {
+        <div class="status-card">
+            You currently have Premium access.
+            Plan: <strong>@premiumPlan</strong>
+            @if (!string.IsNullOrWhiteSpace(premiumEndDate))
+            {
+                <span>• Trial active until <strong>@DateTime.Parse(premiumEndDate).ToLocalTime().ToString("MMM dd, yyyy")</strong></span>
+            }
+        </div>
+    }
+
+    <section class="pricing-grid">
+        <div class="plan-card">
+            <h3>Free</h3>
+            <div class="plan-price">$0</div>
+            <ul>
+                <li>Search listings</li>
+                <li>Apply filters</li>
+                <li>Browse results</li>
+                <li>View housing providers</li>
+                <li>Use tenant checklist</li>
+            </ul>
+        </div>
+
+        <div class="plan-card featured">
+            <div class="plan-tag">Most Popular</div>
+            <h3>Premium Monthly</h3>
+            <div class="plan-price">$7.99 <span>/ month</span></div>
+            <div class="plan-trial">1 month free</div>
+            <ul>
+                <li>AI Best Area Recommendation</li>
+                <li>Premium recommendation summary</li>
+                <li>Guided decision support</li>
+                <li>Access to future premium tools</li>
+            </ul>
+            <a asp-controller="Premium" asp-action="Checkout" asp-route-plan="monthly" class="btn-premium">Start Free Trial</a>
+        </div>
+
+        <div class="plan-card">
+            <h3>Premium Annual</h3>
+            <div class="plan-price">$59.99 <span>/ year</span></div>
+            <div class="plan-trial">1 month free</div>
+            <ul>
+                <li>All premium features</li>
+                <li>Better annual value</li>
+                <li>Long-term access</li>
+                <li>Access to future upgrades</li>
+            </ul>
+            <a asp-controller="Premium" asp-action="Checkout" asp-route-plan="annual" class="btn-premium">Choose Annual</a>
+        </div>
+    </section>
+
+    <section class="feature-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Free</th>
+                    <th>Premium</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Search listings</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>Filters and results</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>Saved searches</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>AI Best Area Recommendation</td>
+                    <td>—</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>Premium guidance summary</td>
+                    <td>—</td>
+                    <td>✓</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>

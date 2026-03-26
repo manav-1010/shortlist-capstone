@@ -9,19 +9,35 @@ namespace Shortlist.Web.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // Read the most recent filters selected by the user
             var state = GetFilterState();
 
-            // viewmodel contains filters and an initially empty list of results
+            var isPremium = HttpContext.Session.GetString("IsPremium") == "true";
+            var premiumEndText = HttpContext.Session.GetString("PremiumEndDate");
+
+            if (!string.IsNullOrWhiteSpace(premiumEndText) &&
+                DateTime.TryParse(premiumEndText, out var premiumEndUtc))
+            {
+                if (DateTime.UtcNow > premiumEndUtc)
+                {
+                    HttpContext.Session.Remove("IsPremium");
+                    HttpContext.Session.Remove("PremiumPlan");
+                    HttpContext.Session.Remove("PremiumStartDate");
+                    HttpContext.Session.Remove("PremiumEndDate");
+                    isPremium = false;
+                }
+            }
+
+            ViewBag.IsPremium = isPremium;
+
             var vm = new ResultsViewModel
             {
                 Filters = state,
-                Items = new List<ResultItem>() // will be filled by JS in real-time
+                Items = new List<ResultItem>()
             };
 
             return View(vm);
         }
-        // clears the current filter state and reloads the Results page.
+
         [HttpPost]
         public IActionResult Clear()
         {
@@ -29,7 +45,6 @@ namespace Shortlist.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        // Reads FilterState JSON from Session.
         private FilterState GetFilterState()
         {
             var json = HttpContext.Session.GetString("FilterState");

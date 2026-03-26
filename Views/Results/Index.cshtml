@@ -2,6 +2,7 @@
 @{
     Layout = "_Layout";
     ViewData["HeaderFilters"] = Model.Filters;
+    var isPremium = ViewBag.IsPremium == true;
 }
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -63,14 +64,14 @@
     }
 
     .inputx {
-        width: 300px; 
+        width: 300px;
         height: 48px;
         border-radius: 12px;
         border: 1px solid var(--border-strong);
         background: var(--surface);
         color: var(--text);
-        padding: 12px 14px; 
-        font-size: 15px; 
+        padding: 12px 14px;
+        font-size: 15px;
         font-weight: 850;
         outline: none;
         box-shadow: var(--shadow-md);
@@ -213,8 +214,70 @@
         box-shadow: var(--shadow-lg);
         min-height: 0;
         display: grid;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto auto 1fr;
         backdrop-filter: blur(12px);
+    }
+
+    .premium-ai-card {
+        margin: 16px;
+        margin-bottom: 0;
+        border-radius: 20px;
+        border: 1px solid rgba(245, 158, 11, 0.22);
+        background: linear-gradient(135deg, rgba(251,191,36,0.12), var(--surface));
+        padding: 16px;
+        box-shadow: var(--shadow-md);
+    }
+
+        .premium-ai-card.locked {
+            border: 1px dashed rgba(245, 158, 11, 0.35);
+            background: linear-gradient(135deg, rgba(251,191,36,0.06), var(--surface));
+        }
+
+    .premium-ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(251,191,36,0.18);
+        color: #92400e;
+        font-size: 12px;
+        font-weight: 950;
+    }
+
+    .premium-ai-title {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .premium-ai-sub {
+        margin-top: 6px;
+        color: var(--muted);
+        font-weight: 750;
+        line-height: 1.6;
+    }
+
+    .premium-ai-box {
+        margin-top: 12px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+        padding: 14px;
+    }
+
+    .premium-ai-name {
+        font-size: 18px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .premium-ai-reason {
+        margin-top: 6px;
+        color: var(--muted);
+        font-weight: 750;
+        line-height: 1.6;
     }
 
     .kpiRow {
@@ -616,6 +679,10 @@
         .overviewRow {
             grid-template-columns: 1fr;
         }
+
+        .leftPanel {
+            grid-template-rows: auto auto 1fr;
+        }
     }
 </style>
 
@@ -632,7 +699,7 @@
             </div>
 
             <div class="controls">
-                <input id="saveName" class="inputx saveInputBig" placeholder="Enter search name..." />
+                <input id="saveName" class="inputx" placeholder="Enter search name..." />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
                 <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
                 <a id="listingsLink" class="btnx" href="/Listings">Listings</a>
@@ -660,6 +727,35 @@
 
         <section class="mainGrid">
             <div class="leftPanel">
+
+                @if (isPremium)
+                {
+                    <div class="premium-ai-card">
+                        <div class="premium-ai-badge">👑 Premium AI</div>
+                        <div class="premium-ai-title">AI Best Area Recommendation</div>
+                        <div class="premium-ai-sub">
+                            Premium recommendation is active. Your personalized AI recommendation will appear here.
+                        </div>
+                        <div id="aiBestAreaBox" class="premium-ai-box">
+                            <div class="premium-ai-name">Calculating best area...</div>
+                            <div class="premium-ai-reason">We are analyzing your selected priorities and live area results.</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="premium-ai-card locked">
+                        <div class="premium-ai-badge">👑 Premium AI</div>
+                        <div class="premium-ai-title">AI Best Area Recommendation</div>
+                        <div class="premium-ai-sub">
+                            Upgrade to unlock personalized AI-powered housing guidance.
+                        </div>
+                        <a asp-controller="Premium" asp-action="Index" class="btnx primary" style="margin-top:12px;">
+                            View Premium Plans
+                        </a>
+                    </div>
+                }
+
                 <div class="kpiRow">
                     <div class="kpi">
                         <div class="label">Overall Match</div>
@@ -767,6 +863,8 @@
         const lng = filters.lng ?? filters.Lng;
         const radiusKm = filters.radiusKm ?? filters.RadiusKm ?? 3;
         const priorities = (filters.priorities ?? filters.Priorities ?? []).map(p => (p || "").toLowerCase());
+
+        const isPremium = @(isPremium ? "true" : "false");
 
         const loading = document.getElementById("loadingState");
         const empty = document.getElementById("emptyState");
@@ -1006,29 +1104,29 @@
             }
         });
 
-            document.getElementById("btnSave")?.addEventListener("click", async () => {
-        const saveNameInput = document.getElementById("saveName");
-        const name = (saveNameInput.value || "").trim() || "Saved Search";
+        document.getElementById("btnSave")?.addEventListener("click", async () => {
+            const saveNameInput = document.getElementById("saveName");
+            const name = (saveNameInput.value || "").trim() || "Saved Search";
 
-        const res = await fetch("/SavedSearches/SaveCurrent", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ name })
+            const res = await fetch("/SavedSearches/SaveCurrent", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ name })
+            });
+
+            if (res.status === 401) {
+                alert("You are not logged in. Please login again.");
+                return;
+            }
+
+            if (!res.ok) {
+                const t = await res.text();
+                alert("Save failed: " + t);
+                return;
+            }
+
+            alert("Saved!");
         });
-
-        if (res.status === 401) {
-            alert("You are not logged in. Please login again.");
-            return;
-        }
-
-        if (!res.ok) {
-            const t = await res.text();
-            alert("Save failed: " + t);
-            return;
-        }
-
-        alert("Saved!");
-    });
 
         async function refreshCompareCount() {
             try {
@@ -1064,6 +1162,18 @@
 
             await refreshCompareCount();
             alert("Added to Compare!");
+        }
+
+        function updatePremiumCard(bestCard) {
+            if (!isPremium || !bestCard) return;
+
+            const nameEl = document.querySelector(".premium-ai-name");
+            const reasonEl = document.querySelector(".premium-ai-reason");
+
+            if (!nameEl || !reasonEl) return;
+
+            nameEl.textContent = `${bestCard.name} • ${bestCard.score}/100`;
+            reasonEl.textContent = `${bestCard.name} is currently your strongest overall match because it has solid live coverage, strong score performance, and good alignment with your selected priorities.`;
         }
 
         refreshCompareCount();
@@ -1320,6 +1430,10 @@
 
                 kpiWeak.textContent = worst ? worst.name : "—";
                 kpiWeakSub.textContent = worst ? `${worst.count} matches • ${worst.conf.label}` : "—";
+
+                if (best) {
+                    updatePremiumCard(best);
+                }
 
                 markersLayer.clearLayers();
                 const bounds = [];

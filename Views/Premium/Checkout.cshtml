@@ -1,0 +1,214 @@
+﻿@model Shortlist.Web.Models.PremiumCheckoutViewModel
+
+@{
+    ViewData["Title"] = "Premium Checkout";
+}
+
+<style>
+    .checkout-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .checkout-left, .checkout-right {
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+        box-shadow: var(--shadow-lg);
+        padding: 24px;
+    }
+
+    .checkout-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(251,191,36,0.18);
+        color: #92400e;
+        font-weight: 900;
+        margin-bottom: 12px;
+    }
+
+    .checkout-left h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 950;
+    }
+
+    .checkout-left p {
+        margin-top: 10px;
+        color: var(--muted);
+        line-height: 1.7;
+        font-weight: 750;
+    }
+
+    .summary-box {
+        margin-top: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+        padding: 16px;
+    }
+
+        .summary-box h3 {
+            margin: 0 0 10px;
+            font-size: 17px;
+            font-weight: 950;
+        }
+
+        .summary-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--muted);
+            line-height: 1.8;
+            font-weight: 750;
+        }
+
+    .checkout-form {
+        display: grid;
+        gap: 14px;
+    }
+
+        .checkout-form label {
+            font-size: 13px;
+            font-weight: 900;
+            color: var(--text);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .checkout-form input {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid var(--border-strong);
+            background: var(--surface);
+            color: var(--text);
+            padding: 12px 14px;
+            font-weight: 800;
+            box-shadow: var(--shadow-md);
+            outline: none;
+        }
+
+            .checkout-form input:focus {
+                border-color: var(--accent);
+                box-shadow: var(--focus);
+            }
+
+    .checkout-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .trial-note {
+        margin-top: 4px;
+        color: #15803d;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .checkout-btn {
+        margin-top: 8px;
+        border: 0;
+        border-radius: 14px;
+        padding: 13px 16px;
+        font-weight: 950;
+        cursor: pointer;
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #6366f1);
+        box-shadow: var(--shadow-md);
+    }
+
+    .validation-summary-errors {
+        color: #b91c1c;
+        font-weight: 800;
+    }
+
+    @@media (max-width: 980px) {
+        .checkout-shell {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="checkout-shell">
+    <section class="checkout-left">
+        <div class="checkout-badge">👑 Premium</div>
+        <h1>Complete your upgrade</h1>
+        <p>
+            You are starting a <strong>1-month free trial</strong> for the
+            <strong>@Model.Plan</strong> plan. After the trial period, billing would continue based on the selected plan.
+        </p>
+
+        <div class="summary-box">
+            <h3>Included in Premium</h3>
+            <ul>
+                <li>AI Best Area Recommendation</li>
+                <li>Premium recommendation summary</li>
+                <li>Smarter housing decision support</li>
+                <li>Access to future premium features</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="checkout-right">
+        <form asp-action="StartTrial" method="post" class="checkout-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Plan" />
+
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <div>
+                <label asp-for="CardholderName">Cardholder Name</label>
+                <input asp-for="CardholderName" />
+            </div>
+
+            <div>
+                <label asp-for="CardNumber">Card Number</label>
+                <input asp-for="CardNumber" placeholder="1234 5678 9012 3456" />
+            </div>
+
+            <div class="checkout-grid-2">
+                <div>
+                    <label asp-for="ExpiryDate">Expiry Date</label>
+                    <input asp-for="ExpiryDate" placeholder="MM/YY" />
+                </div>
+                <div>
+                    <label asp-for="CVV">CVV</label>
+                    <input asp-for="CVV" placeholder="123" />
+                </div>
+            </div>
+
+            <div>
+                <label asp-for="BillingEmail">Billing Email</label>
+                <input asp-for="BillingEmail" />
+            </div>
+
+            <div class="checkout-grid-2">
+                <div>
+                    <label asp-for="PostalCode">Postal Code</label>
+                    <input asp-for="PostalCode" />
+                </div>
+                <div>
+                    <label asp-for="Country">Country</label>
+                    <input asp-for="Country" />
+                </div>
+            </div>
+
+            <div class="trial-note">
+                Secure checkout • 1 month free • Cancel anytime before renewal
+            </div>
+
+            <button type="submit" class="checkout-btn">Start 1-Month Free Trial</button>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

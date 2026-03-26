@@ -101,6 +101,36 @@
             gap: 18px;
         }
 
+        .premium-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-weight: 900;
+            text-decoration: none;
+            color: #2b1b00 !important;
+            background: linear-gradient(135deg, #fbbf24, #fde68a);
+            box-shadow: 0 10px 24px rgba(245, 158, 11, 0.22);
+            border: 1px solid rgba(251, 191, 36, 0.45);
+        }
+
+            .premium-link:hover {
+                transform: translateY(-1px);
+                background: linear-gradient(135deg, #f59e0b, #fcd34d);
+                color: #2b1b00 !important;
+            }
+
+            .premium-link.active-link {
+                background: linear-gradient(135deg, #f59e0b, #facc15);
+                color: #2b1b00 !important;
+            }
+
+        .premium-crown {
+            font-size: 15px;
+            line-height: 1;
+        }
+
         .brand {
             color: var(--text);
             font-weight: 950;
@@ -304,6 +334,10 @@
                     <a class="@IsActive("Housing")" asp-controller="Housing" asp-action="Index">Housing Providers</a>
                     <a class="@IsActive("TenantChecklist")" asp-controller="TenantChecklist" asp-action="Index">Tenant Checklist</a>
                     <a class="@IsActive("Compare")" asp-controller="Compare" asp-action="Index">Compare</a>
+                    <a class="premium-link @IsActive("Premium")" asp-controller="Premium" asp-action="Index">
+                        <span class="premium-crown">👑</span>
+                        <span>Premium</span>
+                    </a>
 
                     <a class="icon-only @IsActive("Settings")" asp-controller="Settings" asp-action="Index" aria-label="Settings" title="Settings">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
