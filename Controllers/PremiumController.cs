@@ -34,7 +34,6 @@ namespace Shortlist.Web.Controllers
                 return View("Checkout", model);
             }
 
-            // Demo payment success + 1 month free trial
             var now = DateTime.UtcNow;
             var end = now.AddMonths(1);
 
@@ -45,6 +44,18 @@ namespace Shortlist.Web.Controllers
 
             TempData["Toast"] = "Premium trial activated successfully!";
             return RedirectToAction("Index", "Results");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Cancel()
+        {
+            HttpContext.Session.Remove("IsPremium");
+            HttpContext.Session.Remove("PremiumPlan");
+            HttpContext.Session.Remove("PremiumStartDate");
+            HttpContext.Session.Remove("PremiumEndDate");
+
+            TempData["Toast"] = "Premium has been cancelled.";
+            return RedirectToAction("Index");
         }
     }
 }

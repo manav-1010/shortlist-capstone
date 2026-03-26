@@ -228,11 +228,6 @@
         box-shadow: var(--shadow-md);
     }
 
-        .premium-ai-card.locked {
-            border: 1px dashed rgba(245, 158, 11, 0.35);
-            background: linear-gradient(135deg, rgba(251,191,36,0.06), var(--surface));
-        }
-
     .premium-ai-badge {
         display: inline-flex;
         align-items: center;
@@ -714,7 +709,10 @@
             <div class="tabs" role="tablist" aria-label="Results view">
                 <button id="tabOverview" class="active" type="button">Overview</button>
                 <button id="tabAnalytics" type="button">Analytics</button>
-                <button id="tabHeatmap" type="button">Heatmap</button>
+                @if (isPremium)
+                {
+                    <button id="tabHeatmap" type="button">Heatmap</button>
+                }
             </div>
 
             <div class="sortRow">
@@ -740,20 +738,10 @@
                         <div id="aiBestAreaBox" class="premium-ai-box">
                             <div class="premium-ai-name">Calculating best area...</div>
                             <div class="premium-ai-reason">We are analyzing your selected priorities and live area results.</div>
+                            <button id="btnGenerateReport" class="btnx primary" type="button" style="margin-top:12px;">
+                                Generate AI Report
+                            </button>
                         </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="premium-ai-card locked">
-                        <div class="premium-ai-badge">👑 Premium AI</div>
-                        <div class="premium-ai-title">AI Best Area Recommendation</div>
-                        <div class="premium-ai-sub">
-                            Upgrade to unlock personalized AI-powered housing guidance.
-                        </div>
-                        <a asp-controller="Premium" asp-action="Index" class="btnx primary" style="margin-top:12px;">
-                            View Premium Plans
-                        </a>
                     </div>
                 }
 
@@ -807,12 +795,17 @@
                 <div class="mapBox">
                     <div id="resultsMap"></div>
                 </div>
-                <div class="radiusBox" style="margin-bottom:10px;">
-                    <div style="font-weight:950;">Heatmap Legend</div>
-                    <div class="line"><span style="color:#22c55e;">● Strong Match</span></div>
-                    <div class="line"><span style="color:#facc15;">● Moderate Match</span></div>
-                    <div class="line"><span style="color:#ef4444;">● Weak Match</span></div>
-                </div>
+
+                @if (isPremium)
+                {
+                    <div class="radiusBox" style="margin-bottom:10px;">
+                        <div style="font-weight:950;">Heatmap Legend</div>
+                        <div class="line"><span style="color:#22c55e;">● Strong Match</span></div>
+                        <div class="line"><span style="color:#facc15;">● Moderate Match</span></div>
+                        <div class="line"><span style="color:#ef4444;">● Weak Match</span></div>
+                    </div>
+                }
+
                 <div class="radiusBox">
                     <div style="font-weight:950;">Radius & Location</div>
                     <div class="line"><span>Search Radius</span><strong id="radRadius">—</strong></div>
@@ -892,6 +885,8 @@
 
         const tabOverview = document.getElementById("tabOverview");
         const tabAnalytics = document.getElementById("tabAnalytics");
+        const tabHeatmap = document.getElementById("tabHeatmap");
+
         let analyticsMode = false;
         let heatmapMode = false;
 
@@ -922,6 +917,7 @@
 
         let cards = [];
         let noteExistsMap = new Map();
+        let bestPremiumCard = null;
 
         function show(el) { if (el) el.style.display = ""; }
         function hide(el) { if (el) el.style.display = "none"; }
@@ -929,22 +925,24 @@
         hide(empty);
         show(loading);
 
-           function setTab(mode) {
-        analyticsMode = mode === "analytics";
-        heatmapMode = mode === "heatmap";
+        function setTab(mode) {
+            if (mode === "heatmap" && !isPremium) {
+                mode = "overview";
+            }
 
-        tabOverview.classList.toggle("active", mode === "overview");
-        tabAnalytics.classList.toggle("active", mode === "analytics");
-        document.getElementById("tabHeatmap")?.classList.toggle("active", mode === "heatmap");
+            analyticsMode = mode === "analytics";
+            heatmapMode = mode === "heatmap";
 
-        renderCards();
-        renderHeatmap();
-    }
+            tabOverview?.classList.toggle("active", mode === "overview");
+            tabAnalytics?.classList.toggle("active", mode === "analytics");
+            tabHeatmap?.classList.toggle("active", mode === "heatmap");
+
+            renderCards();
+            renderHeatmap();
+        }
 
         tabOverview?.addEventListener("click", () => setTab("overview"));
         tabAnalytics?.addEventListener("click", () => setTab("analytics"));
-
-        const tabHeatmap = document.getElementById("tabHeatmap");
         tabHeatmap?.addEventListener("click", () => setTab("heatmap"));
 
         function closeNoteModal() {
@@ -952,35 +950,38 @@
             noteModal.classList.add("hidden");
             noteStatus.textContent = "";
         }
-            function getHeatColor(score) {
-        if (score >= 80) return "#22c55e";   // green
-        if (score >= 60) return "#facc15";   // yellow
-        return "#ef4444";                   // red
-    }
+
+        function getHeatColor(score) {
+            if (score >= 80) return "#22c55e";
+            if (score >= 60) return "#facc15";
+            return "#ef4444";
+        }
+
         function renderHeatmap() {
-        if (!heatmapMode) return;
+            if (!heatmapMode || !isPremium) return;
 
-        markersLayer.clearLayers();
+            markersLayer.clearLayers();
 
-        for (const c of cards) {
-            const color = getHeatColor(c.score);
+            for (const c of cards) {
+                const color = getHeatColor(c.score);
 
-            for (const p of c.pois) {
-                L.circle([p.lat, p.lng], {
-                    radius: 220,
-                    color: color,
-                    fillColor: color,
-                    fillOpacity: 0.35
-                })
-                .addTo(markersLayer)
-                .bindPopup(`
-                    <strong>${p.name}</strong><br/>
-                    <span style="font-size:12px; font-weight:800;">${c.name}</span><br/>
-                    Score: ${c.score}
-                `);
+                for (const p of c.pois) {
+                    L.circle([p.lat, p.lng], {
+                        radius: 220,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.35
+                    })
+                    .addTo(markersLayer)
+                    .bindPopup(`
+                        <strong>${p.name}</strong><br/>
+                        <span style="font-size:12px; font-weight:800;">${c.name}</span><br/>
+                        Score: ${c.score}
+                    `);
+                }
             }
         }
-    }
+
         function resetNoteModalFields() {
             notePlaceIdInput.value = "";
             notePlaceNameInput.value = "";
@@ -1207,50 +1208,89 @@
             alert("Added to Compare!");
         }
 
-            async function updatePremiumCard(bestCard) {
-        if (!isPremium || !bestCard) return;
+        async function updatePremiumCard(bestCard) {
+            if (!isPremium || !bestCard) return;
 
-        const nameEl = document.querySelector(".premium-ai-name");
-        const reasonEl = document.querySelector(".premium-ai-reason");
+            const nameEl = document.querySelector(".premium-ai-name");
+            const reasonEl = document.querySelector(".premium-ai-reason");
 
-        if (!nameEl || !reasonEl) return;
+            if (!nameEl || !reasonEl) return;
 
-        nameEl.textContent = `${bestCard.name} • ${bestCard.score}/100`;
-        reasonEl.textContent = "Generating AI recommendation...";
+            nameEl.textContent = `${bestCard.name} • ${bestCard.score}/100`;
+            reasonEl.textContent = "Generating AI recommendation...";
 
-        try {
-            const res = await fetch("/Results/GenerateBestAreaExplanation", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    areaName: bestCard.name,
-                    score: bestCard.score,
-                    priorities: priorities,
-                    matchCount: bestCard.count,
-                    avgDistanceKm: bestCard.avgDist
-                })
-            });
+            try {
+                const res = await fetch("/Results/GenerateBestAreaExplanation", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        areaName: bestCard.name,
+                        score: bestCard.score,
+                        priorities: priorities,
+                        matchCount: bestCard.count,
+                        avgDistanceKm: bestCard.avgDist
+                    })
+                });
 
-            if (!res.ok) {
-                const t = await res.text();
+                if (!res.ok) {
+                    const t = await res.text();
+                    reasonEl.textContent = "AI recommendation could not be generated right now.";
+                    console.error(t);
+                    return;
+                }
+
+                const data = await res.json();
+
+                nameEl.textContent = `${data.areaName} • ${data.score}/100`;
+                reasonEl.textContent = data.summary;
+            } catch (err) {
                 reasonEl.textContent = "AI recommendation could not be generated right now.";
-                console.error(t);
+                console.error(err);
+            }
+        }
+
+        async function generateAiReport() {
+            if (!isPremium || !bestPremiumCard) {
+                alert("Premium report data is not available.");
                 return;
             }
 
-            const data = await res.json();
+            try {
+                const res = await fetch("/Report/Generate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        areaName: bestPremiumCard.name,
+                        score: bestPremiumCard.score,
+                        summary: document.querySelector(".premium-ai-reason")?.textContent || "",
+                        priorities: priorities,
+                        strengths: bestPremiumCard.strengths || [],
+                        weaknesses: bestPremiumCard.weaknesses || []
+                    })
+                });
 
-            nameEl.textContent = `${data.areaName} • ${data.score}/100`;
-            reasonEl.textContent = data.summary;
-        } catch (err) {
-            reasonEl.textContent = "AI recommendation could not be generated right now.";
-            console.error(err);
+                if (!res.ok) {
+                    const t = await res.text();
+                    alert("Failed to generate report: " + t);
+                    return;
+                }
+
+                const data = await res.json();
+                if (data.success && data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Failed to generate report.");
+            }
         }
-    }
 
         refreshCompareCount();
+        document.getElementById("btnGenerateReport")?.addEventListener("click", generateAiReport);
 
         function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
         function fmt(n, digits = 0) { return Number.isFinite(n) ? n.toFixed(digits) : "—"; }
@@ -1505,8 +1545,9 @@
                 kpiWeak.textContent = worst ? worst.name : "—";
                 kpiWeakSub.textContent = worst ? `${worst.count} matches • ${worst.conf.label}` : "—";
 
-                if (best) {
-                   await updatePremiumCard(best);
+                if (best && isPremium) {
+                    bestPremiumCard = best;
+                    await updatePremiumCard(best);
                 }
 
                 markersLayer.clearLayers();
@@ -1524,7 +1565,6 @@
                 }
 
                 renderCards();
-
             } catch (err) {
                 hide(loading);
                 show(empty);
@@ -1545,14 +1585,16 @@
                 const avg = sorted.reduce((a, c) => a + c.score, 0) / sorted.length;
                 sorted.sort((a, b) => Math.abs(a.score - avg) - Math.abs(b.score - avg));
             }
-                if (heatmapMode) {
-        list.innerHTML = `
-            <div class="loadingBox">
-                <div class="t">Heatmap View Active</div>
-                <div class="p">Visualizing best areas based on your preferences.</div>
-            </div>`;
-        return;
-    }
+
+            if (heatmapMode && isPremium) {
+                list.innerHTML = `
+                    <div class="loadingBox">
+                        <div class="t">Heatmap View Active</div>
+                        <div class="p">Visualizing best areas based on your preferences.</div>
+                    </div>`;
+                return;
+            }
+
             list.innerHTML = "";
 
             for (const c of sorted) {

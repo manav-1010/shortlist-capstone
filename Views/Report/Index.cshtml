@@ -1,0 +1,216 @@
+﻿@model Shortlist.Web.Models.AiRecommendationReportViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "AI Recommendation Report";
+}
+
+<style>
+    .report-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+    }
+
+    .report-hero {
+        border-radius: 24px;
+        border: 1px solid rgba(79,70,229,0.18);
+        background: linear-gradient(135deg, rgba(79,70,229,0.12), var(--surface-strong));
+        box-shadow: var(--shadow-lg);
+        padding: 24px;
+    }
+
+    .report-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(251,191,36,0.18);
+        color: #92400e;
+        font-weight: 900;
+        margin-bottom: 12px;
+    }
+
+    .report-title {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .report-sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-weight: 750;
+        line-height: 1.7;
+    }
+
+    .report-grid {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .report-card {
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+        box-shadow: var(--shadow-md);
+        padding: 18px;
+    }
+
+        .report-card h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            font-weight: 950;
+            color: var(--text);
+        }
+
+    .report-big {
+        font-size: 24px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .report-score {
+        margin-top: 8px;
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--surface-tint);
+        color: var(--accent);
+        font-weight: 950;
+    }
+
+    .report-list {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--muted);
+        line-height: 1.8;
+        font-weight: 750;
+    }
+
+    .report-summary {
+        margin-top: 20px;
+        border-radius: 20px;
+        border: 1px solid rgba(245,158,11,0.18);
+        background: linear-gradient(135deg, rgba(251,191,36,0.08), var(--surface-strong));
+        padding: 20px;
+        box-shadow: var(--shadow-md);
+    }
+
+        .report-summary h3 {
+            margin: 0 0 10px;
+            font-weight: 950;
+        }
+
+        .report-summary p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.8;
+            font-weight: 750;
+        }
+
+    .report-meta {
+        margin-top: 12px;
+        color: var(--muted2);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .report-actions {
+        margin-top: 22px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    @@media (max-width: 900px) {
+        .report-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="report-shell">
+    <section class="report-hero">
+        <div class="report-badge">👑 Premium AI Report</div>
+        <h1 class="report-title">Shortlist AI Recommendation Report</h1>
+        <div class="report-sub">
+            This premium report summarizes the strongest area recommendation based on your selected priorities and live housing intelligence.
+        </div>
+        <div class="report-meta">
+            Generated on: @Model.GeneratedAt.ToString("MMMM dd, yyyy • hh:mm tt")
+        </div>
+    </section>
+
+    <section class="report-grid">
+        <div class="report-card">
+            <h3>Best Area Recommendation</h3>
+            <div class="report-big">@Model.AreaName</div>
+            <div class="report-score">@Model.Score / 100</div>
+        </div>
+
+        <div class="report-card">
+            <h3>Selected Priorities</h3>
+            @if (Model.Priorities != null && Model.Priorities.Count > 0)
+            {
+                <ul class="report-list">
+                    @foreach (var p in Model.Priorities)
+                    {
+                        <li>@p</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="report-sub">No priorities were selected.</p>
+            }
+        </div>
+
+        <div class="report-card">
+            <h3>Key Strengths</h3>
+            @if (Model.Strengths != null && Model.Strengths.Count > 0)
+            {
+                <ul class="report-list">
+                    @foreach (var s in Model.Strengths)
+                    {
+                        <li>@s</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="report-sub">No strengths available.</p>
+            }
+        </div>
+
+        <div class="report-card">
+            <h3>Considerations</h3>
+            @if (Model.Weaknesses != null && Model.Weaknesses.Count > 0)
+            {
+                <ul class="report-list">
+                    @foreach (var w in Model.Weaknesses)
+                    {
+                        <li>@w</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="report-sub">No major weaknesses detected.</p>
+            }
+        </div>
+    </section>
+
+    <section class="report-summary">
+        <h3>AI Summary</h3>
+        <p>@Model.Summary</p>
+    </section>
+
+    <div class="report-actions">
+        <a asp-controller="Results" asp-action="Index" class="btnx">Back to Results</a>
+        <button class="btnx primary" onclick="window.print()">Print Report</button>
+    </div>
+</div>
