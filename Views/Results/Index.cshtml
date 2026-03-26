@@ -714,6 +714,7 @@
             <div class="tabs" role="tablist" aria-label="Results view">
                 <button id="tabOverview" class="active" type="button">Overview</button>
                 <button id="tabAnalytics" type="button">Analytics</button>
+                <button id="tabHeatmap" type="button">Heatmap</button>
             </div>
 
             <div class="sortRow">
@@ -806,7 +807,12 @@
                 <div class="mapBox">
                     <div id="resultsMap"></div>
                 </div>
-
+                <div class="radiusBox" style="margin-bottom:10px;">
+                    <div style="font-weight:950;">Heatmap Legend</div>
+                    <div class="line"><span style="color:#22c55e;">● Strong Match</span></div>
+                    <div class="line"><span style="color:#facc15;">● Moderate Match</span></div>
+                    <div class="line"><span style="color:#ef4444;">● Weak Match</span></div>
+                </div>
                 <div class="radiusBox">
                     <div style="font-weight:950;">Radius & Location</div>
                     <div class="line"><span>Search Radius</span><strong id="radRadius">—</strong></div>
@@ -887,6 +893,7 @@
         const tabOverview = document.getElementById("tabOverview");
         const tabAnalytics = document.getElementById("tabAnalytics");
         let analyticsMode = false;
+        let heatmapMode = false;
 
         const noteModal = document.getElementById("noteModal");
         const noteForm = document.getElementById("noteForm");
@@ -922,22 +929,58 @@
         hide(empty);
         show(loading);
 
-        function setTab(mode) {
-            analyticsMode = mode === "analytics";
-            tabOverview.classList.toggle("active", !analyticsMode);
-            tabAnalytics.classList.toggle("active", analyticsMode);
-            renderCards();
-        }
+           function setTab(mode) {
+        analyticsMode = mode === "analytics";
+        heatmapMode = mode === "heatmap";
+
+        tabOverview.classList.toggle("active", mode === "overview");
+        tabAnalytics.classList.toggle("active", mode === "analytics");
+        document.getElementById("tabHeatmap")?.classList.toggle("active", mode === "heatmap");
+
+        renderCards();
+        renderHeatmap();
+    }
 
         tabOverview?.addEventListener("click", () => setTab("overview"));
         tabAnalytics?.addEventListener("click", () => setTab("analytics"));
+
+        const tabHeatmap = document.getElementById("tabHeatmap");
+        tabHeatmap?.addEventListener("click", () => setTab("heatmap"));
 
         function closeNoteModal() {
             if (!noteModal) return;
             noteModal.classList.add("hidden");
             noteStatus.textContent = "";
         }
+            function getHeatColor(score) {
+        if (score >= 80) return "#22c55e";   // green
+        if (score >= 60) return "#facc15";   // yellow
+        return "#ef4444";                   // red
+    }
+        function renderHeatmap() {
+        if (!heatmapMode) return;
 
+        markersLayer.clearLayers();
+
+        for (const c of cards) {
+            const color = getHeatColor(c.score);
+
+            for (const p of c.pois) {
+                L.circle([p.lat, p.lng], {
+                    radius: 220,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.35
+                })
+                .addTo(markersLayer)
+                .bindPopup(`
+                    <strong>${p.name}</strong><br/>
+                    <span style="font-size:12px; font-weight:800;">${c.name}</span><br/>
+                    Score: ${c.score}
+                `);
+            }
+        }
+    }
         function resetNoteModalFields() {
             notePlaceIdInput.value = "";
             notePlaceNameInput.value = "";
@@ -1502,7 +1545,14 @@
                 const avg = sorted.reduce((a, c) => a + c.score, 0) / sorted.length;
                 sorted.sort((a, b) => Math.abs(a.score - avg) - Math.abs(b.score - avg));
             }
-
+                if (heatmapMode) {
+        list.innerHTML = `
+            <div class="loadingBox">
+                <div class="t">Heatmap View Active</div>
+                <div class="p">Visualizing best areas based on your preferences.</div>
+            </div>`;
+        return;
+    }
             list.innerHTML = "";
 
             for (const c of sorted) {
