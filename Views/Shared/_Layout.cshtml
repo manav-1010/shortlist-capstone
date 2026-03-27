@@ -308,6 +308,55 @@
                 margin-left: 0;
             }
         }
+
+        /* ================= PRINT / PDF FIX ================= */
+        @@media print {
+            @@page {
+                size: A4;
+                margin: 12mm;
+            }
+
+            html, body {
+                height: auto !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                color: #111827 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .topbar,
+            .footer,
+            .filter-summary,
+            .premium-link,
+            .icon-only,
+            .nav-wrap,
+            .theme-toggle,
+            .nav-btn {
+                display: none !important;
+            }
+
+            .page,
+            .content,
+            main {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                box-shadow: none !important;
+                border: 0 !important;
+            }
+
+            body {
+                margin: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -334,6 +383,7 @@
                     <a class="@IsActive("Housing")" asp-controller="Housing" asp-action="Index">Housing Providers</a>
                     <a class="@IsActive("TenantChecklist")" asp-controller="TenantChecklist" asp-action="Index">Tenant Checklist</a>
                     <a class="@IsActive("Compare")" asp-controller="Compare" asp-action="Index">Compare</a>
+
                     <a class="premium-link @IsActive("Premium")" asp-controller="Premium" asp-action="Index">
                         <span class="premium-crown">👑</span>
                         <span>Premium</span>
