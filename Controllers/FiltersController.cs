@@ -19,7 +19,6 @@ namespace Shortlist.Web.Controllers
         [HttpPost]
         public IActionResult Index(FilterState state)
         {
-            // Enforce max 3 priorities server-side too
             state.Priorities = (state.Priorities ?? new List<string>())
                 .Where(p => !string.IsNullOrWhiteSpace(p))
                 .Select(p => p.Trim())
@@ -27,7 +26,19 @@ namespace Shortlist.Web.Controllers
                 .Take(3)
                 .ToList();
 
-            // If validation fails, re-render page with errors + preserve selections
+            if (state.Priorities.Count == 0)
+            {
+                ModelState.AddModelError("", "Please select at least one priority.");
+            }
+
+            if (state.Lat is null || state.Lng is null)
+            {
+                ModelState.AddModelError("", "Please choose a location on the map.");
+            }
+
+            if (state.RadiusKm < 1) state.RadiusKm = 1;
+            if (state.RadiusKm > 25) state.RadiusKm = 25;
+
             if (!ModelState.IsValid)
             {
                 return View(state);
@@ -35,16 +46,8 @@ namespace Shortlist.Web.Controllers
 
             SaveFilterState(state);
             return RedirectToAction("Index", "Results");
-            if (state.Lat is null || state.Lng is null)
-            {
-                ModelState.AddModelError("", "Please choose a location on the map.");
-                return View(state);
-            }
-
-            // Clamp radius
-            if (state.RadiusKm < 1) state.RadiusKm = 1;
-            if (state.RadiusKm > 25) state.RadiusKm = 25;
         }
+
 
         // clears the current filter state from session and redirects back to filters page with defaults
         [HttpPost]

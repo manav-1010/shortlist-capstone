@@ -565,13 +565,16 @@
 
 <script>
     (function () {
+        const form = document.getElementById('filtersForm');
         const countEl = document.getElementById('priorityCount');
         const chipsWrap = document.getElementById('priorityChips');
         const hiddenWrap = document.getElementById('priorityHiddenInputs');
         const errorEl = document.getElementById('priorityError');
 
         function getSelected() {
-            return Array.from(document.querySelectorAll('.chip.selected')).map(b => b.dataset.value);
+            return Array.from(document.querySelectorAll('#priorityChips .chip.selected'))
+                .map(b => (b.dataset.value || "").trim())
+                .filter(Boolean);
         }
 
         function syncHidden(selected) {
@@ -594,12 +597,10 @@
             errorEl.style.display = show ? "block" : "none";
         }
 
-        // init count
         const initSel = getSelected();
         syncCount(initSel);
         syncHidden(initSel);
 
-        // click behavior
         chipsWrap?.addEventListener("click", (e) => {
             const btn = e.target.closest(".chip");
             if (!btn) return;
@@ -624,6 +625,12 @@
             const now = getSelected();
             syncCount(now);
             syncHidden(now);
+        });
+
+        form?.addEventListener("submit", function () {
+            const finalSelected = getSelected();
+            syncCount(finalSelected);
+            syncHidden(finalSelected);
         });
     })();
 </script>
