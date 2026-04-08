@@ -183,6 +183,71 @@
             font-weight: 950;
         }
 
+    .status-actions {
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .premium-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 180px;
+        padding: 12px 18px;
+        border-radius: 14px;
+        font-weight: 900;
+        text-decoration: none;
+        border: 1px solid var(--border-strong);
+        cursor: pointer;
+        transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border .12s ease;
+        box-shadow: var(--shadow-md);
+    }
+
+        .premium-action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .premium-action-btn.results {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            border-color: transparent;
+            color: #ffffff;
+        }
+
+            .premium-action-btn.results:hover {
+                background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+            }
+
+        .premium-action-btn.cancel {
+            background: rgba(254, 242, 242, 0.98);
+            color: #b91c1c;
+            border: 1px solid rgba(185, 28, 28, 0.18);
+        }
+
+            .premium-action-btn.cancel:hover {
+                background: rgba(254, 226, 226, 1);
+            }
+
+    @@media (max-width: 640px) {
+        .status-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+            .premium-action-btn,
+            .status-actions form {
+                width: 100%;
+            }
+
+                .status-actions form button {
+                    width: 100%;
+                }
+    }
+
     @@media (max-width: 980px) {
         .pricing-grid {
             grid-template-columns: 1fr;
@@ -215,11 +280,15 @@
             }
 
             <div class="status-actions">
-                <a asp-controller="Results" asp-action="Index" class="btnx">Go to Results</a>
+                <a asp-controller="Results" asp-action="Index" class="premium-action-btn results">
+                    Go to Results
+                </a>
 
                 <form asp-action="Cancel" method="post" style="margin:0;">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btnx danger">Cancel Premium</button>
+                    <button type="submit" class="premium-action-btn cancel">
+                        Cancel Premium
+                    </button>
                 </form>
             </div>
         </div>

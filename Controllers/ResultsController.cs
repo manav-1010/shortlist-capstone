@@ -18,6 +18,10 @@ namespace Shortlist.Web.Controllers
         public IActionResult Index()
         {
             var state = GetFilterState();
+            if (state.Lat is null || state.Lng is null)
+            {
+                return RedirectToAction("Index", "Filters");
+            }
 
             var isPremium = HttpContext.Session.GetString("IsPremium") == "true";
             var premiumEndText = HttpContext.Session.GetString("PremiumEndDate");

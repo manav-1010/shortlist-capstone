@@ -126,6 +126,66 @@
         flex-wrap: wrap;
     }
 
+    .report-actions {
+        margin-top: 22px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .report-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 170px;
+        padding: 12px 18px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 900;
+        border: 1px solid var(--border-strong);
+        cursor: pointer;
+        transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border .12s ease;
+        box-shadow: var(--shadow-md);
+    }
+
+        .report-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .report-btn.back {
+            background: var(--surface-strong);
+            color: var(--text);
+        }
+
+            .report-btn.back:hover {
+                background: var(--surface-soft);
+                border-color: rgba(99, 102, 241, 0.24);
+            }
+
+        .report-btn.print {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: #fff;
+            border-color: transparent;
+        }
+
+            .report-btn.print:hover {
+                background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+            }
+
+    @@media (max-width: 640px) {
+        .report-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .report-btn {
+            width: 100%;
+        }
+    }
+
     @@media (max-width: 900px) {
         .report-grid {
             grid-template-columns: 1fr;
@@ -205,12 +265,17 @@
     </section>
 
     <section class="report-summary">
-        <h3>AI Summary</h3>
+        <h3>AI Summary</h3>s
         <p>@Model.Summary</p>
     </section>
 
     <div class="report-actions">
-        <a asp-controller="Results" asp-action="Index" class="btnx">Back to Results</a>
-        <button class="btnx primary" onclick="window.print()">Print Report</button>
+        <a asp-controller="Results" asp-action="Index" class="report-btn back">
+            ← Back to Results
+        </a>
+
+        <button type="button" class="report-btn print" onclick="window.print()">
+            🖨 Print Report
+        </button>
     </div>
 </div>

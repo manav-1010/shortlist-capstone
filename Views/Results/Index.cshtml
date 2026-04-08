@@ -1034,7 +1034,19 @@
         const lat = filters.lat ?? filters.Lat;
         const lng = filters.lng ?? filters.Lng;
         const radiusKm = filters.radiusKm ?? filters.RadiusKm ?? 3;
-        const priorities = (filters.priorities ?? filters.Priorities ?? []).map(p => (p || "").toLowerCase());
+       const priorities = (filters.priorities ?? filters.Priorities ?? [])
+    .map(p => (p || "").toLowerCase().trim())
+    .map(p => {
+        if (p === "gym/fitness") return "gym/fitness";
+        if (p === "parks") return "parks";
+        if (p === "laundry") return "laundry";
+        if (p === "grocery") return "grocery";
+        if (p === "transit") return "transit";
+        if (p === "parking") return "parking";
+        if (p === "safety") return "safety";
+        if (p === "quiet") return "quiet";
+        return p;
+    });
 
         const isPremium = @(isPremium ? "true" : "false");
 
@@ -1576,7 +1588,7 @@
         if (!lat || !lng) {
             hide(loading);
             show(empty);
-            empty.querySelector(".p").textContent = "Go back to Filters and pick a location on the map.";
+            empty.querySelector(".p").textContent = "No strong matches found. Try increasing the radius or selecting different priorities.";
             kpiOverall.textContent = "—";
             kpiOverallSub.textContent = "No location selected";
             snapTotal.textContent = "—";
@@ -1636,9 +1648,8 @@
                 }
 
                 const selectedCats = priorities.map(p => priorityToCategory[p]).filter(Boolean);
-                const catsToShow = selectedCats.length
-                    ? selectedCats
-                    : ["grocery", "transit", "parks", "gym/fitness", "laundry", "parking", "safety", "quiet"];
+                    const defaultCats = ["grocery", "transit", "parks", "gym/fitness", "laundry", "parking", "safety", "quiet"];
+    const catsToShow = selectedCats.length ? selectedCats : defaultCats;
 
                 function computeCategoryCard(cat) {
                     const items = byCategory.get(cat) || [];
@@ -1693,16 +1704,34 @@
                     };
                 }
 
-                cards = [];
-                for (const cat of catsToShow) {
-                    const c = computeCategoryCard(cat);
-                    if (c) cards.push(c);
-                }
+                  cards = [];
 
+    // First try selected categories
+    for (const cat of catsToShow) {
+        const c = computeCategoryCard(cat);
+        if (c) cards.push(c);
+    }
+
+    // 🔥 IF NOTHING FOUND → FALLBACK TO ALL CATEGORIES
+    if (!cards.length) {
+        const fallbackCats = ["grocery", "transit", "parks", "gym/fitness", "laundry", "parking", "safety", "quiet"];
+
+        for (const cat of fallbackCats) {
+            const c = computeCategoryCard(cat);
+            if (c) cards.push(c);
+        }
+    }
                 const allPlaceIds = cards.flatMap(c => c.pois.map(p => p.id));
                 await checkNotesForPlaces(allPlaceIds);
 
-                const overall = Math.round(cards.reduce((a, c) => a + c.score, 0) / cards.length);
+                 if (!cards.length) {
+        show(empty);
+        empty.querySelector(".p").textContent =
+            "No strong matches for selected priorities. Try increasing radius.";
+        return;
+    }
+
+    const overall = Math.round(cards.reduce((a, c) => a + c.score, 0) / cards.length);
                 const sorted = [...cards].sort((a, b) => b.score - a.score);
                 const best = sorted[0];
                 const worst = sorted[sorted.length - 1];
@@ -1741,13 +1770,16 @@
             } catch (err) {
                 hide(loading);
                 show(empty);
-                empty.querySelector(".p").textContent = "Live search failed. Try again or reduce radius.";
+                empty.querySelector(".p").textContent = "No matching places found for this location and radius.";
                 console.error(err);
             }
         })();
 
         function renderCards() {
-            if (!cards || !cards.length) return;
+                if (!cards || !cards.length) {
+        show(empty);
+        return;
+    }
 
             let sorted = [...cards];
             const mode = sortMode.value;
