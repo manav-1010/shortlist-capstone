@@ -1,8 +1,4 @@
-﻿@{
-    var currentPath = Context.Request.Path.Value ?? "";
-}
-
-<style>
+﻿<style>
     .assistant-fab {
         position: fixed;
         right: 22px;
@@ -24,10 +20,10 @@
         transition: transform .12s ease, box-shadow .12s ease;
     }
 
-    .assistant-fab:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 22px 44px rgba(79, 70, 229, 0.34);
-    }
+        .assistant-fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 22px 44px rgba(79, 70, 229, 0.34);
+        }
 
     .assistant-panel {
         position: fixed;
@@ -48,9 +44,9 @@
         backdrop-filter: blur(14px);
     }
 
-    .assistant-panel.open {
-        display: flex;
-    }
+        .assistant-panel.open {
+            display: flex;
+        }
 
     .assistant-head {
         padding: 16px 18px;
@@ -113,19 +109,19 @@
         word-break: break-word;
     }
 
-    .assistant-msg.bot {
-        align-self: flex-start;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        color: var(--text);
-    }
+        .assistant-msg.bot {
+            align-self: flex-start;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
 
-    .assistant-msg.user {
-        align-self: flex-end;
-        background: linear-gradient(135deg, var(--accent), #6366f1);
-        color: #fff;
-        border: 1px solid transparent;
-    }
+        .assistant-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: #fff;
+            border: 1px solid transparent;
+        }
 
     .assistant-quick {
         padding: 0 16px 12px;
@@ -167,10 +163,10 @@
         box-shadow: var(--shadow-md);
     }
 
-    .assistant-input:focus {
-        border-color: var(--accent);
-        box-shadow: var(--focus);
-    }
+        .assistant-input:focus {
+            border-color: var(--accent);
+            box-shadow: var(--focus);
+        }
 
     .assistant-send {
         border: 0;
@@ -242,13 +238,12 @@
         const form = document.getElementById("assistantForm");
         const input = document.getElementById("assistantInput");
         const chips = document.querySelectorAll(".assistant-chip");
-        const currentPage = "@currentPath".toLowerCase();
-
         const storageKey = "shortlist-assistant-open";
+        const currentPage = window.location.pathname.toLowerCase();
 
         function appendMessage(text, type) {
             const div = document.createElement("div");
-            div.className = `assistant-msg ${type}`;
+            div.className = "assistant-msg " + type;
             div.textContent = text;
             body.appendChild(div);
             body.scrollTop = body.scrollHeight;
@@ -258,8 +253,11 @@
             panel.classList.toggle("open", isOpen);
             panel.setAttribute("aria-hidden", isOpen ? "false" : "true");
             localStorage.setItem(storageKey, isOpen ? "1" : "0");
+
             if (isOpen) {
-                setTimeout(() => input?.focus(), 80);
+                setTimeout(function () {
+                    if (input) input.focus();
+                }, 80);
             }
         }
 
@@ -285,24 +283,36 @@
 
                 const data = await res.json();
                 appendMessage(data.reply || "Sorry, I couldn’t find an answer.", "bot");
-            } catch {
+            } catch (err) {
                 appendMessage("Sorry, I couldn’t respond right now. Please try again.", "bot");
+                console.error(err);
             }
         }
 
-        fab?.addEventListener("click", () => setOpen(true));
-        closeBtn?.addEventListener("click", () => setOpen(false));
+        if (fab) {
+            fab.addEventListener("click", function () {
+                setOpen(true);
+            });
+        }
 
-        form?.addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const msg = (input.value || "").trim();
-            if (!msg) return;
-            input.value = "";
-            await askAssistant(msg);
-        });
+        if (closeBtn) {
+            closeBtn.addEventListener("click", function () {
+                setOpen(false);
+            });
+        }
 
-        chips.forEach(chip => {
-            chip.addEventListener("click", async () => {
+        if (form) {
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const msg = (input.value || "").trim();
+                if (!msg) return;
+                input.value = "";
+                await askAssistant(msg);
+            });
+        }
+
+        chips.forEach(function (chip) {
+            chip.addEventListener("click", async function () {
                 const prompt = chip.getAttribute("data-prompt");
                 if (!prompt) return;
                 setOpen(true);

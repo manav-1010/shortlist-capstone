@@ -465,7 +465,17 @@
             });
         })();
     </script>
+    @{
+        var currentPath = Context.Request.Path.Value?.ToLower() ?? "";
+        var hideAssistant =
+        currentPath.StartsWith("/settings") ||
+        currentPath.StartsWith("/account");
+    }
 
+    @if (!hideAssistant)
+    {
+        @await Html.PartialAsync("_AssistantWidget")
+    }
     <script src="~/js/site.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
