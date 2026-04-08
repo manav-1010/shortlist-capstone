@@ -88,6 +88,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<OllamaRecommendationService>();
+builder.Services.AddScoped<IShortlistAssistantService, ShortlistAssistantService>();
 
 var app = builder.Build();
 
