@@ -1,239 +1,277 @@
-🚀 Shortlist – Smart Rental Decision Platform
+# 🚀 Shortlist — Smart Rental Decision Platform
 
-A modern, AI-powered rental decision assistant that helps users find the best living areas based on real-world proximity data, personalized priorities, and intelligent insights.
+> AI-powered rental decision assistant that helps users choose the best living area based on real-world proximity data, lifestyle priorities, and intelligent insights.
 
-🧠 Project Idea
+---
 
-Shortlist is not just another property search tool.
 
-Instead of showing listings blindly, it answers:
+## 🧠 Project Overview
 
-👉 “Is this area actually good for MY lifestyle?”
+Shortlist is a modern rental decision platform that goes beyond listings.
+Instead of just showing properties, it answers:
+👉 *“Is this area suitable for my lifestyle?”*
 
-Users select:
+Users define preferences, and the system analyzes real-world location data to generate:
 
-Budget
-Travel distance
-Lifestyle priorities (Gym, Parks, Grocery, etc.)
-Location (via map)
+- Smart recommendations  
+- Area scores  
+- AI insights  
+- Visual analytics  
 
-And Shortlist intelligently evaluates nearby infrastructure using real-world OpenStreetMap data to give:
+---
 
-✔ Best areas
-✔ Score-based insights
-✔ AI explanations (Premium)
-✔ Visual analytics
+## 🎯 Problem Statement
 
-🎯 Problem We Solve
+Traditional rental platforms:
 
-Most rental platforms:
+| Issue | Description |
+|------|------------|
+| ❌ Listing-focused | Only show properties |
+| ❌ No lifestyle filtering | Ignore user priorities |
+| ❌ No area analysis | No proximity insights |
+| ❌ No intelligence | No scoring system |
 
-Show listings ❌
-Don’t evaluate area quality ❌
-Ignore lifestyle fit ❌
+---
 
-Shortlist focuses on:
+## 💡 Solution
 
-✅ Lifestyle-first decision making
-✅ Data-driven area analysis
-✅ Real-time proximity scoring
-✅ AI-powered recommendations
+Shortlist introduces:
 
-🧩 Core Features
-🔍 1. Smart Filters System
-Select budget & max distance
-Choose up to 3 priorities
-Interactive map pin selection
-Radius-based search (1–25 km)
+| Feature | Benefit |
+|--------|--------|
+| 🎯 Priority-based filtering | Personalized results |
+| 🗺️ Map-based input | Accurate location targeting |
+| 📊 Scoring system | Data-driven decisions |
+| 🤖 AI recommendations | Human-like insights |
+| 📈 Analytics dashboard | Clear understanding |
 
-👉 Fully session-based persistence
-👉 State survives navigation
+---
 
-🗺️ 2. Real-Time Location Intelligence
-Uses OpenStreetMap + Overpass API
-Fetches nearby:
-Grocery stores
-Transit stops
-Gyms
-Parks
-Parking
-Laundry
+## ✨ Features
 
-👉 Live data → No static datasets
+### 🔍 Smart Filters
+- Budget selection
+- Max distance
+- Radius-based search
+- Up to 3 priorities
 
-📊 3. Intelligent Scoring Engine
+**Available priorities:**
+- Grocery  
+- Transit  
+- Gym/Fitness  
+- Parks  
+- Parking  
+- Laundry  
 
-Each area is scored using:
+---
 
-📍 Density (number of matches)
-📍 Distance (median, P80)
-📍 Anchors (important facilities)
-📍 Accessibility
-
-Outputs:
-
-Overall score
-Strengths & weaknesses
-Confidence level
-📈 4. Analytics Dashboard
-Match insights
-Area strengths
-Weakness breakdown
-Live snapshot of nearby places
-🤖 5. AI-Powered Recommendations (Premium)
-Generates natural language explanations
-Uses local AI models (Ollama)
-Explains:
-Why area is good
-Trade-offs
-Lifestyle fit
-🔥 6. Heatmap Mode (Premium)
-Visualize best areas dynamically
-Shows density-based performance
-💬 7. AI Assistant (Global Feature)
-Available on all pages (except settings)
-Answers:
-How filters work
-What scores mean
-How to use features
-
-👉 Context-aware assistant
-👉 Lightweight API-based responses
-
-💾 8. Save & Compare
-Save searches
-Compare different areas
-Track decisions
-🧾 9. AI Report Generation
-Generate printable report
-Clean UI optimized for PDF
-Includes:
-Score breakdown
-Insights
-AI summary
-🎨 10. Modern UI/UX
-Glassmorphism design
-Fully responsive
-Smooth transitions
-Light/Dark theme support 🌙
-⚙️ 11. Premium System
-Free trial support
-Session-based premium control
-Features gated:
-AI reports
-Heatmap
-Advanced insights
-❓ 12. FAQ System (Settings)
-Central help page
-Styled for both themes
-Covers all app features
-🏗️ Tech Stack
-💻 Frontend
-Razor Views (ASP.NET MVC)
-HTML5, CSS3
-Vanilla JavaScript (no heavy frameworks)
-Leaflet.js (maps)
-⚙️ Backend
-ASP.NET Core MVC (.NET 8)
-C#
-Session-based state management
-🌐 APIs Used
-OpenStreetMap (Overpass API) → location data
-Ollama (Local AI) → AI summaries
-🗃️ Data Handling
-JSON-based session storage
-Real-time API calls (no static DB dependency)
-🧠 AI Integration
-Local AI (Ollama)
-Prompt-based recommendation engine
-🧱 Architecture Overview
-User → Filters → Session State → Results Page
-           ↓
-     Map + API Calls (Overpass)
-           ↓
-    Data Processing & Scoring
-           ↓
-     UI Rendering (Cards + Analytics)
-           ↓
-    (Optional) AI Layer (Ollama)
-🔄 Key Implementation Highlights
-✅ Session-Based Filter Persistence
-Stores full filter state as JSON
-Retrieved across controllers
-Prevents data loss between pages
-✅ Real-Time Data Fetching
+### 🗺️ Real-Time Data (OpenStreetMap)
 POST https://overpass-api.de/api/interpreter
-Dynamic query generation
-Radius-based filtering
-Multiple category support
-✅ Scoring Logic
-Weighted scoring system
-Distance normalization
-Density-based ranking
-✅ AI Integration
-Context-aware prompts
-Structured input → natural output
-✅ Assistant Widget
-Injected globally via _Layout.cshtml
-Pure JS (no Razor dependency)
-API-driven responses
-🧪 Testing Approach
-Manual testing via:
-Different locations
-Different priorities
-Edge cases (no results, max radius)
-API validation:
-Overpass response handling
-Error fallback UI
-⚡ Performance Considerations
-Radius clamped (1–25 km)
-API timeout handling
-Minimal DOM re-renders
-Efficient sorting logic
-🔒 Security Considerations
-No sensitive data stored
-Session-based user state
-API request validation
-📸 Screenshots (Add These in GitHub)
 
-👉 Filters Page
-👉 Results Dashboard
-👉 Heatmap View
-👉 AI Report
-👉 Assistant Widget
 
-🚀 Future Improvements
-🔹 Database integration (user history)
-🔹 Machine learning scoring model
-🔹 Real estate listing integration (API)
-🔹 Chat memory for assistant
-🔹 User profiles & preferences
-🔹 Mobile app version
-👨‍💻 About This Project
+Fetches nearby:
+- Grocery stores
+- Transit stops
+- Gyms
+- Parks
+- Parking
+- Laundry
 
-Built as a portfolio-level full-stack project focusing on:
+---
 
-Real-world problem solving
-Clean architecture
-UX-focused design
-AI integration
-Data-driven decision making
-📬 Contact / Portfolio
+### 📊 Results Dashboard
 
-Add your:
+- Overall score
+- Strengths & weaknesses
+- Confidence level
+- Live nearby data
 
-LinkedIn
-Portfolio
-GitHub
+---
+
+### 🤖 AI Recommendation (Premium)
+
+- Natural language explanations
+- Personalized insights
+- Powered by Ollama
+
+---
+
+### 🔥 Heatmap View (Premium)
+
+- Visual density mapping
+- Highlights best areas
+
+---
+
+### 💬 AI Assistant
+
+- Available on all pages (except settings)
+- Answers user questions
+- Context-aware
+
+---
+
+### 🧾 AI Report
+
+- Printable report
+- Clean layout
+- Includes insights & scores
+
+---
+
+### ⚙️ Premium System
+
+| Feature | Free | Premium |
+|--------|------|--------|
+| Basic results | ✅ | ✅ |
+| AI summary | ❌ | ✅ |
+| Heatmap | ❌ | ✅ |
+| AI report | ❌ | ✅ |
+
+---
+
+## 🧱 Architecture
+User → Filters Page → Session Storage
+↓
+Results Controller
+↓
+Search API (Overpass)
+↓
+Data Processing & Scoring
+↓
+UI Rendering
+↓
+AI Layer (Optional)
+
+
+---
+
+## ⚙️ Tech Stack
+
+### Backend
+- ASP.NET Core MVC (.NET 8)
+- C#
+- Session State
+
+### Frontend
+- Razor Views
+- HTML/CSS
+- JavaScript
+- Leaflet.js
+
+### APIs
+- OpenStreetMap (Overpass API)
+- Ollama (AI)
+
+---
+
+## 🗂️ Data & State Design
+
+### FilterState Model
+
+```csharp
+public class FilterState
+{
+    public decimal? Budget { get; set; }
+    public int? MaxDistanceKm { get; set; }
+    public List<string> Priorities { get; set; }
+    public double? Lat { get; set; }
+    public double? Lng { get; set; }
+    public int RadiusKm { get; set; }
+}
+```
+
+### 🔄 Application Flow
+User selects filters
+Filters saved to session
+Results page loads
+API call executed
+Data processed
+UI rendered
+
+### 🧠 AI Integration
+var response = await _httpClient.PostAsync(
+    "http://localhost:11434/api/chat", content);
+
+AI uses:
+
+- Area name
+- Score
+- Priorities
+- Match count
+- Distance
+
+- 
+### 💬 Assistant Widget
+fetch("/api/assistant/ask", {
+    method: "POST",
+    body: JSON.stringify({ message })
+});
+
+### Features:
+
+- Floating UI
+- Quick prompts
+- Context-aware replies
+
+- ### 📊 Scoring System
+
+Factors:
+
+Factor	Description
+Density	Number of nearby places
+Distance	Proximity
+Anchors	Important facilities
+Accessibility	Ease of access
+Example Formula
+Score = (Density * 0.4) + (Distance * 0.3) + (Anchors * 0.3)
+
+### 🎨 UI/UX Design
+
+- Glassmorphism design
+- Smooth animations
+- Clean layout
+- Light/Dark mode support
+
+
+### 🧪 Testing Strategy
+
+- Manual testing (different locations)
+- Edge cases (no results, large radius)
+- API validation
+
+
+### ⚡ Performance
+
+- Radius limited (1–25 km)
+- API timeout handling
+- Efficient sorting
+- Minimal re-rendering
+
+
+### 🔒 Security
+
+- No sensitive data stored
+- Session-based state
+- Input validation
+
+
+## 👨‍💻 About
+
+This project demonstrates:
+
+- Full-stack development
+- AI integration
+- Real-world problem solving
+-Data-driven decision making
+
 ⭐ Why This Project Stands Out
+- Not a CRUD app
+- AI-powered
+- Real-world use case
+- Advanced logic
+- Strong UI/UX
 
-✔ Not a CRUD app
-✔ Real-world utility
-✔ AI integration
-✔ Map + geospatial logic
-✔ Strong UX + visuals
-✔ Full-stack complexity
-
-🏁 Final Thought
+## 🏁 Final Thought
 
 Shortlist transforms rental searching from guesswork → intelligent decision making.
