@@ -1,345 +1,277 @@
-# Shortlist – Smart Location Decision Platform
+# 🚀 Shortlist — Smart Rental Decision Platform
 
-Shortlist is a web application that helps users evaluate locations based on proximity to essential amenities such as grocery stores, transit stops, parks, gyms, safety services, and more.
-The system combines **live OpenStreetMap data**, **custom scoring logic**, and **user-defined priorities** to help users make smarter location decisions.
-Users can search an area, analyze nearby amenities, compare locations, and save searches for future reference.
+> AI-powered rental decision assistant that helps users choose the best living area based on real-world proximity data, lifestyle priorities, and intelligent insights.
 
 ---
 
-# Project Overview
 
-Shortlist is designed as a **decision support platform** rather than a simple map search tool.
+## 🧠 Project Overview
 
-The application provides:
-• Smart scoring based on proximity and density of amenities  
-• Interactive map visualization  
-• Saved searches with shareable links  
-• Location comparison tools  
-• Personalized search preferences  
+Shortlist is a modern rental decision platform that goes beyond listings.
+Instead of just showing properties, it answers:
+👉 *“Is this area suitable for my lifestyle?”*
 
-This project demonstrates real-world development concepts including:
-- ASP.NET MVC architecture
-- Entity Framework Core
-- REST APIs
-- Session state management
-- Map integrations
-- Data-driven scoring algorithms
-- Responsive UI design
+Users define preferences, and the system analyzes real-world location data to generate:
+
+- Smart recommendations  
+- Area scores  
+- AI insights  
+- Visual analytics  
 
 ---
 
-# Key Features
+## 🎯 Problem Statement
 
-## Live Location Analysis
-Users can search a location and radius to analyze nearby amenities using OpenStreetMap data.
+Traditional rental platforms:
 
-The system evaluates categories such as:
+| Issue | Description |
+|------|------------|
+| ❌ Listing-focused | Only show properties |
+| ❌ No lifestyle filtering | Ignore user priorities |
+| ❌ No area analysis | No proximity insights |
+| ❌ No intelligence | No scoring system |
+
+---
+
+## 💡 Solution
+
+Shortlist introduces:
+
+| Feature | Benefit |
+|--------|--------|
+| 🎯 Priority-based filtering | Personalized results |
+| 🗺️ Map-based input | Accurate location targeting |
+| 📊 Scoring system | Data-driven decisions |
+| 🤖 AI recommendations | Human-like insights |
+| 📈 Analytics dashboard | Clear understanding |
+
+---
+
+## ✨ Features
+
+### 🔍 Smart Filters
+- Budget selection
+- Max distance
+- Radius-based search
+- Up to 3 priorities
+
+**Available priorities:**
+- Grocery  
+- Transit  
+- Gym/Fitness  
+- Parks  
+- Parking  
+- Laundry  
+
+---
+
+### 🗺️ Real-Time Data (OpenStreetMap)
+POST https://overpass-api.de/api/interpreter
+
+
+Fetches nearby:
 - Grocery stores
-- Public transit
+- Transit stops
+- Gyms
 - Parks
-- Fitness facilities
 - Parking
 - Laundry
-- Safety services
-- Quiet spaces
-
-Each category receives a **match score** based on density, proximity, and presence of anchor locations.
 
 ---
 
-## Interactive Map
-The application includes an interactive map powered by **Leaflet.js**.
+### 📊 Results Dashboard
 
-Features include:
-- Live map markers
-- Radius visualization
-- Location pin
-- Popup details
-- Automatic zoom and bounds fitting
+- Overall score
+- Strengths & weaknesses
+- Confidence level
+- Live nearby data
 
 ---
 
-## Smart Scoring Algorithm
-Each category is scored using three metrics:
+### 🤖 AI Recommendation (Premium)
 
-| Metric | Weight |
-|------|------|
-| Density (number of places nearby) | 50% |
-| Anchor locations (major facilities) | 30% |
-| Distance accessibility | 20% |
-
-The system calculates:
-- Category score
-- Overall match score
-- Strengths and weaknesses
-- Confidence level based on available data
+- Natural language explanations
+- Personalized insights
+- Powered by Ollama
 
 ---
 
-## Compare Locations
-Users can add locations to a **Compare list**.
-The compare feature allows users to evaluate multiple locations side-by-side to determine which area best matches their needs.
+### 🔥 Heatmap View (Premium)
+
+- Visual density mapping
+- Highlights best areas
 
 ---
 
-## Saved Searches
-Users can save search configurations.
+### 💬 AI Assistant
 
-Each saved search stores:
-- Radius
-- Priorities
-- Location coordinates
-- Search name
-- Creation timestamp
-
-Saved searches allow users to:
-- Reload filters instantly
-- Share searches using a unique link
-- Regenerate share tokens
-- Delete searches
+- Available on all pages (except settings)
+- Answers user questions
+- Context-aware
 
 ---
 
-## Settings and Preferences
-The Settings page allows users to configure default preferences:
-- Default search radius
-- Default priorities
-- Default location label
+### 🧾 AI Report
 
-Additional controls include:
-- Clear session filters
-- Clear comparison list
-- Delete saved searches
-- Logout
+- Printable report
+- Clean layout
+- Includes insights & scores
 
 ---
 
-## Shareable Search Links
-Saved searches generate unique tokens that can be shared.
-Anyone with the link can open the search and see the same filters applied.
+### ⚙️ Premium System
+
+| Feature | Free | Premium |
+|--------|------|--------|
+| Basic results | ✅ | ✅ |
+| AI summary | ❌ | ✅ |
+| Heatmap | ❌ | ✅ |
+| AI report | ❌ | ✅ |
 
 ---
 
-# Technology Stack
+## 🧱 Architecture
+User → Filters Page → Session Storage
+↓
+Results Controller
+↓
+Search API (Overpass)
+↓
+Data Processing & Scoring
+↓
+UI Rendering
+↓
+AI Layer (Optional)
 
-## Backend
-- ASP.NET Core MVC
-- Entity Framework Core
-- SQL Server / SQLite (depending on configuration)
-- REST API endpoints
 
-## Frontend
+---
+
+## ⚙️ Tech Stack
+
+### Backend
+- ASP.NET Core MVC (.NET 8)
+- C#
+- Session State
+
+### Frontend
 - Razor Views
-- HTML5
-- CSS3
+- HTML/CSS
 - JavaScript
-
-## Map and Data
 - Leaflet.js
-- OpenStreetMap
-- Overpass API
+
+### APIs
+- OpenStreetMap (Overpass API)
+- Ollama (AI)
 
 ---
 
-# Project Architecture
+## 🗂️ Data & State Design
 
-The project follows the **MVC (Model-View-Controller)** architecture.
+### FilterState Model
 
+```csharp
+public class FilterState
+{
+    public decimal? Budget { get; set; }
+    public int? MaxDistanceKm { get; set; }
+    public List<string> Priorities { get; set; }
+    public double? Lat { get; set; }
+    public double? Lng { get; set; }
+    public int RadiusKm { get; set; }
+}
+```
 
-Controllers
-Handles user requests, business logic, and API calls.
+### 🔄 Application Flow
+User selects filters
+Filters saved to session
+Results page loads
+API call executed
+Data processed
+UI rendered
 
-Models
-Represents application data such as users, saved searches, and filter states.
+### 🧠 AI Integration
+var response = await _httpClient.PostAsync(
+    "http://localhost:11434/api/chat", content);
 
-Views
-Razor pages that render the user interface.
+AI uses:
 
-Data
-Entity Framework DbContext used for database operations.
+- Area name
+- Score
+- Priorities
+- Match count
+- Distance
 
-Helpers
-Utility classes for session and JSON operations.
+- 
+### 💬 Assistant Widget
+fetch("/api/assistant/ask", {
+    method: "POST",
+    body: JSON.stringify({ message })
+});
 
+### Features:
 
----
+- Floating UI
+- Quick prompts
+- Context-aware replies
 
-# Core Components
+- ### 📊 Scoring System
 
-## AppDbContext
+Factors:
 
-Entity Framework database context responsible for managing:
-- Users
-- Saved Searches
-- User Settings
+Factor	Description
+Density	Number of nearby places
+Distance	Proximity
+Anchors	Important facilities
+Accessibility	Ease of access
+Example Formula
+Score = (Density * 0.4) + (Distance * 0.3) + (Anchors * 0.3)
 
-Includes relationships and indexes for performance.
+### 🎨 UI/UX Design
 
----
+- Glassmorphism design
+- Smooth animations
+- Clean layout
+- Light/Dark mode support
 
-## SessionJsonExtensions
 
-Helper class that allows storing complex objects in session using JSON serialization.
+### 🧪 Testing Strategy
 
-Example usage:
-HttpContext.Session.SetJson("FilterState", filterState);
+- Manual testing (different locations)
+- Edge cases (no results, large radius)
+- API validation
 
-This enables storing filter preferences between pages.
 
----
+### ⚡ Performance
 
-# Database Schema
+- Radius limited (1–25 km)
+- API timeout handling
+- Efficient sorting
+- Minimal re-rendering
 
-## Users
 
-| Column | Description |
-|------|------|
-| Id | Primary key |
-| Email | User email |
-| Password | Local login password |
+### 🔒 Security
 
----
+- No sensitive data stored
+- Session-based state
+- Input validation
 
-## SavedSearches
 
-| Column | Description |
-|------|------|
-| Id | Primary key |
-| Name | Search name |
-| UserId | Owner |
-| ShareToken | Unique share identifier |
-| CreatedAtUtc | Creation timestamp |
+## 👨‍💻 About
 
----
+This project demonstrates:
 
-## UserSettings
+- Full-stack development
+- AI integration
+- Real-world problem solving
+-Data-driven decision making
 
-| Column | Description |
-|------|------|
-| UserId | Foreign key |
-| DefaultRadiusKm | Default search radius |
-| DefaultPrioritiesCsv | Stored priority categories |
-| DefaultLocationLabel | Optional location label |
-
----
-
-# Application Workflow
-
-1. User selects location and radius in Filters page
-2. Results page retrieves nearby places using OpenStreetMap API
-3. Scoring algorithm evaluates each category
-4. Results displayed with map and analytics
-5. User can save the search or compare locations
-6. Settings allow customization of default preferences
-
----
-
-# API Endpoints
-
-## Search API
-GET /api/search
-
-
-Parameters:
-lat
-lng
-radiusKm
-
-Returns nearby amenities within the selected radius.
-
----
-
-## Compare API
-
-POST /Compare/Add
-GET /Compare/Count
-
-
-Handles compare list operations.
-
----
-
-## Saved Searches API
-
-POST /SavedSearches/SaveCurrent
-POST /SavedSearches/Delete
-POST /SavedSearches/RegenerateShareLink
-
-
-Handles saved search management.
-
----
-
-# UI Design
-
-The interface is designed using a modern card-based layout with:
-- consistent spacing
-- subtle shadows
-- soft color palette
-- responsive layout
-
-The UI emphasizes clarity and usability.
-
----
-
-# Security Considerations
-
-- Authorization enforced for user-specific actions
-- Anti-forgery tokens used for form submissions
-- Session data used for temporary state management
-- Share tokens generated securely for saved searches
-
----
-
-# Installation
-
-Clone the repository:
-
-
-git clone https://github.com/yourusername/shortlist.git
-
-Navigate to project directory:
-cd shortlist
-
-Restore dependencies:
-dotnet restore
-
-Run the application:
-dotnet run
-
-
-Open in browser:
-https://localhost:5001
-
-
----
-
-# Future Improvements
-
-Potential enhancements include:
-
-- advanced location scoring models
-- machine learning recommendations
-- mobile app integration
-- user authentication with OAuth providers
-- additional amenity categories
-- improved comparison visualizations
-
----
-
-# Learning Outcomes
-
-This project demonstrates skills in:
-
-- ASP.NET MVC development
-- API integration
-- geospatial data handling
-- UI/UX design
-- database modeling
-- full-stack application development
-
----
-
-# License
-
-This project is intended for educational and portfolio use.
+⭐ Why This Project Stands Out
+- Not a CRUD app
+- AI-powered
+- Real-world use case
+- Advanced logic
+- Strong UI/UX
+
+## 🏁 Final Thought
+
+Shortlist transforms rental searching from guesswork → intelligent decision making.
