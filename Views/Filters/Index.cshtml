@@ -468,7 +468,7 @@
 
                     <div class="prio-head">
                         <div class="section-title" style="margin:12px 0 0;">Priorities</div>
-                        <span id="priorityCount" class="count-pill">0/3</span>
+                        <span id="priorityCount" class="count-pill">@selected</span>
                     </div>
                     <div class="microhint">Select up to 3. Click again to remove.</div>
 
@@ -490,9 +490,9 @@
                     </div>
 
                     <div id="priorityHiddenInputs">
-                        @foreach (var p in selected)
+                        @for (var i = 0; i < selected.Count; i++)
                         {
-                            <input type="hidden" name="Priorities" value="@p" />
+                            <input type-"hidden" name="Priorities[@i]" value="@selected[i]" />
                         }
                     </div>
 
@@ -522,7 +522,7 @@
                                 Reset
                             </button>
 
-                            <a class="btnx" asp-controller="Results" asp-action="Index">View Results</a>
+                            
                         </div>
                     </div>
                 </div>
@@ -562,49 +562,57 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
-
 <script>
     (function () {
+        const form = document.getElementById('filtersForm');
         const countEl = document.getElementById('priorityCount');
         const chipsWrap = document.getElementById('priorityChips');
         const hiddenWrap = document.getElementById('priorityHiddenInputs');
         const errorEl = document.getElementById('priorityError');
 
         function getSelected() {
-            return Array.from(document.querySelectorAll('.chip.selected')).map(b => b.dataset.value);
+            return Array.from(chipsWrap.querySelectorAll('.chip.selected'))
+                .map(btn => (btn.dataset.value || '').trim())
+                .filter(Boolean);
         }
 
         function syncHidden(selected) {
-            hiddenWrap.innerHTML = "";
-            for (const p of selected) {
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = "Priorities";
+            hiddenWrap.innerHTML = '';
+            selected.forEach((p, index) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `Priorities[${index}]`;
                 input.value = p;
                 hiddenWrap.appendChild(input);
-            }
+            });
         }
 
         function syncCount(selected) {
-            if (countEl) countEl.textContent = `${selected.length}/3`;
+            if (countEl) {
+                countEl.textContent = `${selected.length}/3`;
+            }
         }
 
         function showError(show) {
             if (!errorEl) return;
-            errorEl.style.display = show ? "block" : "none";
+            errorEl.style.display = show ? 'block' : 'none';
         }
 
-        // init count
-        const initSel = getSelected();
-        syncCount(initSel);
-        syncHidden(initSel);
+        function syncAll() {
+            const selected = getSelected();
+            syncCount(selected);
+            syncHidden(selected);
+            return selected;
+        }
 
-        // click behavior
-        chipsWrap?.addEventListener("click", (e) => {
-            const btn = e.target.closest(".chip");
+        // initialize on page load
+        syncAll();
+
+        chipsWrap?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.chip');
             if (!btn) return;
 
-            const isSelected = btn.classList.contains("selected");
+            const isSelected = btn.classList.contains('selected');
 
             if (!isSelected) {
                 const current = getSelected();
@@ -612,18 +620,20 @@
                     showError(true);
                     return;
                 }
-                btn.classList.add("selected");
-                btn.setAttribute("aria-pressed", "true");
+                btn.classList.add('selected');
+                btn.setAttribute('aria-pressed', 'true');
                 showError(false);
             } else {
-                btn.classList.remove("selected");
-                btn.setAttribute("aria-pressed", "false");
+                btn.classList.remove('selected');
+                btn.setAttribute('aria-pressed', 'false');
                 showError(false);
             }
 
-            const now = getSelected();
-            syncCount(now);
-            syncHidden(now);
+            syncAll();
+        });
+
+        form?.addEventListener('submit', function () {
+            syncAll();
         });
     })();
 </script>

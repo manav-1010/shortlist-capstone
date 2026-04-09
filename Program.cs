@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -15,11 +16,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.Name = ".Shortlist.Session";
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 builder.Services.Configure<RapidApiRealEstateOptions>(
@@ -40,6 +45,8 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/Account/AccessDenied";
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 })
 .AddOpenIdConnect(options =>
 {
@@ -62,6 +69,11 @@ builder.Services.AddAuthentication(options =>
         NameClaimType = "email"
     };
 
+    options.NonceCookie.SameSite = SameSiteMode.None;
+    options.CorrelationCookie.SameSite = SameSiteMode.None;
+    options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+
     options.Events = new Microsoft.AspNetCore.Authentication.OpenIdConnect.OpenIdConnectEvents
     {
         OnRemoteFailure = context =>
@@ -75,6 +87,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<OllamaRecommendationService>();
+builder.Services.AddScoped<IShortlistAssistantService, ShortlistAssistantService>();
 
 var app = builder.Build();
 

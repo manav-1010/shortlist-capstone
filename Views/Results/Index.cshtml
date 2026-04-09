@@ -2,6 +2,7 @@
 @{
     Layout = "_Layout";
     ViewData["HeaderFilters"] = Model.Filters;
+    var isPremium = ViewBag.IsPremium == true;
 }
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -63,14 +64,14 @@
     }
 
     .inputx {
-        width: 300px; 
+        width: 300px;
         height: 48px;
         border-radius: 12px;
         border: 1px solid var(--border-strong);
         background: var(--surface);
         color: var(--text);
-        padding: 12px 14px; 
-        font-size: 15px; 
+        padding: 12px 14px;
+        font-size: 15px;
         font-weight: 850;
         outline: none;
         box-shadow: var(--shadow-md);
@@ -213,8 +214,65 @@
         box-shadow: var(--shadow-lg);
         min-height: 0;
         display: grid;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto auto 1fr;
         backdrop-filter: blur(12px);
+    }
+
+    .premium-ai-card {
+        margin: 16px;
+        margin-bottom: 0;
+        border-radius: 20px;
+        border: 1px solid rgba(245, 158, 11, 0.22);
+        background: linear-gradient(135deg, rgba(251,191,36,0.12), var(--surface));
+        padding: 16px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .premium-ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(251,191,36,0.18);
+        color: #92400e;
+        font-size: 12px;
+        font-weight: 950;
+    }
+
+    .premium-ai-title {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .premium-ai-sub {
+        margin-top: 6px;
+        color: var(--muted);
+        font-weight: 750;
+        line-height: 1.6;
+    }
+
+    .premium-ai-box {
+        margin-top: 12px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+        padding: 14px;
+    }
+
+    .premium-ai-name {
+        font-size: 18px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .premium-ai-reason {
+        margin-top: 6px;
+        color: var(--muted);
+        font-weight: 750;
+        line-height: 1.6;
     }
 
     .kpiRow {
@@ -616,10 +674,187 @@
         .overviewRow {
             grid-template-columns: 1fr;
         }
+
+        .leftPanel {
+            grid-template-rows: auto auto 1fr;
+        }
+    }
+
+    /* ================= PRINT / PDF LAYOUT ================= */
+    @@media print {
+        @@page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        html, body {
+            height: auto !important;
+            overflow: visible !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .results-shell {
+            max-width: none !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+
+            .results-shell::before {
+                content: "Shortlist – Results Report";
+                display: block;
+                font-size: 24px;
+                font-weight: 800;
+                color: #111827;
+                margin-bottom: 6px;
+            }
+
+            .results-shell::after {
+                content: "Generated on: " attr(data-print-date);
+                display: block;
+                font-size: 12px;
+                color: #6b7280;
+                margin-bottom: 14px;
+            }
+
+        .viewport,
+        .mainGrid,
+        .leftPanel,
+        .rightPanel,
+        .cardsScroll {
+            display: block !important;
+            height: auto !important;
+            min-height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+            box-shadow: none !important;
+            border: 0 !important;
+            backdrop-filter: none !important;
+        }
+
+        .results-topbar,
+        .tabsRow,
+        .controls,
+        .sortRow,
+        .mapBox,
+        #resultsMap,
+        .note-modal,
+        .btnx,
+        .leaflet-control-container {
+            display: none !important;
+        }
+
+        .kpiRow {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 10px !important;
+            padding: 0 0 12px !important;
+            margin: 0 0 12px !important;
+            border: 0 !important;
+            background: #ffffff !important;
+        }
+
+        .kpi,
+        .premium-ai-card,
+        .rCard,
+        .box,
+        .snap,
+        .radiusBox,
+        .loadingBox,
+        .emptyBox {
+            background: #ffffff !important;
+            border: 1px solid #d1d5db !important;
+            box-shadow: none !important;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .premium-ai-card {
+            margin: 0 0 12px !important;
+        }
+
+        .cardsScroll {
+            padding: 0 !important;
+        }
+
+        .rCard {
+            margin-bottom: 12px !important;
+        }
+
+        .score,
+        .chip,
+        .premium-ai-badge {
+            background: #eef2ff !important;
+            color: #3730a3 !important;
+            border: 1px solid #c7d2fe !important;
+            box-shadow: none !important;
+        }
+
+        .premium-ai-name,
+        .premium-ai-title,
+        .rTitle .name,
+        .kpi .value,
+        .box h4 {
+            color: #111827 !important;
+        }
+
+        .premium-ai-reason,
+        .premium-ai-sub,
+        .rTitle .sub,
+        .kpi .mini,
+        .box ul,
+        .barLabel,
+        .barPct,
+        .snap .s,
+        .radiusBox .line,
+        .loadingBox .p,
+        .emptyBox .p {
+            color: #4b5563 !important;
+        }
+
+        .overviewRow {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+        }
+
+        .analyticsBlock {
+            display: grid !important;
+            gap: 10px !important;
+        }
+
+        .bar {
+            background: #e5e7eb !important;
+            border: 0 !important;
+        }
+
+        .fill {
+            background: #6366f1 !important;
+        }
+
+        .snapGrid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .radiusBox {
+            margin-top: 12px !important;
+        }
+
+            .radiusBox .line {
+                display: flex !important;
+            }
     }
 </style>
 
-<div class="results-shell">
+<div class="results-shell" data-print-date="@DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt")">
     @Html.AntiForgeryToken()
 
     <div class="viewport">
@@ -632,7 +867,7 @@
             </div>
 
             <div class="controls">
-                <input id="saveName" class="inputx saveInputBig" placeholder="Enter search name..." />
+                <input id="saveName" class="inputx" placeholder="Enter search name..." />
                 <button id="btnSave" class="btnx primary" type="button">Save Search</button>
                 <a id="compareLink" class="btnx" href="/Compare">Compare (0)</a>
                 <a id="listingsLink" class="btnx" href="/Listings">Listings</a>
@@ -647,6 +882,10 @@
             <div class="tabs" role="tablist" aria-label="Results view">
                 <button id="tabOverview" class="active" type="button">Overview</button>
                 <button id="tabAnalytics" type="button">Analytics</button>
+                @if (isPremium)
+                {
+                    <button id="tabHeatmap" type="button">Heatmap</button>
+                }
             </div>
 
             <div class="sortRow">
@@ -660,6 +899,25 @@
 
         <section class="mainGrid">
             <div class="leftPanel">
+
+                @if (isPremium)
+                {
+                    <div class="premium-ai-card">
+                        <div class="premium-ai-badge">👑 Premium AI</div>
+                        <div class="premium-ai-title">AI Best Area Recommendation</div>
+                        <div class="premium-ai-sub">
+                            Premium recommendation is active. Your personalized AI recommendation will appear here.
+                        </div>
+                        <div id="aiBestAreaBox" class="premium-ai-box">
+                            <div class="premium-ai-name">Calculating best area...</div>
+                            <div class="premium-ai-reason">We are analyzing your selected priorities and live area results.</div>
+                            <button id="btnGenerateReport" class="btnx primary" type="button" style="margin-top:12px;">
+                                Generate AI Report
+                            </button>
+                        </div>
+                    </div>
+                }
+
                 <div class="kpiRow">
                     <div class="kpi">
                         <div class="label">Overall Match</div>
@@ -710,6 +968,16 @@
                 <div class="mapBox">
                     <div id="resultsMap"></div>
                 </div>
+
+                @if (isPremium)
+                {
+                    <div class="radiusBox" style="margin-bottom:10px;">
+                        <div style="font-weight:950;">Heatmap Legend</div>
+                        <div class="line"><span style="color:#22c55e;">● Strong Match</span></div>
+                        <div class="line"><span style="color:#facc15;">● Moderate Match</span></div>
+                        <div class="line"><span style="color:#ef4444;">● Weak Match</span></div>
+                    </div>
+                }
 
                 <div class="radiusBox">
                     <div style="font-weight:950;">Radius & Location</div>
@@ -766,7 +1034,21 @@
         const lat = filters.lat ?? filters.Lat;
         const lng = filters.lng ?? filters.Lng;
         const radiusKm = filters.radiusKm ?? filters.RadiusKm ?? 3;
-        const priorities = (filters.priorities ?? filters.Priorities ?? []).map(p => (p || "").toLowerCase());
+       const priorities = (filters.priorities ?? filters.Priorities ?? [])
+    .map(p => (p || "").toLowerCase().trim())
+    .map(p => {
+        if (p === "gym/fitness") return "gym/fitness";
+        if (p === "parks") return "parks";
+        if (p === "laundry") return "laundry";
+        if (p === "grocery") return "grocery";
+        if (p === "transit") return "transit";
+        if (p === "parking") return "parking";
+        if (p === "safety") return "safety";
+        if (p === "quiet") return "quiet";
+        return p;
+    });
+
+        const isPremium = @(isPremium ? "true" : "false");
 
         const loading = document.getElementById("loadingState");
         const empty = document.getElementById("emptyState");
@@ -788,7 +1070,10 @@
 
         const tabOverview = document.getElementById("tabOverview");
         const tabAnalytics = document.getElementById("tabAnalytics");
+        const tabHeatmap = document.getElementById("tabHeatmap");
+
         let analyticsMode = false;
+        let heatmapMode = false;
 
         const noteModal = document.getElementById("noteModal");
         const noteForm = document.getElementById("noteForm");
@@ -817,6 +1102,7 @@
 
         let cards = [];
         let noteExistsMap = new Map();
+        let bestPremiumCard = null;
 
         function show(el) { if (el) el.style.display = ""; }
         function hide(el) { if (el) el.style.display = "none"; }
@@ -825,19 +1111,60 @@
         show(loading);
 
         function setTab(mode) {
+            if (mode === "heatmap" && !isPremium) {
+                mode = "overview";
+            }
+
             analyticsMode = mode === "analytics";
-            tabOverview.classList.toggle("active", !analyticsMode);
-            tabAnalytics.classList.toggle("active", analyticsMode);
+            heatmapMode = mode === "heatmap";
+
+            tabOverview?.classList.toggle("active", mode === "overview");
+            tabAnalytics?.classList.toggle("active", mode === "analytics");
+            tabHeatmap?.classList.toggle("active", mode === "heatmap");
+
             renderCards();
+            renderHeatmap();
         }
 
         tabOverview?.addEventListener("click", () => setTab("overview"));
         tabAnalytics?.addEventListener("click", () => setTab("analytics"));
+        tabHeatmap?.addEventListener("click", () => setTab("heatmap"));
 
         function closeNoteModal() {
             if (!noteModal) return;
             noteModal.classList.add("hidden");
             noteStatus.textContent = "";
+        }
+
+        function getHeatColor(score) {
+            if (score >= 80) return "#22c55e";
+            if (score >= 60) return "#facc15";
+            return "#ef4444";
+        }
+
+        function renderHeatmap() {
+            if (!heatmapMode || !isPremium) return;
+
+            markersLayer.clearLayers();
+
+            for (const c of cards) {
+                const color = getHeatColor(c.score);
+
+                for (const p of c.pois) {
+                    L.circle([p.lat, p.lng], {
+                        radius: 220,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.35
+                    })
+                    .addTo(markersLayer)
+                    .bindPopup(`
+                        <strong>${p.name}</strong><br/>
+                        <span style="font-size:12px; font-weight:800;">${c.name}</span><br/>
+                        Score: ${c.score}
+                    `);
+                }
+            }
         }
 
         function resetNoteModalFields() {
@@ -1006,29 +1333,29 @@
             }
         });
 
-            document.getElementById("btnSave")?.addEventListener("click", async () => {
-        const saveNameInput = document.getElementById("saveName");
-        const name = (saveNameInput.value || "").trim() || "Saved Search";
+        document.getElementById("btnSave")?.addEventListener("click", async () => {
+            const saveNameInput = document.getElementById("saveName");
+            const name = (saveNameInput.value || "").trim() || "Saved Search";
 
-        const res = await fetch("/SavedSearches/SaveCurrent", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ name })
+            const res = await fetch("/SavedSearches/SaveCurrent", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ name })
+            });
+
+            if (res.status === 401) {
+                alert("You are not logged in. Please login again.");
+                return;
+            }
+
+            if (!res.ok) {
+                const t = await res.text();
+                alert("Save failed: " + t);
+                return;
+            }
+
+            alert("Saved!");
         });
-
-        if (res.status === 401) {
-            alert("You are not logged in. Please login again.");
-            return;
-        }
-
-        if (!res.ok) {
-            const t = await res.text();
-            alert("Save failed: " + t);
-            return;
-        }
-
-        alert("Saved!");
-    });
 
         async function refreshCompareCount() {
             try {
@@ -1066,7 +1393,89 @@
             alert("Added to Compare!");
         }
 
+        async function updatePremiumCard(bestCard) {
+            if (!isPremium || !bestCard) return;
+
+            const nameEl = document.querySelector(".premium-ai-name");
+            const reasonEl = document.querySelector(".premium-ai-reason");
+
+            if (!nameEl || !reasonEl) return;
+
+            nameEl.textContent = `${bestCard.name} • ${bestCard.score}/100`;
+            reasonEl.textContent = "Generating AI recommendation...";
+
+            try {
+                const res = await fetch("/Results/GenerateBestAreaExplanation", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        areaName: bestCard.name,
+                        score: bestCard.score,
+                        priorities: priorities,
+                        matchCount: bestCard.count,
+                        avgDistanceKm: bestCard.avgDist
+                    })
+                });
+
+                if (!res.ok) {
+                    const t = await res.text();
+                    reasonEl.textContent = "AI recommendation could not be generated right now.";
+                    console.error(t);
+                    return;
+                }
+
+                const data = await res.json();
+
+                nameEl.textContent = `${data.areaName} • ${data.score}/100`;
+                reasonEl.textContent = data.summary;
+            } catch (err) {
+                reasonEl.textContent = "AI recommendation could not be generated right now.";
+                console.error(err);
+            }
+        }
+
+        async function generateAiReport() {
+            if (!isPremium || !bestPremiumCard) {
+                alert("Premium report data is not available.");
+                return;
+            }
+
+            try {
+                const res = await fetch("/Report/Generate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        areaName: bestPremiumCard.name,
+                        score: bestPremiumCard.score,
+                        summary: document.querySelector(".premium-ai-reason")?.textContent || "",
+                        priorities: priorities,
+                        strengths: bestPremiumCard.strengths || [],
+                        weaknesses: bestPremiumCard.weaknesses || []
+                    })
+                });
+
+                if (!res.ok) {
+                    const t = await res.text();
+                    alert("Failed to generate report: " + t);
+                    return;
+                }
+
+                const data = await res.json();
+                if (data.success && data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Failed to generate report.");
+            }
+        }
+
         refreshCompareCount();
+        document.getElementById("btnGenerateReport")?.addEventListener("click", generateAiReport);
 
         function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
         function fmt(n, digits = 0) { return Number.isFinite(n) ? n.toFixed(digits) : "—"; }
@@ -1179,7 +1588,7 @@
         if (!lat || !lng) {
             hide(loading);
             show(empty);
-            empty.querySelector(".p").textContent = "Go back to Filters and pick a location on the map.";
+            empty.querySelector(".p").textContent = "No strong matches found. Try increasing the radius or selecting different priorities.";
             kpiOverall.textContent = "—";
             kpiOverallSub.textContent = "No location selected";
             snapTotal.textContent = "—";
@@ -1239,9 +1648,8 @@
                 }
 
                 const selectedCats = priorities.map(p => priorityToCategory[p]).filter(Boolean);
-                const catsToShow = selectedCats.length
-                    ? selectedCats
-                    : ["grocery", "transit", "parks", "gym/fitness", "laundry", "parking", "safety", "quiet"];
+                    const defaultCats = ["grocery", "transit", "parks", "gym/fitness", "laundry", "parking", "safety", "quiet"];
+    const catsToShow = selectedCats.length ? selectedCats : defaultCats;
 
                 function computeCategoryCard(cat) {
                     const items = byCategory.get(cat) || [];
@@ -1296,16 +1704,34 @@
                     };
                 }
 
-                cards = [];
-                for (const cat of catsToShow) {
-                    const c = computeCategoryCard(cat);
-                    if (c) cards.push(c);
-                }
+                  cards = [];
 
+    // First try selected categories
+    for (const cat of catsToShow) {
+        const c = computeCategoryCard(cat);
+        if (c) cards.push(c);
+    }
+
+    // 🔥 IF NOTHING FOUND → FALLBACK TO ALL CATEGORIES
+    if (!cards.length) {
+        const fallbackCats = ["grocery", "transit", "parks", "gym/fitness", "laundry", "parking", "safety", "quiet"];
+
+        for (const cat of fallbackCats) {
+            const c = computeCategoryCard(cat);
+            if (c) cards.push(c);
+        }
+    }
                 const allPlaceIds = cards.flatMap(c => c.pois.map(p => p.id));
                 await checkNotesForPlaces(allPlaceIds);
 
-                const overall = Math.round(cards.reduce((a, c) => a + c.score, 0) / cards.length);
+                 if (!cards.length) {
+        show(empty);
+        empty.querySelector(".p").textContent =
+            "No strong matches for selected priorities. Try increasing radius.";
+        return;
+    }
+
+    const overall = Math.round(cards.reduce((a, c) => a + c.score, 0) / cards.length);
                 const sorted = [...cards].sort((a, b) => b.score - a.score);
                 const best = sorted[0];
                 const worst = sorted[sorted.length - 1];
@@ -1320,6 +1746,11 @@
 
                 kpiWeak.textContent = worst ? worst.name : "—";
                 kpiWeakSub.textContent = worst ? `${worst.count} matches • ${worst.conf.label}` : "—";
+
+                if (best && isPremium) {
+                    bestPremiumCard = best;
+                    await updatePremiumCard(best);
+                }
 
                 markersLayer.clearLayers();
                 const bounds = [];
@@ -1336,17 +1767,19 @@
                 }
 
                 renderCards();
-
             } catch (err) {
                 hide(loading);
                 show(empty);
-                empty.querySelector(".p").textContent = "Live search failed. Try again or reduce radius.";
+                empty.querySelector(".p").textContent = "No matching places found for this location and radius.";
                 console.error(err);
             }
         })();
 
         function renderCards() {
-            if (!cards || !cards.length) return;
+                if (!cards || !cards.length) {
+        show(empty);
+        return;
+    }
 
             let sorted = [...cards];
             const mode = sortMode.value;
@@ -1356,6 +1789,15 @@
             else if (mode === "balanced") {
                 const avg = sorted.reduce((a, c) => a + c.score, 0) / sorted.length;
                 sorted.sort((a, b) => Math.abs(a.score - avg) - Math.abs(b.score - avg));
+            }
+
+            if (heatmapMode && isPremium) {
+                list.innerHTML = `
+                    <div class="loadingBox">
+                        <div class="t">Heatmap View Active</div>
+                        <div class="p">Visualizing best areas based on your preferences.</div>
+                    </div>`;
+                return;
             }
 
             list.innerHTML = "";

@@ -15,7 +15,6 @@
         border-radius: 26px;
         background: radial-gradient(760px 280px at 15% 0%, rgba(79,70,229,0.16), transparent 58%), radial-gradient(560px 240px at 92% 18%, rgba(37,99,235,0.10), transparent 54%), linear-gradient(180deg, var(--surface-strong), var(--surface));
         box-shadow: var(--shadow-lg);
-        backdrop-filter: blur(14px);
         padding: 22px;
         display: grid;
         grid-template-columns: 1.2fr 1fr;
@@ -99,21 +98,11 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .btn:focus-visible {
-            outline: none;
-            box-shadow: var(--focus);
-        }
-
         .btn.primary {
             background: linear-gradient(135deg, var(--accent), #6366f1);
             border-color: transparent;
             color: #ffffff;
-            box-shadow: 0 14px 34px rgba(79,70,229,0.20);
         }
-
-            .btn.primary:hover {
-                background: linear-gradient(135deg, var(--accent-hover), var(--accent));
-            }
 
     .topStats {
         margin-top: 16px;
@@ -128,7 +117,6 @@
         background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         box-shadow: var(--shadow-md);
         padding: 14px;
-        backdrop-filter: blur(10px);
     }
 
         .stat .k {
@@ -167,7 +155,6 @@
         background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
         box-shadow: var(--shadow-md);
         padding: 18px;
-        backdrop-filter: blur(12px);
     }
 
         .card h2 {
@@ -200,7 +187,6 @@
         border-radius: 16px;
         border: 1px solid var(--border);
         background: var(--surface);
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
     }
 
         .item input {
@@ -238,7 +224,6 @@
         color: var(--text);
         font-weight: 850;
         font-size: 12px;
-        box-shadow: var(--shadow-md);
     }
 
         .pill.good {
@@ -265,7 +250,6 @@
         border: 1px solid var(--border);
         background: var(--surface);
         padding: 12px 14px;
-        box-shadow: var(--shadow-md);
     }
 
         details summary {
@@ -323,7 +307,6 @@
         font-size: 12px;
         font-weight: 800;
         line-height: 1.65;
-        box-shadow: var(--shadow-md);
     }
 
     .miniSection {
@@ -337,6 +320,10 @@
         font-weight: 950;
         color: var(--text);
         margin-bottom: 8px;
+    }
+
+    .print-report {
+        display: none;
     }
 
     @@media (max-width: 980px) {
@@ -357,294 +344,420 @@
         }
     }
 
+    /* ================= PRINT ONLY ================= */
     @@media print {
-        body {
-            background: #fff !important;
+        @@page {
+            size: A4;
+            margin: 12mm;
         }
 
-        .hero, .card, details, .stat {
-            box-shadow: none !important;
-            background: #fff !important;
-            border: 1px solid #ddd !important;
+        html, body {
+            background: #ffffff !important;
+            color: #111827 !important;
+            height: auto !important;
+            overflow: visible !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .btn {
+        .screen-view {
             display: none !important;
         }
 
-        .shell {
-            color: #000 !important;
+        .print-report {
+            display: block !important;
+            width: 100% !important;
+            color: #111827 !important;
+            font-family: Arial, sans-serif;
         }
 
-        .item {
-            background: #fff !important;
-            border: 1px solid #ddd !important;
-        }
-
-            .item .t,
-            .item .p,
-            .hint,
-            .sub,
-            .pill,
-            .links a,
-            h1,
-            h2,
-            .stat .k,
-            .stat .v,
-            .stat .s {
-                color: #000 !important;
+            .print-report h1 {
+                font-size: 26px !important;
+                margin: 0 0 6px 0 !important;
+                color: #111827 !important;
             }
 
-        .links a {
+            .print-report .report-date {
+                font-size: 12px;
+                color: #6b7280;
+                margin-bottom: 16px;
+            }
+
+            .print-report .report-sub {
+                font-size: 13px;
+                line-height: 1.7;
+                margin-bottom: 16px;
+                color: #374151;
+            }
+
+        .print-section {
+            margin-bottom: 18px;
+            page-break-inside: avoid;
+        }
+
+            .print-section h2 {
+                font-size: 18px;
+                margin: 0 0 8px 0;
+                color: #111827;
+                border-bottom: 1px solid #d1d5db;
+                padding-bottom: 6px;
+            }
+
+            .print-section ul {
+                margin: 0;
+                padding-left: 18px;
+            }
+
+            .print-section li {
+                margin-bottom: 8px;
+                line-height: 1.6;
+                color: #374151;
+            }
+
+        .print-note {
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #374151;
+        }
+
+        .print-links div {
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+
+        .print-links a {
+            color: #111827 !important;
             text-decoration: underline !important;
         }
     }
 </style>
 
 <div class="shell">
-    <section class="hero">
-        <div>
-            <h1>Tenant Checklist</h1>
-            <div class="sub">
-                A practical checklist to help you move from “Shortlist results” to “sign the lease” with confidence.
-                Use this page during searches, viewings, and applications so you do not miss anything important.
-            </div>
-
-            <div class="hero-pills">
-                <span class="hero-pill">Viewing prep</span>
-                <span class="hero-pill good">Scam awareness</span>
-                <span class="hero-pill">Lease readiness</span>
-            </div>
-        </div>
-
-        <div class="actions">
-            <button class="btn primary" type="button" onclick="window.print()">Print / Save PDF</button>
-            <a class="btn" href="/Results">Back to Results</a>
-        </div>
-    </section>
-
-    <section class="topStats">
-        <div class="stat">
-            <div class="k">Step 1</div>
-            <div class="v">Screen the listing</div>
-            <div class="s">Check price, address, landlord communication, and obvious red flags.</div>
-        </div>
-        <div class="stat">
-            <div class="k">Step 2</div>
-            <div class="v">Inspect carefully</div>
-            <div class="s">Use the checklist during the viewing so details are not missed.</div>
-        </div>
-        <div class="stat">
-            <div class="k">Step 3</div>
-            <div class="v">Document everything</div>
-            <div class="s">Keep receipts, copies, photos, and written confirmations.</div>
-        </div>
-    </section>
-
-    <section class="grid">
-        <div class="card">
-            <h2>Before you book a viewing</h2>
-            <div class="hint">Goal: avoid scams and filter out weak listings early.</div>
-
-            <div class="list">
-                <div class="item">
-                    <input type="checkbox" />
-                    <div>
-                        <div class="t">Confirm the address is real</div>
-                        <div class="p">Search the address, compare listing photos, and check whether the same photos appear on unrelated websites.</div>
-                    </div>
+    <div class="screen-view">
+        <section class="hero">
+            <div>
+                <h1>Tenant Checklist</h1>
+                <div class="sub">
+                    A practical checklist to help you move from “Shortlist results” to “sign the lease” with confidence.
+                    Use this page during searches, viewings, and applications so you do not miss anything important.
                 </div>
 
-                <div class="item">
-                    <input type="checkbox" />
-                    <div>
-                        <div class  ="t">Ask basic questions in writing</div>
-                        <div class="p">Confirm rent, utilities, parking, move-in date, lease term, deposits, and application requirements before visiting.</div>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <input type="checkbox" />
-                    <div>
-                        <div class="t">Do not pay before viewing</div>
-                        <div class="p">A legitimate landlord or property manager should provide a viewing and proper documentation before asking for money.</div>
-                    </div>
+                <div class="hero-pills">
+                    <span class="hero-pill">Viewing prep</span>
+                    <span class="hero-pill good">Scam awareness</span>
+                    <span class="hero-pill">Lease readiness</span>
                 </div>
             </div>
 
-            <div class="noteBox">
-                Tip: Save screenshots of the original listing before it changes or disappears.
+            <div class="actions">
+                <button class="btn primary" type="button" onclick="window.print()">Print / Save PDF</button>
+                <a class="btn" href="/Results">Back to Results</a>
             </div>
+        </section>
 
-            <details>
-                <summary>Viewing checklist (what to check on-site)</summary>
-                <div class="content">
-                    <div class="list">
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Water pressure and hot water</div>
-                                <div class="p">Test sinks and shower, check how quickly hot water arrives, and look for leaks underneath.</div>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Windows, locks, and phone signal</div>
-                                <div class="p">Open and close windows, test locks, and check phone signal if you rely on mobile data indoors.</div>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Noise level</div>
-                                <div class="p">Listen for traffic, hallways, neighbors, building systems, and nearby construction noise.</div>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Heating, cooling, and ventilation</div>
-                                <div class="p">Ask how temperature is controlled and whether the tenant or building manages it.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </details>
-
-            <details>
-                <summary>Application package (what to prepare)</summary>
-                <div class="content">
-                    <div class="list">
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Proof of income</div>
-                                <div class="p">Prepare pay stubs, an offer letter, or limited supporting documents only if reasonably requested.</div>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">References</div>
-                                <div class="p">Keep previous landlord, roommate, or employer references ready if the application process asks for them.</div>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">ID and safe document sharing</div>
-                                <div class="p">Bring ID in person, but avoid sending unnecessary sensitive records unless truly required.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </details>
-
-            <details>
-                <summary>Lease signing (do not skip these)</summary>
-                <div class="content">
-                    <div class="list">
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Read the lease carefully</div>
-                                <div class="p">Review rent amount, included utilities, lease term, parking, maintenance responsibility, and building rules.</div>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Keep receipts and signed copies</div>
-                                <div class="p">Save payment confirmations, lease copies, emails, and any move-in documents.</div>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <input type="checkbox" />
-                            <div>
-                                <div class="t">Take move-in condition photos</div>
-                                <div class="p">Photograph walls, appliances, floors, and damage on day one to prevent later disputes.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </details>
-        </div>
-
-        <div class="card">
-            <h2>Scam red flags</h2>
-            <div class="hint">If you notice multiple red flags together, it is safer to walk away.</div>
-
-            <div class="pillRow">
-                <span class="pill bad">Money before viewing</span>
-                <span class="pill bad">Pressure / urgency</span>
-                <span class="pill warn">Unverified identity</span>
-                <span class="pill warn">Too-good-to-be-true price</span>
-                <span class="pill bad">No lease / no paperwork</span>
+        <section class="topStats">
+            <div class="stat">
+                <div class="k">Step 1</div>
+                <div class="v">Screen the listing</div>
+                <div class="s">Check price, address, landlord communication, and obvious red flags.</div>
             </div>
-
-            <div class="list" style="margin-top:12px;">
-                <div class="item">
-                    <input type="checkbox" />
-                    <div>
-                        <div class="t">They refuse to show the unit</div>
-                        <div class="p">Excuses like “I’m out of the country” combined with a deposit request are common warning signs.</div>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <input type="checkbox" />
-                    <div>
-                        <div class="t">They ask for unusual payment methods</div>
-                        <div class="p">Gift cards, crypto, wire transfers, or personal transfer arrangements are high-risk.</div>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <input type="checkbox" />
-                    <div>
-                        <div class="t">Important details keep changing</div>
-                        <div class="p">The address, rent, included utilities, or move-in date changes after you ask follow-up questions.</div>
-                    </div>
-                </div>
+            <div class="stat">
+                <div class="k">Step 2</div>
+                <div class="v">Inspect carefully</div>
+                <div class="s">Use the checklist during the viewing so details are not missed.</div>
             </div>
+            <div class="stat">
+                <div class="k">Step 3</div>
+                <div class="v">Document everything</div>
+                <div class="s">Keep receipts, copies, photos, and written confirmations.</div>
+            </div>
+        </section>
 
-            <div class="miniSection">
-                <div class="miniTitle">Good practice during communication</div>
+        <section class="grid">
+            <div class="card">
+                <h2>Before you book a viewing</h2>
+                <div class="hint">Goal: avoid scams and filter out weak listings early.</div>
+
                 <div class="list">
                     <div class="item">
                         <input type="checkbox" />
                         <div>
-                            <div class="t">Keep messages in writing</div>
-                            <div class="p">Email or platform messages are easier to reference later than phone-only conversations.</div>
+                            <div class="t">Confirm the address is real</div>
+                            <div class="p">Search the address, compare listing photos, and check whether the same photos appear on unrelated websites.</div>
                         </div>
                     </div>
 
                     <div class="item">
                         <input type="checkbox" />
                         <div>
-                            <div class="t">Bring someone to the viewing if possible</div>
-                            <div class="p">A second person can notice issues you miss and adds confidence during the visit.</div>
+                            <div class="t">Ask basic questions in writing</div>
+                            <div class="p">Confirm rent, utilities, parking, move-in date, lease term, deposits, and application requirements before visiting.</div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <input type="checkbox" />
+                        <div>
+                            <div class="t">Do not pay before viewing</div>
+                            <div class="p">A legitimate landlord or property manager should provide a viewing and proper documentation before asking for money.</div>
                         </div>
                     </div>
                 </div>
+
+                <div class="noteBox">
+                    Tip: Save screenshots of the original listing before it changes or disappears.
+                </div>
+
+                <details open>
+                    <summary>Viewing checklist (what to check on-site)</summary>
+                    <div class="content">
+                        <div class="list">
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Water pressure and hot water</div>
+                                    <div class="p">Test sinks and shower, check how quickly hot water arrives, and look for leaks underneath.</div>
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Windows, locks, and phone signal</div>
+                                    <div class="p">Open and close windows, test locks, and check phone signal if you rely on mobile data indoors.</div>
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Noise level</div>
+                                    <div class="p">Listen for traffic, hallways, neighbors, building systems, and nearby construction noise.</div>
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Heating, cooling, and ventilation</div>
+                                    <div class="p">Ask how temperature is controlled and whether the tenant or building manages it.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <details open>
+                    <summary>Application package (what to prepare)</summary>
+                    <div class="content">
+                        <div class="list">
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Proof of income</div>
+                                    <div class="p">Prepare pay stubs, an offer letter, or limited supporting documents only if reasonably requested.</div>
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">References</div>
+                                    <div class="p">Keep previous landlord, roommate, or employer references ready if the application process asks for them.</div>
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">ID and safe document sharing</div>
+                                    <div class="p">Bring ID in person, but avoid sending unnecessary sensitive records unless truly required.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <details open>
+                    <summary>Lease signing (do not skip these)</summary>
+                    <div class="content">
+                        <div class="list">
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Read the lease carefully</div>
+                                    <div class="p">Review rent amount, included utilities, lease term, parking, maintenance responsibility, and building rules.</div>
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Keep receipts and signed copies</div>
+                                    <div class="p">Save payment confirmations, lease copies, emails, and any move-in documents.</div>
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <input type="checkbox" />
+                                <div>
+                                    <div class="t">Take move-in condition photos</div>
+                                    <div class="p">Photograph walls, appliances, floors, and damage on day one to prevent later disputes.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
             </div>
 
-            <details class="links">
-                <summary>Helpful links (Ontario)</summary>
-                <div class="content">
-                    <div>• Landlord and Tenant Board (LTB): <a href="https://tribunalsontario.ca/ltb/" target="_blank" rel="noopener noreferrer">tribunalsontario.ca/ltb</a></div>
-                    <div>• Ontario Standard Lease guide: <a href="https://www.ontario.ca/page/guide-ontarios-standard-lease" target="_blank" rel="noopener noreferrer">ontario.ca/page/guide-ontarios-standard-lease</a></div>
-                    <div>• Tenant rights overview: <a href="https://www.ontario.ca/page/renting-ontario-your-rights" target="_blank" rel="noopener noreferrer">ontario.ca/page/renting-ontario-your-rights</a></div>
+            <div class="card">
+                <h2>Scam red flags</h2>
+                <div class="hint">If you notice multiple red flags together, it is safer to walk away.</div>
+
+                <div class="pillRow">
+                    <span class="pill bad">Money before viewing</span>
+                    <span class="pill bad">Pressure / urgency</span>
+                    <span class="pill warn">Unverified identity</span>
+                    <span class="pill warn">Too-good-to-be-true price</span>
+                    <span class="pill bad">No lease / no paperwork</span>
                 </div>
-            </details>
+
+                <div class="list" style="margin-top:12px;">
+                    <div class="item">
+                        <input type="checkbox" />
+                        <div>
+                            <div class="t">They refuse to show the unit</div>
+                            <div class="p">Excuses like “I’m out of the country” combined with a deposit request are common warning signs.</div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <input type="checkbox" />
+                        <div>
+                            <div class="t">They ask for unusual payment methods</div>
+                            <div class="p">Gift cards, crypto, wire transfers, or personal transfer arrangements are high-risk.</div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <input type="checkbox" />
+                        <div>
+                            <div class="t">Important details keep changing</div>
+                            <div class="p">The address, rent, included utilities, or move-in date changes after you ask follow-up questions.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="miniSection">
+                    <div class="miniTitle">Good practice during communication</div>
+                    <div class="list">
+                        <div class="item">
+                            <input type="checkbox" />
+                            <div>
+                                <div class="t">Keep messages in writing</div>
+                                <div class="p">Email or platform messages are easier to reference later than phone-only conversations.</div>
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <input type="checkbox" />
+                            <div>
+                                <div class="t">Bring someone to the viewing if possible</div>
+                                <div class="p">A second person can notice issues you miss and adds confidence during the visit.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <details open class="links">
+                    <summary>Helpful links (Ontario)</summary>
+                    <div class="content">
+                        <div>• Landlord and Tenant Board (LTB): <a href="https://tribunalsontario.ca/ltb/" target="_blank" rel="noopener noreferrer">tribunalsontario.ca/ltb</a></div>
+                        <div>• Ontario Standard Lease guide: <a href="https://www.ontario.ca/page/guide-ontarios-standard-lease" target="_blank" rel="noopener noreferrer">ontario.ca/page/guide-ontarios-standard-lease</a></div>
+                        <div>• Tenant rights overview: <a href="https://www.ontario.ca/page/renting-ontario-your-rights" target="_blank" rel="noopener noreferrer">ontario.ca/page/renting-ontario-your-rights</a></div>
+                    </div>
+                </details>
+            </div>
+        </section>
+    </div>
+
+    <div class="print-report">
+        <h1>Shortlist – Tenant Checklist Report</h1>
+        <div class="report-date">Generated on: @DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt")</div>
+        <div class="report-sub">
+            A practical checklist to help you move from “Shortlist results” to “sign the lease” with confidence.
+            Use this page during searches, viewings, and applications so you do not miss anything important.
         </div>
-    </section>
+
+        <div class="print-section">
+            <h2>Before you book a viewing</h2>
+            <ul>
+                <li><strong>Confirm the address is real:</strong> Search the address, compare listing photos, and check whether the same photos appear on unrelated websites.</li>
+                <li><strong>Ask basic questions in writing:</strong> Confirm rent, utilities, parking, move-in date, lease term, deposits, and application requirements before visiting.</li>
+                <li><strong>Do not pay before viewing:</strong> A legitimate landlord or property manager should provide a viewing and proper documentation before asking for money.</li>
+            </ul>
+            <div class="print-note">Tip: Save screenshots of the original listing before it changes or disappears.</div>
+        </div>
+
+        <div class="print-section">
+            <h2>Viewing checklist (what to check on-site)</h2>
+            <ul>
+                <li><strong>Water pressure and hot water:</strong> Test sinks and shower, check how quickly hot water arrives, and look for leaks underneath.</li>
+                <li><strong>Windows, locks, and phone signal:</strong> Open and close windows, test locks, and check phone signal if you rely on mobile data indoors.</li>
+                <li><strong>Noise level:</strong> Listen for traffic, hallways, neighbors, building systems, and nearby construction noise.</li>
+                <li><strong>Heating, cooling, and ventilation:</strong> Ask how temperature is controlled and whether the tenant or building manages it.</li>
+            </ul>
+        </div>
+
+        <div class="print-section">
+            <h2>Application package (what to prepare)</h2>
+            <ul>
+                <li><strong>Proof of income:</strong> Prepare pay stubs, an offer letter, or limited supporting documents only if reasonably requested.</li>
+                <li><strong>References:</strong> Keep previous landlord, roommate, or employer references ready if the application process asks for them.</li>
+                <li><strong>ID and safe document sharing:</strong> Bring ID in person, but avoid sending unnecessary sensitive records unless truly required.</li>
+            </ul>
+        </div>
+
+        <div class="print-section">
+            <h2>Lease signing (do not skip these)</h2>
+            <ul>
+                <li><strong>Read the lease carefully:</strong> Review rent amount, included utilities, lease term, parking, maintenance responsibility, and building rules.</li>
+                <li><strong>Keep receipts and signed copies:</strong> Save payment confirmations, lease copies, emails, and any move-in documents.</li>
+                <li><strong>Take move-in condition photos:</strong> Photograph walls, appliances, floors, and damage on day one to prevent later disputes.</li>
+            </ul>
+        </div>
+
+        <div class="print-section">
+            <h2>Scam red flags</h2>
+            <ul>
+                <li>Money before viewing</li>
+                <li>Pressure or urgency</li>
+                <li>Unverified identity</li>
+                <li>Too-good-to-be-true price</li>
+                <li>No lease or no paperwork</li>
+                <li>Refusal to show the unit before payment</li>
+                <li>Unusual payment methods such as gift cards, crypto, or wire transfers</li>
+                <li>Important listing details keep changing</li>
+            </ul>
+        </div>
+
+        <div class="print-section">
+            <h2>Good practice during communication</h2>
+            <ul>
+                <li>Keep messages in writing for easier reference later.</li>
+                <li>Bring someone to the viewing if possible.</li>
+            </ul>
+        </div>
+
+        <div class="print-section print-links">
+            <h2>Helpful links (Ontario)</h2>
+            <div>Landlord and Tenant Board (LTB): <a href="https://tribunalsontario.ca/ltb/">tribunalsontario.ca/ltb</a></div>
+            <div>Ontario Standard Lease guide: <a href="https://www.ontario.ca/page/guide-ontarios-standard-lease">ontario.ca/page/guide-ontarios-standard-lease</a></div>
+            <div>Tenant rights overview: <a href="https://www.ontario.ca/page/renting-ontario-your-rights">ontario.ca/page/renting-ontario-your-rights</a></div>
+        </div>
+    </div>
 </div>

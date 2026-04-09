@@ -1,0 +1,186 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "FAQ";
+}
+
+<style>
+    .faq-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+    }
+
+    .faq-hero {
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: linear-gradient(135deg, rgba(79,70,229,0.12), var(--surface-strong));
+        box-shadow: var(--shadow-lg);
+        padding: 24px;
+    }
+
+    .faq-title {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .faq-sub {
+        margin-top: 8px;
+        color: var(--muted);
+        font-weight: 750;
+        line-height: 1.7;
+        max-width: 72ch;
+    }
+
+    .faq-grid {
+        margin-top: 20px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .faq-card {
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .faq-question {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        text-align: left;
+        padding: 18px 20px;
+        font-size: 16px;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .faq-answer {
+        display: none;
+        padding: 0 20px 18px;
+        color: var(--muted);
+        font-weight: 750;
+        line-height: 1.8;
+    }
+
+    .faq-card.open .faq-answer {
+        display: block;
+    }
+
+    .faq-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .faq-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 900;
+        border: 1px solid var(--border-strong);
+        background: var(--surface-strong);
+        color: var(--text);
+        box-shadow: var(--shadow-md);
+    }
+</style>
+
+<div class="faq-shell">
+    <section class="faq-hero">
+        <h1 class="faq-title">Shortlist FAQ</h1>
+        <div class="faq-sub">
+            Quick answers about filters, results, premium, AI reports, compare, listings, and general app usage.
+        </div>
+    </section>
+
+    <section class="faq-grid">
+        <div class="faq-card">
+            <button class="faq-question" type="button">How do I use filters?</button>
+            <div class="faq-answer">
+                Start by dropping a pin on the map, set your budget and max distance if needed, then choose up to 3 priorities before applying filters.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">What does radius mean?</button>
+            <div class="faq-answer">
+                Radius controls how far around your selected pin Shortlist searches for nearby places and amenities.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">What is Overall Match?</button>
+            <div class="faq-answer">
+                Overall Match summarizes how well an area fits your selected priorities using the live data found nearby.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">What does Confidence mean?</button>
+            <div class="faq-answer">
+                Confidence shows how strong the result is based on the amount of useful live data found nearby.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">What does premium include?</button>
+            <div class="faq-answer">
+                Premium includes AI Best Area Recommendation, Heatmap View, and AI Report generation.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">How do I cancel premium?</button>
+            <div class="faq-answer">
+                You can cancel Premium from the Premium page. Your access remains active until the end of the current premium period.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">How does Compare work?</button>
+            <div class="faq-answer">
+                Compare lets you save multiple places or areas side by side so you can review them before deciding.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">What is the AI Report?</button>
+            <div class="faq-answer">
+                The AI Report summarizes the strongest recommended area based on your selected priorities and live results.
+            </div>
+        </div>
+
+        <div class="faq-card">
+            <button class="faq-question" type="button">Why do I see no results?</button>
+            <div class="faq-answer">
+                Try increasing the radius, choosing a different location, or selecting priorities with broader nearby coverage.
+            </div>
+        </div>
+    </section>
+
+    <div class="faq-actions">
+        <a asp-controller="Settings" asp-action="Index" class="faq-btn">Back to Settings</a>
+        <a asp-controller="Results" asp-action="Index" class="faq-btn">Go to Results</a>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const cards = document.querySelectorAll(".faq-card");
+
+        cards.forEach(card => {
+            const btn = card.querySelector(".faq-question");
+            btn?.addEventListener("click", () => {
+                card.classList.toggle("open");
+            });
+        });
+    })();
+</script>

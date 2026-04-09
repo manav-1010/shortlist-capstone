@@ -86,6 +86,105 @@
         gap: 8px;
     }
 
+    .settings-help-card {
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--surface-strong), var(--surface-soft));
+        box-shadow: var(--shadow-md);
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        transition: transform .12s ease, box-shadow .12s ease, border .12s ease;
+    }
+
+        .settings-help-card:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(99, 102, 241, 0.20);
+        }
+
+    .settings-help-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .settings-help-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(79,70,229,0.14), rgba(99,102,241,0.22));
+        color: var(--accent);
+        font-size: 22px;
+        font-weight: 900;
+        flex-shrink: 0;
+        box-shadow: var(--shadow-md);
+    }
+
+    .settings-help-text h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 950;
+        color: var(--text);
+    }
+
+    .settings-help-text p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.7;
+        font-weight: 750;
+        max-width: 560px;
+    }
+
+    .settings-faq-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 165px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 900;
+        border: 1px solid transparent;
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--accent), #6366f1);
+        box-shadow: 0 14px 30px rgba(79,70,229,0.20);
+        transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+        white-space: nowrap;
+    }
+
+        .settings-faq-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 34px rgba(79,70,229,0.24);
+            background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+        }
+
+        .settings-faq-btn:focus-visible {
+            outline: none;
+            box-shadow: var(--focus);
+        }
+
+    @@media (max-width: 760px) {
+        .settings-help-card {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .settings-help-left {
+            align-items: flex-start;
+        }
+
+        .settings-faq-btn {
+            width: 100%;
+        }
+    }
     .inputx {
         border-radius: 12px;
         border: 1px solid var(--border-strong);
@@ -264,8 +363,7 @@
         </div>
 
         <div class="card">
-            <div class="k">Data & Privacy (Demo actions)</div>
-            <div class="note">These actions help with demos and testing edge cases.</div>
+            <div class="k">Data & Privacy</div>
 
             <div class="btnRow">
                 <form method="post" asp-action="ClearSession" style="margin:0;">
@@ -299,6 +397,11 @@
                 <a class="btnx" asp-controller="Settings" asp-action="Legal">
                     View Privacy & Legal
                 </a>
+            </div>
+            <div class="settings-card">
+                <h3>FAQ & Help</h3>
+                <p>Find quick answers about filters, results, premium, AI reports, compare, and general Shortlist usage.</p>
+                <a asp-controller="Faq" asp-action="Index" class="btnx">Open FAQ</a>
             </div>
 
             <div class="note" style="margin-top:12px;">
